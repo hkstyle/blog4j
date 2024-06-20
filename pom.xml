@@ -20,6 +20,7 @@
     <modules>
         <module>blog4j-auth</module>
         <module>blog4j-common</module>
+        <module>blog4j-gateway</module>
     </modules>
 
     <properties>
@@ -37,6 +38,8 @@
         <jwt-version>3.18.3</jwt-version>
         <hutool.version>5.8.0</hutool.version>
         <alibaba-json-version>1.2.70</alibaba-json-version>
+        <sa-token-redis>1.38.0</sa-token-redis>
+        <sa-token-jwt>1.38.0</sa-token-jwt>
     </properties>
 
     <dependencies>
@@ -71,6 +74,10 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${alibaba-json-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
         </dependency>
     </dependencies>
 
@@ -123,10 +130,17 @@
                 <artifactId>sa-token-spring-boot-starter</artifactId>
                 <version>${satoken-version}</version>
             </dependency>
+            <!-- Sa-Token 整合 Redis （使用 jdk 默认序列化方式） -->
             <dependency>
-                <groupId>com.auth0</groupId>
-                <artifactId>java-jwt</artifactId>
-                <version>${jwt-version}</version>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${sa-token-redis}</version>
+            </dependency>
+            <!-- Sa-Token 整合 jwt -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-jwt</artifactId>
+                <version>${sa-token-jwt}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

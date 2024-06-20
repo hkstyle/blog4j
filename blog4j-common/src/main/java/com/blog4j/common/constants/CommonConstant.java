@@ -26,4 +26,9 @@ public class CommonConstant {
      * 失败响应码
      */
     public static final int FAIL_CODE = 500;
+
+    /**
+     * JWT的有效时间
+     */
+    public static final long JWT_TIMEOUT = 3600 * 24;
 }

@@ -1,8 +1,10 @@
 package com.blog4j.auth.api;
 
-import com.blog4j.common.model.JwtUser;
+import cn.dev33.satoken.stp.SaLoginConfig;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
+import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.model.Result;
-import com.blog4j.common.utils.JwtUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +21,9 @@ public class ApiAuthController {
 
     @GetMapping("/login")
     public Result login() {
-        String jwt = JwtUtil.build(JwtUser.builder().userId("as23gghhnn").userName("李四").build());
-        JwtUser parse = JwtUtil.parse(jwt);
-        System.out.println(parse);
-        return Result.ok(jwt);
+        StpUtil.login("123456", SaLoginConfig.setExtra("name", "张三")
+                .setTimeout(CommonConstant.JWT_TIMEOUT));
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        return Result.ok(tokenInfo);
     }
 }
