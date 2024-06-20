@@ -2,6 +2,7 @@ package com.blog4j.auth.handler;
 
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.exception.InvalidRequestException;
 import com.blog4j.common.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +26,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotPermissionException.class)
     public Result NotPermissionException(NotPermissionException exception) {
         log.error("访问接口，权限不足...");
-        return Result.error(ErrorEnum.NO_PERMISSION);
+        return Result.error(ErrorEnum.NO_PERMISSION_ERROR);
+    }
+
+    /**
+     * 捕获无效请求的异常
+     *
+     * @param exception 异常
+     * @return 统一响应体
+     */
+    @ExceptionHandler(InvalidRequestException.class)
+    public Result InvalidRequestException(InvalidRequestException exception) {
+        log.error("无效请求...");
+        return Result.error(ErrorEnum.INVALID_REQUEST_ERROR);
     }
 
 }

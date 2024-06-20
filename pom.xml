@@ -40,6 +40,7 @@
         <alibaba-json-version>1.2.70</alibaba-json-version>
         <sa-token-redis>1.38.0</sa-token-redis>
         <sa-token-jwt>1.38.0</sa-token-jwt>
+        <commons-lang-version>2.6</commons-lang-version>
     </properties>
 
     <dependencies>
@@ -78,6 +79,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang-version}</version>
         </dependency>
     </dependencies>
 

@@ -13,7 +13,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorEnum {
 
-    NO_PERMISSION(403, "权限不足，请联系管理员！"),
+    NO_PERMISSION_ERROR(403, "权限不足，请联系管理员！"),
+    INVALID_REQUEST_ERROR(405, "无效请求！")
     ;
 
     private final int errorCode;
