@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorEnum {
 
-    TEST(400, "cesium"),
+    NO_PERMISSION(403, "权限不足，请联系管理员！"),
     ;
 
     private final int errorCode;
