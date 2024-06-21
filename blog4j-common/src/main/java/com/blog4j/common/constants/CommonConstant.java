@@ -28,7 +28,7 @@ public class CommonConstant {
     public static final int FAIL_CODE = 500;
 
     /**
-     * JWT的有效时间
+     * 校验请求是否有效
      */
-    public static final long JWT_TIMEOUT = 3600 * 24;
+    public static final String GATEWAY_AUTHENTICATION = "gateway_authentication";
 }

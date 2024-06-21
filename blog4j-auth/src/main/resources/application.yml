@@ -31,3 +31,7 @@ spring:
 
 sa-token:
   jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+  token-name: Authentication
+  timeout: 86400
+  is-concurrent: false
+  is-log: true

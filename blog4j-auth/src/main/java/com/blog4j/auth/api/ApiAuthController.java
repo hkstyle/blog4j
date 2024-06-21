@@ -23,8 +23,7 @@ public class ApiAuthController {
     @SaCheckPermission("login")
     @GetMapping("/login")
     public Result login() {
-        StpUtil.login("123456", SaLoginConfig.setExtra("name", "张三")
-                .setTimeout(CommonConstant.JWT_TIMEOUT));
+        StpUtil.login("123456", SaLoginConfig.setExtra("name", "张三"));
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         return Result.ok(tokenInfo);
     }
