@@ -1,10 +1,8 @@
 package com.blog4j.auth.api;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.SaLoginConfig;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.model.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
-    @SaCheckPermission("login")
     @GetMapping("/login")
     public Result login() {
         StpUtil.login("123456", SaLoginConfig.setExtra("name", "张三"));
