@@ -21,6 +21,7 @@
         <module>blog4j-auth</module>
         <module>blog4j-common</module>
         <module>blog4j-gateway</module>
+        <module>blog4j-user</module>
     </modules>
 
     <properties>
@@ -41,6 +42,7 @@
         <sa-token-redis>1.38.0</sa-token-redis>
         <sa-token-jwt>1.38.0</sa-token-jwt>
         <commons-lang-version>2.6</commons-lang-version>
+        <lombok-version>1.18.24</lombok-version>
     </properties>
 
     <dependencies>
@@ -60,6 +62,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

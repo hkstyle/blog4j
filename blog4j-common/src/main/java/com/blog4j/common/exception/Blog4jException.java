@@ -1,6 +1,7 @@
 package com.blog4j.common.exception;
 
 import com.blog4j.common.constants.CommonConstant;
+import com.blog4j.common.enums.ErrorEnum;
 
 /**
  * @author 98k灬
@@ -33,6 +34,11 @@ public class Blog4jException extends RuntimeException {
     public Blog4jException(String errMsg) {
         this.code = CommonConstant.FAIL_CODE;
         this.errMsg = errMsg;
+    }
+
+    public Blog4jException(ErrorEnum errorEnum) {
+        this.code = errorEnum.getErrorCode();
+        this.errMsg = errorEnum.getErrorMsg();
     }
 
     public Integer getCode() {

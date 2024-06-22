@@ -1,7 +1,8 @@
-package com.blog4j.auth.handler;
+package com.blog4j.user.handler;
 
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.exception.InvalidRequestException;
 import com.blog4j.common.model.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler {
      * @return 统一响应体
      */
     @ExceptionHandler(NotPermissionException.class)
-    public Result NotPermissionException(NotPermissionException exception) {
+    public Result notPermissionException(NotPermissionException exception) {
         log.error("访问接口，权限不足...");
         return Result.error(ErrorEnum.NO_PERMISSION_ERROR);
     }
@@ -36,9 +37,21 @@ public class GlobalExceptionHandler {
      * @return 统一响应体
      */
     @ExceptionHandler(InvalidRequestException.class)
-    public Result InvalidRequestException(InvalidRequestException exception) {
+    public Result invalidRequestException(InvalidRequestException exception) {
         log.error("无效请求...");
         return Result.error(ErrorEnum.INVALID_REQUEST_ERROR);
+    }
+
+    /**
+     * 捕获业务异常
+     *
+     * @param exception 异常
+     * @return 统一响应体
+     */
+    @ExceptionHandler(Blog4jException.class)
+    public Result blog4jException(Blog4jException exception) {
+        log.error("业务异常...");
+        return Result.build(exception.getCode(), exception.getErrMsg());
     }
 
     /**

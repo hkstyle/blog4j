@@ -12,9 +12,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorEnum {
-
+    INVALID_PARAMETER_ERROR(300, "参数非法！"),
     NO_PERMISSION_ERROR(403, "权限不足，请联系管理员！"),
-    INVALID_REQUEST_ERROR(405, "无效请求！")
+    INVALID_REQUEST_ERROR(405, "无效请求！"),
+
+    /**
+     * 用户相关
+     */
+    USER_NOT_EXIST_ERROR(301, "用户不存在！"),
     ;
 
     private final int errorCode;
