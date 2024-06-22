@@ -1,6 +1,6 @@
 package com.blog4j.auth.feign;
 
-import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.common.model.FResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,5 +20,5 @@ public interface UserFeignService {
      * @return 用户信息
      */
     @GetMapping("/api/user/getUserInfoByUserName/{userName}")
-    UserInfoVo getUserInfoByUserName(@PathVariable("userName") String userName);
+    FResult getUserInfoByUserName(@PathVariable("userName") String userName);
 }

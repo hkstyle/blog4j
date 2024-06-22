@@ -16,8 +16,15 @@ import java.util.List;
 @Slf4j
 @Component
 public class StpInterfaceImpl implements StpInterface {
+    /**
+     * 获取用户权限列表
+     *
+     * @param userId 用户ID
+     * @param loginType 登录类型
+     * @return 用户权限列表
+     */
     @Override
-    public List<String> getPermissionList(Object o, String s) {
+    public List<String> getPermissionList(Object userId, String loginType) {
         List<String> list = new ArrayList<>();
         list.add("101");
         list.add("user.add");
@@ -26,8 +33,15 @@ public class StpInterfaceImpl implements StpInterface {
         return list;
     }
 
+    /**
+     * 获取用户角色列表
+     *
+     * @param userId 用户ID
+     * @param loginType 登录类型
+     * @return 用户角色列表
+     */
     @Override
-    public List<String> getRoleList(Object o, String s) {
+    public List<String> getRoleList(Object userId, String loginType) {
         return null;
     }
 }

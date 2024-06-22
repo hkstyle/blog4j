@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -32,10 +31,4 @@ public class LoginReqVo {
      */
     @NotBlank(message = "密码不能为空")
     private String password;
-
-    /**
-     * 是否管理员
-     */
-    @NotNull(message = "是否为管理员不能为空")
-    private boolean isAdmin;
 }

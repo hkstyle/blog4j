@@ -1,5 +1,6 @@
 package com.blog4j.auth.context;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +31,9 @@ public class LoginContext {
      * 是否管理员
      */
     private boolean isAdmin;
+
+    /**
+     * SaTokenInfo
+     */
+    private SaTokenInfo saTokenInfo;
 }
