@@ -28,12 +28,17 @@ public class LoginContext {
     private String password;
 
     /**
-     * 是否管理员
-     */
-    private boolean isAdmin;
-
-    /**
      * SaTokenInfo
      */
     private SaTokenInfo saTokenInfo;
+
+    /**
+     * UUID
+     */
+    private String uuid;
+
+    /**
+     * 验证码
+     */
+    private String captcha;
 }

@@ -1,6 +1,8 @@
 package com.blog4j.auth.config;
 
 import com.blog4j.common.interceptor.ApiCheckInterceptor;
+import com.blog4j.common.utils.RedisUtil;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -17,5 +19,10 @@ public class AuthConfigure implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ApiCheckInterceptor())
                 .addPathPatterns("/**");
+    }
+
+    @Bean
+    public RedisUtil redisUtil() {
+        return new RedisUtil();
     }
 }

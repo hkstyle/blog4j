@@ -43,6 +43,9 @@
         <sa-token-jwt>1.38.0</sa-token-jwt>
         <commons-lang-version>2.6</commons-lang-version>
         <lombok-version>1.18.24</lombok-version>
+        <gson.version>2.8.5</gson.version>
+        <kaptcha.version>0.0.9</kaptcha.version>
+        <jedis-version>2.7.0</jedis-version>
     </properties>
 
     <dependencies>
@@ -150,6 +153,21 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-jwt</artifactId>
                 <version>${sa-token-jwt}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.axet</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

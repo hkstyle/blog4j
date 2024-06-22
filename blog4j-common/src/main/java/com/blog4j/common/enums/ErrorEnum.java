@@ -20,6 +20,7 @@ public enum ErrorEnum {
      * 用户相关
      */
     USER_NOT_EXIST_ERROR(301, "用户不存在！"),
+    INVALID_CAPTCHA_ERROR(302, "验证码非法！"),
     ;
 
     private final int errorCode;
