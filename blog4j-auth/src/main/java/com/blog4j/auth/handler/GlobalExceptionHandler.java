@@ -62,6 +62,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public Result exception(Exception exception) {
+        exception.printStackTrace();
         log.error("其他异常... 异常信息: [{}]", exception.getMessage());
         return Result.error(exception.getMessage());
     }
