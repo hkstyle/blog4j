@@ -18,4 +18,12 @@ public interface UserService extends IService<UserEntity> {
      * @return 用户信息
      */
     UserInfoVo getUserInfoByUserName(String userName);
+
+    /**
+     * 根据用户ID获取用户信息
+     *
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    UserInfoVo getUserInfoByUserId(String userId);
 }

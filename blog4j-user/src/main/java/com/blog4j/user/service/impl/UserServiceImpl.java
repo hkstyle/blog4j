@@ -47,4 +47,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         BeanUtils.copyProperties(userEntity, userInfoVo);
         return userInfoVo;
     }
+
+    /**
+     * 根据用户ID获取用户信息
+     *
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    @Override
+    public UserInfoVo getUserInfoByUserId(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            log.error("userId is blank .");
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+        LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserEntity::getUserId, userId);
+        queryWrapper.ne(UserEntity::getStatus, UserStatusEnum.LOCK.getErrorCode());
+        UserEntity userEntity = this.baseMapper.selectOne(queryWrapper);
+        if (Objects.isNull(userEntity)) {
+            log.error("User is empty .");
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
+        UserInfoVo userInfoVo = new UserInfoVo();
+        userInfoVo.setUserId(userId).setUserName(userEntity.getUserName()).setAvatar(userEntity.getAvatar());
+        return userInfoVo;
+    }
 }
