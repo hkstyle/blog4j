@@ -16,7 +16,7 @@ public enum UserStatusEnum {
     NORMAL(1, "正常"),
     ;
 
-    private final int errorCode;
+    private final int code;
 
-    private final String errorMsg;
+    private final String desc;
 }

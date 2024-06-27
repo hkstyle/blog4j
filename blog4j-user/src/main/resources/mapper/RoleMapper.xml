@@ -4,7 +4,6 @@
 <mapper namespace="com.blog4j.user.mapper.RoleMapper">
     <resultMap type="com.blog4j.user.entity.RoleEntity" id="BaseResultMap">
         <result property="roleId" column="role_id"/>
-        <result property="userId" column="user_id"/>
         <result property="roleName" column="role_name"/>
         <result property="roleCode" column="role_code"/>
         <result property="roleDesc" column="role_desc"/>

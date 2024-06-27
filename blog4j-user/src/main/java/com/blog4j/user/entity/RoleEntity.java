@@ -28,11 +28,6 @@ public class RoleEntity {
     private String roleId;
 
     /**
-     * 用户ID
-     */
-    private String userId;
-
-    /**
      * 角色名
      */
     private String roleName;
