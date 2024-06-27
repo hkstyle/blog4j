@@ -1,7 +1,14 @@
 package com.blog4j.auth.component;
 
 import cn.dev33.satoken.stp.StpInterface;
+import com.alibaba.fastjson.TypeReference;
+import com.blog4j.auth.feign.UserFeignService;
+import com.blog4j.common.constants.CommonConstant;
+import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.model.FResult;
+import com.blog4j.common.vo.RoleInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,6 +23,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class StpInterfaceImpl implements StpInterface {
+    @Autowired
+    private UserFeignService userFeignService;
+
     /**
      * 获取用户权限列表
      *
@@ -42,6 +52,19 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object userId, String loginType) {
-        return null;
+        FResult result = userFeignService.getRoleInfoByUserId((String)userId);
+        Integer code = result.getCode();
+        String message = result.getMessage();
+        if (code != CommonConstant.SUCCESS_CODE) {
+            log.error("远程调用user模块获取用户角色信息失败, 失败原因：[{}]", message);
+            throw new Blog4jException(code, message);
+        }
+
+        RoleInfoVo roleInfoVo = result.getData(new TypeReference<RoleInfoVo>() {
+        });
+
+        List<String> list = new ArrayList<>();
+        list.add(roleInfoVo.getRoleCode());
+        return list;
     }
 }

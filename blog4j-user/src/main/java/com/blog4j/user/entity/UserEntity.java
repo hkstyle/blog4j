@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 @Data
-@TableName("t_blog4j_user")
+@TableName("t_user")
 public class UserEntity {
     /**
      * 用户ID

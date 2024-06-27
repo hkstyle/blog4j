@@ -1,5 +1,6 @@
 package com.blog4j.auth.api;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.blog4j.auth.context.LoginContext;
 import com.blog4j.auth.service.AuthService;
 import com.blog4j.auth.service.CaptchaService;
@@ -37,6 +38,7 @@ public class ApiAuthController {
     @Autowired
     private CaptchaService captchaService;
 
+    @SaIgnore()
     @PostMapping("/login")
     public Result login(@RequestBody @Valid LoginReqVo loginReqVo) {
         LoginContext loginContext = new LoginContext();
@@ -45,6 +47,7 @@ public class ApiAuthController {
         return Result.ok(loginContext.getSaTokenInfo());
     }
 
+    @SaIgnore()
     @GetMapping("/captcha.jpg")
     public void captcha(HttpServletResponse response, @RequestParam String uuid) throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache");

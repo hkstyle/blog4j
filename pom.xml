@@ -22,6 +22,7 @@
         <module>blog4j-common</module>
         <module>blog4j-gateway</module>
         <module>blog4j-user</module>
+        <module>blog4j-article</module>
     </modules>
 
     <properties>

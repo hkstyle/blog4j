@@ -1,4 +1,4 @@
-package com.blog4j.user.entity;
+package com.blog4j.article.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -11,41 +11,31 @@ import lombok.experimental.Accessors;
 /**
  * @author 98k灬
  * @version v1.0.0
- * @Description : 用户角色信息
- * @Create on : 2024/6/22 14:40
+ * @Description : 功能描述
+ * @Create on : 2024/6/26 21:00
  **/
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
 @Data
-@TableName("t_role")
-public class RoleEntity {
+@TableName("t_category")
+public class CategoryEntity {
     /**
-     * 角色ID
+     * 分类ID
      */
     @TableId
-    private String roleId;
+    private String categoryId;
 
     /**
-     * 用户ID
+     * 分类代码描述
      */
-    private String userId;
+    private String categoryCode;
 
     /**
-     * 角色名
+     * 分类名称
      */
-    private String roleName;
-
-    /**
-     * 角色代码描述
-     */
-    private String roleCode;
-
-    /**
-     * 角色中文描述
-     */
-    private String roleDesc;
+    private String categoryName;
 
     /**
      * 更新时间

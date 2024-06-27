@@ -8,6 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 /**
  * @author 98k灬
@@ -23,6 +24,7 @@ public class ApiCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
         log.info("request uri : [{}]", uri);
+
         if (uri.startsWith(WHITE_API_RUI_PREFIX)) {
             return true;
         }

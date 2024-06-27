@@ -21,4 +21,13 @@ public interface UserFeignService {
      */
     @GetMapping("/api/user/getUserInfoByUserName/{userName}")
     FResult getUserInfoByUserName(@PathVariable("userName") String userName);
+
+    /**
+     * 根据用户ID获取角色信息
+     *
+     * @param userId 用户ID
+     * @return 角色信息
+     */
+    @GetMapping("/api/role/getRoleInfoByUserId/{userId}")
+    FResult getRoleInfoByUserId(@PathVariable("userId") String userId);
 }

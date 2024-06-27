@@ -21,6 +21,8 @@ public enum ErrorEnum {
      */
     USER_NOT_EXIST_ERROR(301, "用户不存在！"),
     INVALID_CAPTCHA_ERROR(302, "验证码非法！"),
+    ROLE_INFO_EMPTY_ERROR(303, "用户角色信息为空！"),
+    PERMISSION_INFO_EMPTY_ERROR(304, "用户权限信息为空！"),
     ;
 
     private final int errorCode;

@@ -1,4 +1,4 @@
-package com.blog4j.auth.config;
+package com.blog4j.user.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import org.springframework.context.annotation.Configuration;

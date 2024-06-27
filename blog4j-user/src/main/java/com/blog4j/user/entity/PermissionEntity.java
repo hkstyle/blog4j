@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 @Data
-@TableName("t_blog4j_permission")
+@TableName("t_permission")
 public class PermissionEntity {
     /**
      * 权限ID
