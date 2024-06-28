@@ -37,7 +37,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(UserEntity::getUserName, userName);
-        wrapper.ne(UserEntity::getStatus, UserStatusEnum.LOCK.getErrorCode());
+        wrapper.ne(UserEntity::getStatus, UserStatusEnum.LOCK.getCode());
         UserEntity userEntity = this.baseMapper.selectOne(wrapper);
         if (Objects.isNull(userEntity)) {
             log.error("User is empty .");
@@ -62,7 +62,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserEntity::getUserId, userId);
-        queryWrapper.ne(UserEntity::getStatus, UserStatusEnum.LOCK.getErrorCode());
+        queryWrapper.ne(UserEntity::getStatus, UserStatusEnum.LOCK.getCode());
         UserEntity userEntity = this.baseMapper.selectOne(queryWrapper);
         if (Objects.isNull(userEntity)) {
             log.error("User is empty .");
