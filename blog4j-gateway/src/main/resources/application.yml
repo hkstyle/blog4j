@@ -22,3 +22,9 @@ spring:
             - Path=/user/**
           filters:
             - RewritePath=/user/(?<segment>.*),/$\{segment}
+        - id: article_route
+          uri: http://localhost:9200/
+          predicates:
+            - Path=/article/**
+          filters:
+            - RewritePath=/article/(?<segment>.*),/$\{segment}
