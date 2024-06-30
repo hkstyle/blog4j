@@ -6,11 +6,14 @@ import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -23,6 +26,10 @@ import java.util.Objects;
  **/
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
+
+    @Autowired
+    private RoleMapper roleMapper;
+
     /**
      * 根据用户名获取用户信息
      *
@@ -68,8 +75,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             log.error("User is empty .");
             throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
         }
+
+        RoleEntity roleEntity = roleMapper.selectById(userEntity.getRoleId());
         UserInfoVo userInfoVo = new UserInfoVo();
-        userInfoVo.setUserId(userId).setUserName(userEntity.getUserName()).setAvatar(userEntity.getAvatar());
+        userInfoVo.setUserId(userId)
+                .setUserName(userEntity.getUserName())
+                .setAvatar(userEntity.getAvatar())
+                .setRoleCode(roleEntity.getRoleCode());
         return userInfoVo;
     }
 }

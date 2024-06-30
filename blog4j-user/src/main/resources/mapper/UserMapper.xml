@@ -4,6 +4,7 @@
 <mapper namespace="com.blog4j.user.mapper.UserMapper">
     <resultMap type="com.blog4j.user.entity.UserEntity" id="BaseResultMap">
         <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
         <result property="userName" column="user_name"/>
         <result property="password" column="password"/>
         <result property="avatar" column="avatar"/>

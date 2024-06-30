@@ -26,6 +26,16 @@ public class UserInfoVo implements Serializable {
     private String userId;
 
     /**
+     * 角色ID
+     */
+    private String roleId;
+
+    /**
+     * 角色代码描述
+     */
+    private String roleCode;
+
+    /**
      * 用户名
      */
     private String userName;

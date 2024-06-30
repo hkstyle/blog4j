@@ -29,6 +29,11 @@ public class UserEntity {
     private String userId;
 
     /**
+     * 角色ID
+     */
+    private String roleId;
+
+    /**
      * 用户名
      */
     private String userName;

@@ -11,11 +11,4 @@ import com.blog4j.user.entity.RoleEntity;
  * @Create on : 2024/6/26 13:22
  **/
 public interface RoleService extends IService<RoleEntity>  {
-    /**
-     * 根据用户ID获取角色信息
-     *
-     * @param userId 用户ID
-     * @return 角色信息
-     */
-    RoleInfoVo getRoleInfoByUserId(String userId);
 }

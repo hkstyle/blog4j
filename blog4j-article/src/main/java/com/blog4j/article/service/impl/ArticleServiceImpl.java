@@ -1,0 +1,175 @@
+package com.blog4j.article.service.impl;
+
+import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.blog4j.article.entity.ArticleEntity;
+import com.blog4j.article.entity.CategoryEntity;
+import com.blog4j.article.feign.UserFeignService;
+import com.blog4j.article.mapper.ArticleMapper;
+import com.blog4j.article.mapper.CategoryMapper;
+import com.blog4j.article.service.ArticleService;
+import com.blog4j.article.vo.req.ArticleListReqVo;
+import com.blog4j.article.vo.resp.ArticleRespVo;
+import com.blog4j.common.enums.ArticlePublicTypeEnum;
+import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.enums.RoleEnum;
+import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.vo.OrganizationVo;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+/**
+ * @author 98k灬
+ * @version v1.0.0
+ * @Description : 功能描述
+ * @Create on : 2024/6/28 13:03
+ **/
+@Service
+public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity> implements ArticleService {
+    @Autowired
+    private CategoryMapper categoryMapper;
+    
+    @Autowired
+    private UserFeignService userFeignService;
+
+    /**
+     * 获取文章列表
+     *
+     * @param articleListReqVo 查询条件
+     * @return 文章列表
+     */
+    @Override
+    public PageInfo<ArticleRespVo> getArticleList(ArticleListReqVo articleListReqVo) {
+        String categoryId = articleListReqVo.getCategoryId();
+        String title = articleListReqVo.getTitle();
+        Integer status = articleListReqVo.getStatus();
+
+        this.checkCategory(categoryId);
+
+        List<String> roleList = StpUtil.getRoleList();
+        if (roleList.isEmpty()) {
+            log.error("roleList is empty .");
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        }
+
+        String userId = StpUtil.getLoginIdAsString();
+
+        LambdaQueryWrapper<ArticleEntity> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(categoryId)) {
+            wrapper.eq(ArticleEntity::getCategoryId, articleListReqVo.getCategoryId());
+        }
+
+        if (StringUtils.isNotBlank(title)) {
+            wrapper.likeLeft(ArticleEntity::getTitle, articleListReqVo.getTitle());
+        }
+
+        if (Objects.nonNull(status)) {
+            wrapper.eq(ArticleEntity::getStatus, status);
+        }
+
+        String role = roleList.get(0);
+        // 如果是超级管理员  可以查看所有的文章
+        if (StringUtils.equals(role, RoleEnum.SUPER_ADMIN.getDesc())) {
+            return this.getArticleList(wrapper, articleListReqVo);
+        } else if (StringUtils.equals(role, RoleEnum.ORGANIZATION_ADMIN.getDesc())) {
+            // 如果是组织管理员  可以查看该组织下的所有的文章
+            List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(userId);
+            wrapper.in(ArticleEntity::getAuthorId, userIds).or()
+                    .eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
+            return this.getArticleList(wrapper, articleListReqVo);
+        } else if (StringUtils.equals(role, RoleEnum.ORDINARY.getDesc())) {
+            // 如果是普通用户
+            List<OrganizationVo> organizationVoList = userFeignService.getOrganizationInfoByUserId(userId);
+            if (organizationVoList.isEmpty()) {
+                // 如果该用户不是任何组织的成员
+                wrapper.eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
+                return this.getArticleList(wrapper, articleListReqVo);
+            } else {
+                HashSet<String> idSet = new HashSet<>();
+                for (OrganizationVo vo : organizationVoList) {
+                    String admin = vo.getOrganizationAdmin();
+                    List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(admin);
+                    idSet.addAll(userIds);
+                }
+                PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
+                List<ArticleEntity> articleList = this.baseMapper.getOrdinaryArticleList(idSet, status, categoryId, title);
+                if (!articleList.isEmpty()) {
+                    List<ArticleRespVo> respVos = articleList.stream().map(article -> {
+                        ArticleRespVo articleRespVo = new ArticleRespVo();
+                        BeanUtils.copyProperties(article, articleRespVo);
+                        return articleRespVo;
+                    }).collect(Collectors.toList());
+                    return new PageInfo<>(respVos);
+                }
+            }
+        } else if (StringUtils.equals(role, RoleEnum.COMPOSER.getDesc())) {
+            // 如果是创作者
+            List<OrganizationVo> organizationVoList = userFeignService.getOrganizationInfoByUserId(userId);
+            List<ArticleEntity> articleList ;
+            if (organizationVoList.isEmpty()) {
+                // 如果该用户不是任何组织的成员
+                PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
+                articleList = this.baseMapper.getComposerArticleList1(status, categoryId, title, userId);
+            } else {
+                HashSet<String> idSet = new HashSet<>();
+                for (OrganizationVo vo : organizationVoList) {
+                    String admin = vo.getOrganizationAdmin();
+                    List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(admin);
+                    idSet.addAll(userIds);
+                }
+                PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
+                articleList = this.baseMapper.getComposerArticleList2(idSet, status, categoryId, title, userId);
+            }
+            if (!articleList.isEmpty()) {
+                List<ArticleRespVo> respVos = articleList.stream().map(article -> {
+                    ArticleRespVo articleRespVo = new ArticleRespVo();
+                    BeanUtils.copyProperties(article, articleRespVo);
+                    return articleRespVo;
+                }).collect(Collectors.toList());
+                return new PageInfo<>(respVos);
+            }
+        } else {
+            // 该用户是访客
+            wrapper.eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
+            return this.getArticleList(wrapper, articleListReqVo);
+        }
+        return new PageInfo<>();
+    }
+
+    private void checkCategory(String categoryId) {
+        if (StringUtils.isBlank(categoryId)) {
+            return;
+        }
+        CategoryEntity category = categoryMapper.selectById(categoryId);
+        if (Objects.isNull(category)) {
+            log.error("category is not exist");
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+    }
+
+    private PageInfo<ArticleRespVo> getArticleList(LambdaQueryWrapper<ArticleEntity> wrapper,
+                                                   ArticleListReqVo articleListReqVo) {
+        PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
+        List<ArticleEntity> articleList = this.baseMapper.selectList(wrapper);
+        if (!articleList.isEmpty()) {
+            List<ArticleRespVo> respVos = articleList.stream().map(article -> {
+                ArticleRespVo articleRespVo = new ArticleRespVo();
+                BeanUtils.copyProperties(article, articleRespVo);
+                return articleRespVo;
+            }).collect(Collectors.toList());
+            return new PageInfo<>(respVos);
+        }
+        return null;
+    }
+}
