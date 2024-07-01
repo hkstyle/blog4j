@@ -24,12 +24,12 @@
     <select id="getOrdinaryArticleList" resultMap="BaseResultMap">
         select * from  t_article
         where deleted = 0
-        and (author_id in
+        and ((author_id in
         <foreach collection="idSet" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         and public_type &lt;&gt; 1)
-        or public_type = 3
+        or public_type = 3 )
         <if test=" categoryId != null and categoryId != '' " >
             and category_id = #{categoryId}
         </if>
@@ -45,8 +45,8 @@
     <select id="getComposerArticleList1" resultMap="BaseResultMap">
         select * from t_article
         where deleted = 0
-        and public_type = 3
-        or author_id = #{userId}
+        and ( public_type = 3
+        or author_id = #{userId} )
         <if test=" categoryId != null and categoryId != '' " >
             and category_id = #{categoryId}
         </if>
@@ -62,13 +62,13 @@
     <select id="getComposerArticleList2" resultMap="BaseResultMap">
         select * from  t_article
         where deleted = 0
-        and (author_id in
+        and ( (author_id in
         <foreach collection="idSet" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         and public_type &lt;&gt; 1)
         or public_type = 3
-        or author_id = #{userId}
+        or author_id = #{userId} )
         <if test=" categoryId != null and categoryId != '' " >
             and category_id = #{categoryId}
         </if>

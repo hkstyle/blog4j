@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
+import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * @author 98k灬
@@ -20,4 +23,11 @@ public interface ArticleService extends IService<ArticleEntity>  {
      * @return 文章列表
      */
     PageInfo<ArticleRespVo> getArticleList(ArticleListReqVo articleListReqVo);
+
+    /**
+     * 获取所有的文章状态
+     *
+     * @return 所有的文章状态
+     */
+    List<ArticleStatusRespVo> statusList();
 }

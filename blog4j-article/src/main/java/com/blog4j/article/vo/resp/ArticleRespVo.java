@@ -62,4 +62,19 @@ public class ArticleRespVo {
      * 文章的作者名称
      */
     private String authorName;
+
+    /**
+     * 文章状态
+     */
+    private Integer status;
+
+    /**
+     * 公开类型
+     */
+    private Integer publicType;
+
+    /**
+     * 创建时间
+     */
+    private String createTime;
 }

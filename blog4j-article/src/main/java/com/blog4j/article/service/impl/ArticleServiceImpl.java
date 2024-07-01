@@ -11,6 +11,7 @@ import com.blog4j.article.mapper.CategoryMapper;
 import com.blog4j.article.service.ArticleService;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
+import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.blog4j.common.enums.ArticlePublicTypeEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
@@ -147,6 +148,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return new PageInfo<>();
     }
 
+    /**
+     * 获取所有的文章状态
+     *
+     * @return 所有的文章状态
+     */
+    @Override
+    public List<ArticleStatusRespVo> statusList() {
+        List<ArticleStatusRespVo> list = new ArrayList<>();
+        ArticleStatusRespVo val1 = ArticleStatusRespVo.builder()
+                .code(1)
+                .desc("草稿中")
+                .build();
+        ArticleStatusRespVo val2 = ArticleStatusRespVo.builder()
+                .code(2)
+                .desc("待发布")
+                .build();
+        ArticleStatusRespVo val3 = ArticleStatusRespVo.builder()
+                .code(3)
+                .desc("已发布")
+                .build();
+        list.add(val3);
+        list.add(val2);
+        list.add(val1);
+        return list;
+    }
+
+    // ------------------ private -------------------------------------------------------------
+
     private void checkCategory(String categoryId) {
         if (StringUtils.isBlank(categoryId)) {
             return;
@@ -170,6 +199,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             }).collect(Collectors.toList());
             return new PageInfo<>(respVos);
         }
-        return null;
+        return new PageInfo<>();
     }
 }
