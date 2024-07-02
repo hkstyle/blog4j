@@ -10,7 +10,6 @@ import com.blog4j.article.feign.UserFeignService;
 import com.blog4j.article.mapper.ArticleMapper;
 import com.blog4j.article.mapper.CategoryMapper;
 import com.blog4j.article.service.ArticleService;
-import com.blog4j.article.vo.req.ArticleEditReqVo;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;

@@ -51,9 +51,8 @@ public class OssServiceImpl implements OssService {
     @Override
     public String upload(MultipartFile file) {
         // 上传文件所在目录名，当天上传的文件放到当天日期的目录下。
-        String folderName = "Blog4j/" + /*platformEnum.name().toLowerCase() + "/" +*/
-                DateFormatUtils.format(new Date(), CommonConstant.DATE_FORMAT);
-        String fileName = UUID.randomUUID().toString().replace("-", "");
+        String folderName = "Blog4j/" + DateFormatUtils.format(new Date(), CommonConstant.DATE_FORMAT);
+        String fileName = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
         // 从原始文件名中，获取文件扩展名
         String fileExtensionName = null;
         if (StringUtils.isNotEmpty(file.getOriginalFilename())) {
@@ -71,7 +70,7 @@ public class OssServiceImpl implements OssService {
             ResponseMessage response = putObjectResult.getResponse();
             if(response == null) {
                 // 返回上传文件的访问完整路径
-                return bucketDomain + filePath;
+                return "https://" + bucketDomain + "/" + filePath;
             } else {
                 String errorMsg = "响应的错误状态码是【" + response.getStatusCode() +"】，" +
                         "错误信息【"+response.getErrorResponseAsString()+"】";

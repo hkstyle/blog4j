@@ -36,8 +36,8 @@ sa-token:
 
 aliyun:
   oss:
-    endPoint: oss-cn-nanjing.aliyuncs.com
-    bucketDomain: blog4j.oss-cn-nanjing.aliyuncs.com
+    endPoint: oss-cn-shanghai.aliyuncs.com
+    bucketDomain: blog4j.oss-cn-shanghai.aliyuncs.com
     bucketName: blog4j
     accessKeyId: LTAI5t5cKojWq6BV7612oH1q
     accessKeySecret: aLbRddAZjbFVSJ0tSdUHu5HhfwLXHp

@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 /**
  * @author 98k灬
  * @version v1.0.0
- * @Description : 功能描述
+ * @Description : 文章信息
  * @Create on : 2024/6/28 12:53
  **/
 @Builder
@@ -87,6 +87,16 @@ public class ArticleEntity {
      * 发布人用户ID
      */
     private String publishUserId;
+
+    /**
+     * 是否允许评论
+     */
+    private int allowComment;
+
+    /**
+     * 是否定时发布
+     */
+    private int timedRelease;
 
     /**
      * 是否已被删除

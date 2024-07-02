@@ -16,6 +16,8 @@
         <result property="publicType" column="public_type"/>
         <result property="cronReleaseTime" column="cron_release_time"/>
         <result property="publishUserId" column="publish_user_id"/>
+        <result property="allowComment" column="allow_comment"/>
+        <result property="timedRelease" column="timed_release"/>
         <result property="deleted" column="deleted"/>
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>

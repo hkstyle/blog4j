@@ -32,6 +32,13 @@ public enum ErrorEnum {
      * OSS相关
      */
     UPLOAD_FILE_ERROR(501, "文件上传失败！"),
+    FILE_MAX_ERROR(502, "文件太大，上传失败！"),
+
+
+    /**
+     * 文章相关
+     */
+    CATEGORY_INFO_EMPTY_ERROR(601, "分类信息为空")
     ;
 
     private final int errorCode;

@@ -1,5 +1,7 @@
 package com.blog4j.oss.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
 import com.blog4j.oss.service.OssService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @Description : 功能描述
  * @Create on : 2024/7/2 13:04
  **/
-@RequestMapping("/")
+@RequestMapping("/file")
 @RestController
 public class OssController {
     @Autowired
@@ -26,6 +28,7 @@ public class OssController {
      * @param file 文件
      * @return 上传后的路径
      */
+    @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN", "COMPOSER"}, mode = SaMode.OR)
     @PostMapping("/upload")
     public Result upload(MultipartFile file) {
         String path = ossService.upload(file);
