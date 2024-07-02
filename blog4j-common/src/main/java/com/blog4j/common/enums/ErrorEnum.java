@@ -26,6 +26,12 @@ public enum ErrorEnum {
     ROLE_INFO_EMPTY_ERROR(303, "用户角色信息为空！"),
     PERMISSION_INFO_EMPTY_ERROR(304, "用户权限信息为空！"),
     ORGANIZATION_INFO_EMPTY_ERROR(304, "组织信息为空！"),
+
+
+    /**
+     * OSS相关
+     */
+    UPLOAD_FILE_ERROR(501, "文件上传失败！"),
     ;
 
     private final int errorCode;

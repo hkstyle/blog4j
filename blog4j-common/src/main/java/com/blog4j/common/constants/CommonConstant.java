@@ -36,4 +36,9 @@ public class CommonConstant {
      * 时间格式化
      */
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 日期格式化
+     */
+    public static final String DATE_FORMAT = "yyyyMMdd";
 }
