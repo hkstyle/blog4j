@@ -1,4 +1,4 @@
-package com.blog4j.oss.service;
+package com.blog4j.oss.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -7,6 +7,7 @@ import com.aliyun.oss.model.PutObjectResult;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.oss.service.OssService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
