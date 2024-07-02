@@ -1,7 +1,9 @@
 package com.blog4j.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.blog4j.article.context.UpdateArticleContext;
 import com.blog4j.article.entity.ArticleEntity;
+import com.blog4j.article.vo.req.ArticleEditReqVo;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
@@ -30,4 +32,33 @@ public interface ArticleService extends IService<ArticleEntity>  {
      * @return 所有的文章状态
      */
     List<ArticleStatusRespVo> statusList();
+
+    /**
+     * 根据文章ID删除文章
+     *
+     * @param articleId 文章ID
+     */
+    void deleteArticle(String articleId);
+
+    /**
+     * 根据文章ID发布文章
+     *
+     * @param articleId 文章ID
+     */
+    void publishArticle(String articleId);
+
+    /**
+     * 查询文章详情信息
+     *
+     * @param articleId 文章ID
+     * @return 文章详情信息
+     */
+    ArticleRespVo info(String articleId);
+
+    /**
+     * 编辑文章信息
+     *
+     * @param context 更新文章信息的上下文信息
+     */
+    void updateArticle(UpdateArticleContext context);
 }

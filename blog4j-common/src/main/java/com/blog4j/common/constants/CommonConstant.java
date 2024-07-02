@@ -31,4 +31,9 @@ public class CommonConstant {
      * 校验请求是否有效
      */
     public static final String GATEWAY_AUTHENTICATION = "gateway_authentication";
+
+    /**
+     * 时间格式化
+     */
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

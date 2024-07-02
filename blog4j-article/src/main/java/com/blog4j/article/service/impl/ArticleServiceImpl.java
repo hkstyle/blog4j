@@ -3,19 +3,23 @@ package com.blog4j.article.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.blog4j.article.context.UpdateArticleContext;
 import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.feign.UserFeignService;
 import com.blog4j.article.mapper.ArticleMapper;
 import com.blog4j.article.mapper.CategoryMapper;
 import com.blog4j.article.service.ArticleService;
+import com.blog4j.article.vo.req.ArticleEditReqVo;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.blog4j.common.enums.ArticlePublicTypeEnum;
+import com.blog4j.common.enums.ArticleStatusEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.vo.OrganizationVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -174,6 +178,65 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return list;
     }
 
+    /**
+     * 根据文章ID删除文章
+     *
+     * @param articleId 文章ID
+     */
+    @Override
+    public void deleteArticle(String articleId) {
+        this.beforeDeleteAndPublish(articleId);
+        this.baseMapper.deleteById(articleId);
+        // TODO 删除评论信息
+    }
+
+    /**
+     * 根据文章ID发布文章
+     *
+     * @param articleId 文章ID
+     */
+    @Override
+    public void publishArticle(String articleId) {
+        ArticleEntity article = this.beforeDeleteAndPublish(articleId);
+        article.setStatus(ArticleStatusEnum.ONLINE.getCode())
+                .setPublishUserId(StpUtil.getLoginIdAsString())
+                .setUpdateTime(CommonUtil.getCurrentDateTime());
+        this.baseMapper.updateById(article);
+    }
+
+    /**
+     * 查询文章详情信息
+     *
+     * @param articleId 文章ID
+     * @return 文章详情信息
+     */
+    @Override
+    public ArticleRespVo info(String articleId) {
+        ArticleEntity article = this.baseMapper.selectById(articleId);
+        if (Objects.isNull(article)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        ArticleRespVo respVo = new ArticleRespVo();
+        BeanUtils.copyProperties(article, respVo);
+        return respVo;
+    }
+
+    /**
+     * 编辑文章信息
+     *
+     * @param context 更新文章信息的上下文信息
+     */
+    @Override
+    public void updateArticle(UpdateArticleContext context) {
+        this.beforeUpdateArticle(context);
+        ArticleEntity article = context.getArticle();
+        BeanUtils.copyProperties(context, article);
+        article.setUpdateTime(CommonUtil.getCurrentDateTime())
+                .setCategoryName(context.getCategory().getCategoryName());
+        this.baseMapper.updateById(article);
+    }
+
     // ------------------ private -------------------------------------------------------------
 
     private void checkCategory(String categoryId) {
@@ -200,5 +263,70 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             return new PageInfo<>(respVos);
         }
         return new PageInfo<>();
+    }
+
+    private ArticleEntity beforeDeleteAndPublish(String articleId) {
+        ArticleEntity article = this.baseMapper.selectById(articleId);
+        if (Objects.isNull(article)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+        List<String> roleList = StpUtil.getRoleList();
+        if (roleList.isEmpty()) {
+            log.error("roleList is empty .");
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        }
+
+        String role = roleList.get(0);
+        String userId = StpUtil.getLoginIdAsString();
+        String authorId = article.getAuthorId();
+
+        // 如果角是创作者  只能删除或者发布自己发表的文章
+        if (StringUtils.equals(role, RoleEnum.COMPOSER.getDesc()) &&
+                !StringUtils.equals(userId, authorId)) {
+            throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
+        }
+
+        // 如果角色是组织管理员  只能删除或者发布自己组织下的用户发表的文章
+        if (StringUtils.equals(role, RoleEnum.ORGANIZATION_ADMIN.getDesc())) {
+            // 获取该组织管理员所有的用户ID列表
+            List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(userId);
+            if (!userIds.contains(authorId)) {
+                throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
+            }
+        }
+        return article;
+    }
+
+    private void beforeUpdateArticle(UpdateArticleContext context) {
+        String articleId = context.getArticleId();
+        ArticleEntity article = this.baseMapper.selectById(articleId);
+        if (Objects.isNull(article)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+        context.setArticle(article);
+
+        String categoryId = context.getCategoryId();
+        CategoryEntity category = categoryMapper.selectById(categoryId);
+        if (Objects.isNull(category)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+        context.setCategory(category);
+
+        List<String> roleList = StpUtil.getRoleList();
+        if (roleList.isEmpty()) {
+            log.error("roleList is empty .");
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        }
+
+        String roleCode = roleList.get(0);
+        String userId = StpUtil.getLoginIdAsString();
+
+        // 如果角色是组织管理员或者创作者，只能编辑自己发表的文章
+        if (StringUtils.equals(roleCode, RoleEnum.COMPOSER.getDesc()) ||
+                StringUtils.equals(roleCode, RoleEnum.ORGANIZATION_ADMIN.getDesc())) {
+            if (!StringUtils.equals(userId, article.getAuthorId())) {
+                throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
+            }
+        }
     }
 }

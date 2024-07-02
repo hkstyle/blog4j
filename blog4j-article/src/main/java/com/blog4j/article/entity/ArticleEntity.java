@@ -84,6 +84,11 @@ public class ArticleEntity {
     private String cronReleaseTime;
 
     /**
+     * 发布人用户ID
+     */
+    private String publishUserId;
+
+    /**
      * 是否已被删除
      */
     @TableLogic
