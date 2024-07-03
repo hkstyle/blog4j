@@ -3,10 +3,12 @@ package com.blog4j.article.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
+import com.blog4j.article.context.CreateArticleContext;
 import com.blog4j.article.context.UpdateArticleContext;
 import com.blog4j.article.service.ArticleService;
 import com.blog4j.article.vo.req.ArticleEditReqVo;
 import com.blog4j.article.vo.req.ArticleListReqVo;
+import com.blog4j.article.vo.req.CreateArticleReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.blog4j.common.model.Result;
@@ -112,6 +114,21 @@ public class ArticleController {
         UpdateArticleContext context = new UpdateArticleContext();
         BeanUtils.copyProperties(reqVo, context);
         articleService.updateArticle(context);
+        return Result.ok();
+    }
+
+    /**
+     * 创建文章信息
+     *
+     * @param reqVo 请求
+     * @return 创建成功
+     */
+    @PostMapping("/create")
+    @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN", "COMPOSER"}, mode = SaMode.OR)
+    public Result create(@RequestBody CreateArticleReqVo reqVo) {
+        CreateArticleContext context = new CreateArticleContext();
+        BeanUtils.copyProperties(reqVo, context);
+        articleService.create(context);
         return Result.ok();
     }
 }

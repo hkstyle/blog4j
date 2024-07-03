@@ -15,9 +15,9 @@ import javax.annotation.PostConstruct;
  **/
 @Slf4j
 public class IdGeneratorSnowflakeUtil {
-    private long workerId = 0;  // 第几号机房
-    private long datacenterId = 1;  //第几号机器
-    private Snowflake snowflake = IdUtil.createSnowflake(workerId, datacenterId);
+    private static long workerId = 0;  // 第几号机房
+    private static long datacenterId = 1;  //第几号机器
+    private static final Snowflake snowflake = IdUtil.createSnowflake(workerId, datacenterId);
 
     @PostConstruct
     public void init(){
@@ -32,12 +32,12 @@ public class IdGeneratorSnowflakeUtil {
         }
     }
 
-    public synchronized long snowflakeId(){
-        return snowflake.nextId();
+    public synchronized static String snowflakeId(){
+        return String.valueOf(snowflake.nextId());
     }
 
-    public synchronized long snowflakeId(long workerId, long datacenterId){
+    public synchronized static String snowflakeId(long workerId, long datacenterId){
         Snowflake snowflake = IdUtil.createSnowflake(workerId, datacenterId);
-        return snowflake.nextId();
+        return String.valueOf(snowflake.nextId());
     }
 }

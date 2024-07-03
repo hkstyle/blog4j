@@ -37,7 +37,7 @@
             and category_id = #{categoryId}
         </if>
         <if test=" title != null and title != '' ">
-            and title like concat (#{title}, '%')
+            and title like concat ('%', #{title}, '%')
         </if>
         <if test=" status > 0 ">
             and status  = #{status}
@@ -54,7 +54,7 @@
             and category_id = #{categoryId}
         </if>
         <if test=" title != null and title != '' ">
-            and title like concat (#{title}, '%')
+            and title like concat ('%', #{title}, '%')
         </if>
         <if test=" status > 0 ">
             and status  = #{status}
@@ -76,7 +76,7 @@
             and category_id = #{categoryId}
         </if>
         <if test=" title != null and title != '' ">
-            and title like concat (#{title}, '%')
+            and title like concat ('%', #{title}, '%')
         </if>
         <if test=" status > 0 ">
             and status  = #{status}

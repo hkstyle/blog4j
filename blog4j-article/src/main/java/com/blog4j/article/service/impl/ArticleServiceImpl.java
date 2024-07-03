@@ -3,6 +3,7 @@ package com.blog4j.article.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.blog4j.article.context.CreateArticleContext;
 import com.blog4j.article.context.UpdateArticleContext;
 import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.entity.CategoryEntity;
@@ -17,9 +18,13 @@ import com.blog4j.common.enums.ArticlePublicTypeEnum;
 import com.blog4j.common.enums.ArticleStatusEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
+import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.vo.OrganizationVo;
+import com.blog4j.common.vo.UserInfoVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
@@ -236,6 +241,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         this.baseMapper.updateById(article);
     }
 
+    /**
+     * 创建文章信息
+     *
+     * @param context 创建文章信息的上下文信息
+     */
+    @Override
+    public void create(CreateArticleContext context) {
+        this.beforeCreate(context);
+        ArticleEntity article = new ArticleEntity();
+        BeanUtils.copyProperties(context, article);
+        article.setArticleId(IdGeneratorSnowflakeUtil.snowflakeId())
+                .setUpdateTime(CommonUtil.getCurrentDateTime())
+                .setCreateTime(CommonUtil.getCurrentDateTime())
+                .setDeleted(YesOrNoEnum.NO.getCode());
+        this.baseMapper.insert(article);
+    }
+
+
+
     // ------------------ private -------------------------------------------------------------
 
     private void checkCategory(String categoryId) {
@@ -332,5 +356,28 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
                 throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
             }
         }
+    }
+
+    private void beforeCreate(CreateArticleContext context) {
+        Integer timedRelease = context.getTimedRelease();
+        if (timedRelease == YesOrNoEnum.YES.getCode()) {
+            if (StringUtils.isBlank(context.getCronReleaseTime())) {
+                throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+            }
+            context.setStatus(ArticleStatusEnum.WAIT.getCode());
+        }
+        context.setStatus(ArticleStatusEnum.ONLINE.getCode());
+
+        String userId = StpUtil.getLoginIdAsString();
+        context.setUserId(userId);
+        UserInfoVo userInfoVo = CommonUtil.getUserInfo(userFeignService.getUserInfoByUserId(userId));
+        context.setAuthorName(userInfoVo.getUserName())
+                .setAuthorId(userId);
+
+        CategoryEntity category = categoryMapper.selectById(context.getCategoryId());
+        if (Objects.isNull(category)) {
+            throw new Blog4jException(ErrorEnum.CATEGORY_INFO_EMPTY_ERROR);
+        }
+        context.setCategoryName(category.getCategoryName());
     }
 }

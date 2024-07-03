@@ -1,9 +1,9 @@
 package com.blog4j.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.blog4j.article.context.CreateArticleContext;
 import com.blog4j.article.context.UpdateArticleContext;
 import com.blog4j.article.entity.ArticleEntity;
-import com.blog4j.article.vo.req.ArticleEditReqVo;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
@@ -61,4 +61,11 @@ public interface ArticleService extends IService<ArticleEntity>  {
      * @param context 更新文章信息的上下文信息
      */
     void updateArticle(UpdateArticleContext context);
+
+    /**
+     * 创建文章信息
+     *
+     * @param context 创建文章信息的上下文信息
+     */
+    void create(CreateArticleContext context);
 }

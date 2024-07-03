@@ -1,12 +1,9 @@
 package com.blog4j.article.component;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.alibaba.fastjson.TypeReference;
 import com.blog4j.article.feign.UserFeignService;
-import com.blog4j.common.constants.CommonConstant;
-import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
-import com.blog4j.common.vo.RoleInfoVo;
+import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,16 +51,7 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object userId, String loginType) {
         FResult result = userFeignService.getUserInfoByUserId((String)userId);
-        Integer code = result.getCode();
-        String message = result.getMessage();
-        if (code != CommonConstant.SUCCESS_CODE) {
-            log.error("远程调用user模块获取用户角色信息失败, 失败原因：[{}]", message);
-            throw new Blog4jException(code, message);
-        }
-
-        UserInfoVo userInfoVo = result.getData(new TypeReference<UserInfoVo>() {
-        });
-
+        UserInfoVo userInfoVo = CommonUtil.getUserInfo(result);
         List<String> list = new ArrayList<>();
         list.add(userInfoVo.getRoleCode());
         return list;
