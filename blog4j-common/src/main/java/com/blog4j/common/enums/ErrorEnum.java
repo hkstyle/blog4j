@@ -40,6 +40,7 @@ public enum ErrorEnum {
      */
     CATEGORY_INFO_EMPTY_ERROR(601, "分类信息为空"),
     ARTICLE_STATUS_ILLEGAL(602, "文章状态非法！"),
+    CATEGORY_BIND_ARTICLE_ERROR(603, "该分类绑定了文章，不能删除！")
     ;
 
     private final int errorCode;

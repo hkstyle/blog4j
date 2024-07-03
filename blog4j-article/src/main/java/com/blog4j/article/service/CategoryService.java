@@ -20,4 +20,11 @@ public interface CategoryService extends IService<CategoryEntity>  {
      * @return 文章分类信息
      */
     List<CategoryEntity> listCategory(CategoryListReqVo reqVo);
+
+    /**
+     * 删除分类信息
+     *
+     * @param ids 待删除的分类ID列表
+     */
+    void deleteCategory(List<String> ids);
 }
