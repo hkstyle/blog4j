@@ -269,6 +269,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         if (Objects.isNull(article)) {
             throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
+
+        if (article.getStatus() != ArticleStatusEnum.WAIT.getCode()) {
+            throw new Blog4jException(ErrorEnum.ARTICLE_STATUS_ILLEGAL);
+        }
+
         List<String> roleList = StpUtil.getRoleList();
         if (roleList.isEmpty()) {
             log.error("roleList is empty .");

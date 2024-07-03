@@ -1,7 +1,9 @@
 package com.blog4j.oss.service.impl;
 
+import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.comm.ResponseMessage;
 import com.aliyun.oss.model.PutObjectResult;
 import com.blog4j.common.constants.CommonConstant;
@@ -82,6 +84,30 @@ public class OssServiceImpl implements OssService {
         } finally {
             if (ossClient != null) {
                 // 关闭OSSClient。
+                ossClient.shutdown();
+            }
+        }
+    }
+
+    /**
+     * 删除文件
+     *
+     * @param filePath 文件路径
+     */
+    @Override
+    public void delete(String filePath) {
+        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        try {
+            ossClient.deleteObject(bucketName, filePath);
+        } catch (OSSException oe) {
+            log.error("远程删除阿里云OSS文件失败, 错误码： [{}], 错误信息：[{}]",
+                    oe.getErrorCode(), oe.getErrorMessage());
+            throw new Blog4jException(ErrorEnum.UPLOAD_FILE_ERROR);
+        } catch (ClientException ce) {
+            log.error("远程删除阿里云OSS文件失败, 错误信息：[{}]", ce.getMessage());
+            throw new Blog4jException(ErrorEnum.UPLOAD_FILE_ERROR);
+        } finally {
+            if (ossClient != null) {
                 ossClient.shutdown();
             }
         }

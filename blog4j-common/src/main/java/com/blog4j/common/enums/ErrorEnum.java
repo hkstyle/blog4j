@@ -38,7 +38,8 @@ public enum ErrorEnum {
     /**
      * 文章相关
      */
-    CATEGORY_INFO_EMPTY_ERROR(601, "分类信息为空")
+    CATEGORY_INFO_EMPTY_ERROR(601, "分类信息为空"),
+    ARTICLE_STATUS_ILLEGAL(602, "文章状态非法！"),
     ;
 
     private final int errorCode;

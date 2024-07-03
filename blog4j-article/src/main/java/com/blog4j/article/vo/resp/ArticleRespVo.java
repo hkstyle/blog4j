@@ -74,6 +74,11 @@ public class ArticleRespVo {
     private Integer publicType;
 
     /**
+     * 是否允许评论
+     */
+    private Integer allowComment;
+
+    /**
      * 创建时间
      */
     private String createTime;

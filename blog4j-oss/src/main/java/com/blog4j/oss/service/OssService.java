@@ -16,4 +16,11 @@ public interface OssService {
      * @return 上传后的路径
      */
     String upload(MultipartFile file);
+
+    /**
+     * 删除文件
+     *
+     * @param filePath 文件路径
+     */
+    void delete(String filePath);
 }

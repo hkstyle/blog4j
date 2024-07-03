@@ -44,6 +44,16 @@ public class UpdateArticleContext {
     private Integer publicType;
 
     /**
+     * 是否允许评论
+     */
+    private Integer allowComment;
+
+    /**
+     * 状态
+     */
+    private Integer status;
+
+    /**
      * 文章内容
      */
     private String htmlContent;

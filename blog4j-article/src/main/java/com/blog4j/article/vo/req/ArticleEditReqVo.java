@@ -50,6 +50,18 @@ public class ArticleEditReqVo {
     private Integer publicType;
 
     /**
+     * 是否允许评论
+     */
+    @NotNull(message = "是否允许评论不能为空")
+    private Integer allowComment;
+
+    /**
+     * 状态
+     */
+    @NotNull(message = "状态不能为空")
+    private Integer status;
+
+    /**
      * 文章内容
      */
     @NotBlank(message = "文章内容不能为空")
