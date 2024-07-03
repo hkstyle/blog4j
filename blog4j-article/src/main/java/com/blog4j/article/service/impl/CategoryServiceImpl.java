@@ -42,6 +42,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
     public List<CategoryEntity> listCategory(CategoryListReqVo reqVo) {
         String categoryName = reqVo.getCategoryName();
         LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(CategoryEntity::getStatus);
         if (StringUtils.isNotBlank(categoryName)) {
             wrapper.like(CategoryEntity::getCategoryName, categoryName);
         }
