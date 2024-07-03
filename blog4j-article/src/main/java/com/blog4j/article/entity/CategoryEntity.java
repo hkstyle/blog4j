@@ -38,6 +38,11 @@ public class CategoryEntity {
     private String categoryName;
 
     /**
+     * 是否禁用 (1:是 0:否)
+     */
+    private Integer status;
+
+    /**
      * 更新时间
      */
     private String updateTime;

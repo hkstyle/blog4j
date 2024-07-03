@@ -2,9 +2,11 @@ package com.blog4j.article.api;
 
 import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.service.CategoryService;
+import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.common.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,11 +27,12 @@ public class ApiCategoryController {
     /**
      * 获取文章分类信息列表
      *
+     * @param reqVo 查询条件
      * @return 文章分类信息
      */
-    @GetMapping("/list")
-    public Result list() {
-        List<CategoryEntity> list = categoryService.list();
+    @PostMapping("/list")
+    public Result list(@RequestBody CategoryListReqVo reqVo) {
+        List<CategoryEntity> list = categoryService.listCategory(reqVo);
         return Result.ok(list);
     }
 }

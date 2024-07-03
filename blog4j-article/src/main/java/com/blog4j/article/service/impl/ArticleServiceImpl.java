@@ -338,6 +338,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         if (Objects.isNull(category)) {
             throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
+        if (category.getStatus() == YesOrNoEnum.YES.getCode()) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
         context.setCategory(category);
 
         List<String> roleList = StpUtil.getRoleList();
@@ -377,6 +380,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         CategoryEntity category = categoryMapper.selectById(context.getCategoryId());
         if (Objects.isNull(category)) {
             throw new Blog4jException(ErrorEnum.CATEGORY_INFO_EMPTY_ERROR);
+        }
+
+        if (category.getStatus() == YesOrNoEnum.YES.getCode()) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
         context.setCategoryName(category.getCategoryName());
     }
