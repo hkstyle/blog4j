@@ -8,9 +8,13 @@ import com.blog4j.article.mapper.ArticleMapper;
 import com.blog4j.article.mapper.CategoryMapper;
 import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CategoryListReqVo;
+import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +76,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
         this.baseMapper.deleteBatchIds(ids);
 
         // TODO 删除该分类下的标签
+    }
+
+    /**
+     * 创建分类信息
+     *
+     * @param reqVo 分类信息
+     */
+    @Override
+    public void create(CreateCategoryReqVo reqVo) {
+        CategoryEntity category = new CategoryEntity();
+        BeanUtils.copyProperties(reqVo, category);
+        category.setUpdateTime(CommonUtil.getCurrentDateTime())
+                .setCreateTime(CommonUtil.getCurrentDateTime())
+                .setCategoryId(IdGeneratorSnowflakeUtil.snowflakeId());
+        this.baseMapper.insert(category);
     }
 }

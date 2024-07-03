@@ -3,6 +3,7 @@ package com.blog4j.article.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.vo.req.CategoryListReqVo;
+import com.blog4j.article.vo.req.CreateCategoryReqVo;
 
 import java.util.List;
 
@@ -27,4 +28,11 @@ public interface CategoryService extends IService<CategoryEntity>  {
      * @param ids 待删除的分类ID列表
      */
     void deleteCategory(List<String> ids);
+
+    /**
+     * 创建分类信息
+     *
+     * @param reqVo 分类信息
+     */
+    void create(CreateCategoryReqVo reqVo);
 }

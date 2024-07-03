@@ -5,6 +5,8 @@ import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.common.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +36,17 @@ public class ApiCategoryController {
     public Result list(@RequestBody CategoryListReqVo reqVo) {
         List<CategoryEntity> list = categoryService.listCategory(reqVo);
         return Result.ok(list);
+    }
+
+    /**
+     * 根据分类ID查询分类信息
+     *
+     * @param categoryId 分类ID
+     * @return 分类信息
+     */
+    @GetMapping("/info/{categoryId}")
+    public Result info(@PathVariable("categoryId") String categoryId) {
+        CategoryEntity category = categoryService.getById(categoryId);
+        return Result.ok(category);
     }
 }

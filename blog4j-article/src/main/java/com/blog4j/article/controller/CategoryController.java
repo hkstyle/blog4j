@@ -1,6 +1,7 @@
 package com.blog4j.article.controller;
 
 import com.blog4j.article.service.CategoryService;
+import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.article.vo.req.DeleteCategoryReqVo;
 import com.blog4j.common.model.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author 98k灬
@@ -32,6 +31,18 @@ public class CategoryController {
     @PostMapping ("/delete")
     public Result delete(@RequestBody DeleteCategoryReqVo reqVo) {
         categoryService.deleteCategory(reqVo.getIds());
+        return Result.ok();
+    }
+
+    /**
+     * 创建分类信息
+     *
+     * @param reqVo 分类信息
+     * @return 创建成功
+     */
+    @PostMapping("/create")
+    public Result create(@RequestBody CreateCategoryReqVo reqVo) {
+        categoryService.create(reqVo);
         return Result.ok();
     }
 }
