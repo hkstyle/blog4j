@@ -1,5 +1,6 @@
 package com.blog4j.user.api;
 
+import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class ApiOrganizationController {
      * @return 组织信息
      */
     @GetMapping("/getOrganizationInfoByUserId/{userId}")
-    public List<OrganizationVo> getOrganizationInfoByUserId(@PathVariable("userId") String userId) {
-        return organizationService.getOrganizationInfoByUserId(userId);
+    public Result getOrganizationInfoByUserId(@PathVariable("userId") String userId) {
+        return Result.ok(organizationService.getOrganizationInfoByUserId(userId));
     }
 
     /**
@@ -40,7 +41,7 @@ public class ApiOrganizationController {
      * @return 组织下所有的用户ID列表
      */
     @GetMapping("/getUserIdsByOrganizationAdmin/{admin}")
-    public List<String> getUserIdsByOrganizationAdmin(@PathVariable("admin") String admin) {
-        return organizationService.getUserIdsByOrganizationAdmin(admin);
+    public Result getUserIdsByOrganizationAdmin(@PathVariable("admin") String admin) {
+        return Result.ok(organizationService.getUserIdsByOrganizationAdmin(admin));
     }
 }

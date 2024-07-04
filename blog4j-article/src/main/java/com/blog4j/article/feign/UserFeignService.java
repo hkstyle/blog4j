@@ -33,7 +33,7 @@ public interface UserFeignService {
      * @return 组织信息
      */
     @GetMapping("/api/organization/getOrganizationInfoByUserId/{userId}")
-    List<OrganizationVo> getOrganizationInfoByUserId(@PathVariable("userId") String userId);
+    FResult getOrganizationInfoByUserId(@PathVariable("userId") String userId);
 
     /**
      * 根据组织管理员ID获取该组织下所有的用户ID列表
@@ -42,7 +42,7 @@ public interface UserFeignService {
      * @return 组织下所有的用户ID列表
      */
     @GetMapping("/api/organization/getUserIdsByOrganizationAdmin/{admin}")
-    List<String> getUserIdsByOrganizationAdmin(@PathVariable("admin") String admin);
+    FResult getUserIdsByOrganizationAdmin(@PathVariable("admin") String admin);
 
     /**
      * 根据用户ID获取用户信息

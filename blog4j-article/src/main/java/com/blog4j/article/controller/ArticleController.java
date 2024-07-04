@@ -39,7 +39,7 @@ public class ArticleController {
     private ArticleService articleService;
 
     /**
-     * 获取文章列表
+     * 获取文章列表(后台管理端)
      *
      * @param articleListReqVo 查询条件
      * @return 文章列表

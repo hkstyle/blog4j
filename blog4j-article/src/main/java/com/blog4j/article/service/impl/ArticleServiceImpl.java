@@ -1,6 +1,7 @@
 package com.blog4j.article.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.article.context.CreateArticleContext;
@@ -20,7 +21,6 @@ import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
-import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.vo.OrganizationVo;
@@ -66,14 +66,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
 
         this.checkCategory(categoryId);
 
-        List<String> roleList = StpUtil.getRoleList();
-        if (roleList.isEmpty()) {
-            log.error("roleList is empty .");
-            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
-        }
-
-        String userId = StpUtil.getLoginIdAsString();
-
         LambdaQueryWrapper<ArticleEntity> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotBlank(categoryId)) {
             wrapper.eq(ArticleEntity::getCategoryId, articleListReqVo.getCategoryId());
@@ -87,19 +79,24 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             wrapper.eq(ArticleEntity::getStatus, status);
         }
 
+        List<String> roleList = StpUtil.getRoleList();
+        if (CollectionUtil.isEmpty(roleList)) {
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        }
+        String userId = StpUtil.getLoginIdAsString();
         String role = roleList.get(0);
         // 如果是超级管理员  可以查看所有的文章
         if (StringUtils.equals(role, RoleEnum.SUPER_ADMIN.getDesc())) {
             return this.getArticleList(wrapper, articleListReqVo);
         } else if (StringUtils.equals(role, RoleEnum.ORGANIZATION_ADMIN.getDesc())) {
             // 如果是组织管理员  可以查看该组织下的所有的文章
-            List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(userId);
+            List<String> userIds = CommonUtil.getUserIdsByOrganizationAdmin(userFeignService.getUserIdsByOrganizationAdmin(userId));
             wrapper.in(ArticleEntity::getAuthorId, userIds).or()
                     .eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
             return this.getArticleList(wrapper, articleListReqVo);
         } else if (StringUtils.equals(role, RoleEnum.ORDINARY.getDesc())) {
             // 如果是普通用户
-            List<OrganizationVo> organizationVoList = userFeignService.getOrganizationInfoByUserId(userId);
+            List<OrganizationVo> organizationVoList = CommonUtil.getOrganizationInfoByUserId(userFeignService.getOrganizationInfoByUserId(userId));
             if (organizationVoList.isEmpty()) {
                 // 如果该用户不是任何组织的成员
                 wrapper.eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
@@ -108,7 +105,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
                 HashSet<String> idSet = new HashSet<>();
                 for (OrganizationVo vo : organizationVoList) {
                     String admin = vo.getOrganizationAdmin();
-                    List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(admin);
+                    List<String> userIds = CommonUtil.getUserIdsByOrganizationAdmin(userFeignService.getUserIdsByOrganizationAdmin(admin));
                     idSet.addAll(userIds);
                 }
                 PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
@@ -124,9 +121,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             }
         } else if (StringUtils.equals(role, RoleEnum.COMPOSER.getDesc())) {
             // 如果是创作者
-            List<OrganizationVo> organizationVoList = userFeignService.getOrganizationInfoByUserId(userId);
+            List<OrganizationVo> organizationVoList = CommonUtil.getOrganizationInfoByUserId(userFeignService.getOrganizationInfoByUserId(userId));
             List<ArticleEntity> articleList ;
-            if (organizationVoList.isEmpty()) {
+            if (CollectionUtil.isEmpty(organizationVoList)) {
                 // 如果该用户不是任何组织的成员
                 PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
                 articleList = this.baseMapper.getComposerArticleList1(status, categoryId, title, userId);
@@ -134,7 +131,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
                 HashSet<String> idSet = new HashSet<>();
                 for (OrganizationVo vo : organizationVoList) {
                     String admin = vo.getOrganizationAdmin();
-                    List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(admin);
+                    List<String> userIds = CommonUtil.getUserIdsByOrganizationAdmin(userFeignService.getUserIdsByOrganizationAdmin(admin));
                     idSet.addAll(userIds);
                 }
                 PageHelper.startPage(articleListReqVo.getPageNo(), articleListReqVo.getPageSize());
@@ -317,7 +314,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         // 如果角色是组织管理员  只能删除或者发布自己组织下的用户发表的文章
         if (StringUtils.equals(role, RoleEnum.ORGANIZATION_ADMIN.getDesc())) {
             // 获取该组织管理员所有的用户ID列表
-            List<String> userIds = userFeignService.getUserIdsByOrganizationAdmin(userId);
+            List<String> userIds = CommonUtil.getUserIdsByOrganizationAdmin(userFeignService.getUserIdsByOrganizationAdmin(userId));
             if (!userIds.contains(authorId)) {
                 throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
             }
