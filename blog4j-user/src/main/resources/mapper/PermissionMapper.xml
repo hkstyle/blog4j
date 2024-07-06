@@ -4,10 +4,9 @@
 <mapper namespace="com.blog4j.user.mapper.PermissionMapper">
     <resultMap type="com.blog4j.user.entity.PermissionEntity" id="UserMap">
         <result property="permissionId" column="permission_id"/>
-        <result property="roleId" column="role_id"/>
-        <result property="roleName" column="role_name"/>
-        <result property="roleCode" column="role_code"/>
-        <result property="roleDesc" column="role_desc"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="permissionCode" column="permission_code"/>
+        <result property="permissionName" column="permission_name"/>
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
     </resultMap>

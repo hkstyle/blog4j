@@ -43,6 +43,21 @@ public class CategoryEntity {
     private Integer status;
 
     /**
+     * 作用域(1:公共所有 2：组织所有)
+     */
+    private Integer scope;
+
+    /**
+     * 创建人用户ID
+     */
+    private String creater;
+
+    /**
+     * 创建者名称
+     */
+    private String createrName;
+
+    /**
      * 更新时间
      */
     private String updateTime;

@@ -25,7 +25,9 @@ public enum ErrorEnum {
     INVALID_CAPTCHA_ERROR(302, "验证码非法！"),
     ROLE_INFO_EMPTY_ERROR(303, "用户角色信息为空！"),
     PERMISSION_INFO_EMPTY_ERROR(304, "用户权限信息为空！"),
-    ORGANIZATION_INFO_EMPTY_ERROR(304, "组织信息为空！"),
+    ORGANIZATION_INFO_EMPTY_ERROR(305, "组织信息为空！"),
+    USERNAME_REPEAT_ERROR(306, "用户名称重复！"),
+    PHONE_REPEAT_ERROR(307, "用户手机号码重复！"),
 
 
     /**

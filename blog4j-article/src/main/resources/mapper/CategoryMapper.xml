@@ -7,6 +7,9 @@
         <result property="categoryCode" column="category_code"/>
         <result property="categoryName" column="category_name"/>
         <result property="status" column="status"/>
+        <result property="scope" column="scope"/>
+        <result property="creater" column="creater"/>
+        <result property="categoryName" column="category_name"/>
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
     </resultMap>

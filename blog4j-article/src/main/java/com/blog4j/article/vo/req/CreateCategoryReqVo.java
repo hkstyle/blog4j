@@ -30,4 +30,10 @@ public class CreateCategoryReqVo {
      */
     @NotNull(message = "分类状态不能为空")
     private Integer status;
+
+    /**
+     * 作用域
+     */
+    @NotNull(message = "作用域不能为空")
+    private Integer scope;
 }

@@ -3,11 +3,19 @@ package com.blog4j.user.controller;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.service.UserService;
+import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.UserListReqVo;
+import com.blog4j.user.vo.resp.UserListRespVo;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author 98k灬
@@ -31,5 +39,29 @@ public class UserController {
     public Result info(@PathVariable("userId") String userId) {
         UserInfoVo userInfoVo = userService.getUserInfoByUserId(userId);
         return Result.ok(userInfoVo);
+    }
+
+    /**
+     * 查询用户列表
+     *
+     * @param reqVo 查询条件
+     * @return 用户列表
+     */
+    @PostMapping("/list")
+    public Result list(@RequestBody UserListReqVo reqVo) {
+        List<UserListRespVo> list = userService.userList(reqVo);
+        return Result.ok(new PageInfo<>(list));
+    }
+
+    /**
+     * 创建用户信息
+     *
+     * @param reqVo 用户信息
+     * @return 创建成功
+     */
+    @PostMapping("/create")
+    public Result create(@RequestBody CreateUserReqVo reqVo) {
+        userService.create(reqVo);
+        return Result.ok();
     }
 }

@@ -14,4 +14,14 @@ public class CategoryListReqVo {
      * 分类名称
      */
     private String categoryName;
+
+    /**
+     * 状态
+     */
+    private Integer status;
+
+    /**
+     * 作用域
+     */
+    private Integer scope;
 }

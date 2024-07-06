@@ -41,10 +41,18 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
     @Override
     public List<CategoryEntity> listCategory(CategoryListReqVo reqVo) {
         String categoryName = reqVo.getCategoryName();
+        Integer status = reqVo.getStatus();
+        Integer scope = reqVo.getScope();
         LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByAsc(CategoryEntity::getStatus);
         if (StringUtils.isNotBlank(categoryName)) {
             wrapper.like(CategoryEntity::getCategoryName, categoryName);
+        }
+        if (Objects.nonNull(status)) {
+            wrapper.eq(CategoryEntity::getStatus, status);
+        }
+        if (Objects.nonNull(scope)) {
+            wrapper.eq(CategoryEntity::getScope, scope);
         }
         return this.baseMapper.selectList(wrapper);
     }

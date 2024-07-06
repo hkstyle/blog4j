@@ -3,6 +3,11 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.UserListReqVo;
+import com.blog4j.user.vo.resp.UserListRespVo;
+
+import java.util.List;
 
 /**
  * @author 98k灬
@@ -26,4 +31,19 @@ public interface UserService extends IService<UserEntity> {
      * @return 用户信息
      */
     UserInfoVo getUserInfoByUserId(String userId);
+
+    /**
+     * 查询用户列表
+     *
+     * @param reqVo 查询条件
+     * @return 用户列表
+     */
+    List<UserListRespVo> userList(UserListReqVo reqVo);
+
+    /**
+     * 创建用户信息
+     *
+     * @param reqVo 用户信息
+     */
+    void create(CreateUserReqVo reqVo);
 }

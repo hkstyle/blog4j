@@ -25,27 +25,22 @@ public class PermissionEntity {
      * 权限ID
      */
     @TableId
-    private String permissionId;
+    private Integer permissionId;
 
     /**
      * 角色ID
      */
-    private String roleId;
+    private Integer parentId;
 
     /**
-     * 角色名
+     * 权限代码描述
      */
-    private String roleName;
+    private String permissionCode;
 
     /**
-     * 角色代码描述
+     * 权限名称
      */
-    private String roleCode;
-
-    /**
-     * 角色中文描述
-     */
-    private String roleDesc;
+    private String permissionName;
 
     /**
      * 更新时间
