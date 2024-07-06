@@ -4,6 +4,8 @@ import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.DeleteUserReqVo;
+import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageInfo;
@@ -62,6 +64,30 @@ public class UserController {
     @PostMapping("/create")
     public Result create(@RequestBody CreateUserReqVo reqVo) {
         userService.create(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 编辑用户信息
+     *
+     * @param reqVo 用户信息
+     * @return 编辑成功
+     */
+    @PostMapping("/update")
+    public Result update(@RequestBody EditUserReqVo reqVo) {
+        userService.edit(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param reqVo 用户信息
+     * @return 删除成功
+     */
+    @PostMapping("/delete")
+    public Result delete(@RequestBody DeleteUserReqVo reqVo) {
+        userService.delete(reqVo);
         return Result.ok();
     }
 }

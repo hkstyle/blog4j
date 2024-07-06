@@ -28,7 +28,8 @@ public enum ErrorEnum {
     ORGANIZATION_INFO_EMPTY_ERROR(305, "组织信息为空！"),
     USERNAME_REPEAT_ERROR(306, "用户名称重复！"),
     PHONE_REPEAT_ERROR(307, "用户手机号码重复！"),
-
+    DELETE_ORGANIZATION_ADMIN_ERROR(308, "不能删除超级管理员和组织管理员！"),
+    DELETE_CURRENT_LOGIN_ERROR(309, "不能删除当前登录的用户！"),
 
     /**
      * OSS相关

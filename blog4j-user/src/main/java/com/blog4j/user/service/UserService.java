@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.DeleteUserReqVo;
+import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 
@@ -46,4 +48,18 @@ public interface UserService extends IService<UserEntity> {
      * @param reqVo 用户信息
      */
     void create(CreateUserReqVo reqVo);
+
+    /**
+     * 编辑用户信息
+     *
+     * @param reqVo 用户信息
+     */
+    void edit(EditUserReqVo reqVo);
+
+    /**
+     * 删除用户
+     *
+     * @param reqVo 用户信息
+     */
+    void delete(DeleteUserReqVo reqVo);
 }

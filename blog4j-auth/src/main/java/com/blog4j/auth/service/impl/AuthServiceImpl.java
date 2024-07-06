@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         // 远程调用user模块获取用户信息
         UserInfoVo userInfoVo = this.getUserInfo(loginContext);
 
-        // TODO 校验密码 密码加密
+        // TODO 校验密码 密码加密 更新用户最近一次的登录时间
         StpUtil.login(userInfoVo.getUserId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         loginContext.setSaTokenInfo(tokenInfo);
