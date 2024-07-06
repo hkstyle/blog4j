@@ -30,6 +30,9 @@ public enum ErrorEnum {
     PHONE_REPEAT_ERROR(307, "用户手机号码重复！"),
     DELETE_ORGANIZATION_ADMIN_ERROR(308, "不能删除超级管理员和组织管理员！"),
     DELETE_CURRENT_LOGIN_ERROR(309, "不能删除当前登录的用户！"),
+    ROLE_NAME_REPEAT_ERROR(310, "角色名称不能重复！"),
+    ROLE_CODE_REPEAT_ERROR(311, "角色代码不能重复！"),
+    ROLE_USED_ERROR(312, "角色被使用，不能删除！"),
 
     /**
      * OSS相关

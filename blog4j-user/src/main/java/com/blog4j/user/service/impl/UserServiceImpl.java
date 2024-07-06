@@ -197,17 +197,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         // 用户名称不能重复
-        LambdaQueryWrapper<UserEntity> wrapper1 = new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUserName, reqVo.getUserName());
+        LambdaQueryWrapper<UserEntity> wrapper1 = new LambdaQueryWrapper<UserEntity>()
+                .eq(UserEntity::getUserName, reqVo.getUserName())
+                .ne(UserEntity::getUserId, userId);
         UserEntity val1 = this.baseMapper.selectOne(wrapper1);
-        if (Objects.nonNull(val1) && !val1.getUserId().equals(reqVo.getUserId())) {
+        if (Objects.nonNull(val1)) {
             throw new Blog4jException(ErrorEnum.USERNAME_REPEAT_ERROR);
         }
 
         // 用户手机号码不能重复
         if (StringUtils.isNotBlank(reqVo.getPhone())) {
-            LambdaQueryWrapper<UserEntity> wrapper2 = new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getPhone, reqVo.getPhone());
+            LambdaQueryWrapper<UserEntity> wrapper2 = new LambdaQueryWrapper<UserEntity>()
+                    .eq(UserEntity::getPhone, reqVo.getPhone())
+                    .ne(UserEntity::getUserId, userId);
             UserEntity val2 = this.baseMapper.selectOne(wrapper2);
-            if (Objects.nonNull(val2) && !val2.getUserId().equals(reqVo.getUserId())) {
+            if (Objects.nonNull(val2)) {
                 throw new Blog4jException(ErrorEnum.PHONE_REPEAT_ERROR);
             }
         }
