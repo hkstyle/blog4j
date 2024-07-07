@@ -5,6 +5,7 @@ import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.service.PermissionService;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
+import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,5 +87,29 @@ public class PermissionController {
     public Result createNode(@RequestBody @Valid CreateNodeReqVo reqVo) {
         permissionService.createNode(reqVo);
         return Result.ok();
+    }
+
+    /**
+     * 编辑权限
+     *
+     * @param reqVo 信息
+     * @return 新增成功
+     */
+    @PostMapping("/editNode")
+    public Result editNode(@RequestBody @Valid EditNodeReqVo reqVo) {
+        permissionService.editNode(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 根据权限ID获取权限信息
+     *
+     * @param permissionId 权限ID
+     * @return  权限信息
+     */
+    @GetMapping("/getPermissionById/{permissionId}")
+    public Result getPermissionById(@PathVariable("permissionId") Integer permissionId) {
+        PermissionEntity permission = permissionService.getById(permissionId);
+        return Result.ok(permission);
     }
 }

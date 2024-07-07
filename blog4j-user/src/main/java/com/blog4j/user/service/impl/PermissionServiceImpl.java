@@ -15,7 +15,9 @@ import com.blog4j.user.mapper.RolePermissionRelMapper;
 import com.blog4j.user.service.PermissionService;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
+import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -166,6 +168,42 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                 .permissionCode(reqVo.getPermissionCode())
                 .build();
         this.baseMapper.insert(build);
+    }
+
+    /**
+     * 编辑权限
+     *
+     * @param reqVo 信息
+     */
+    @Override
+    public void editNode(EditNodeReqVo reqVo) {
+        this.beforeEdit(reqVo);
+        PermissionEntity permission = new PermissionEntity();
+        BeanUtils.copyProperties(reqVo, permission);
+        permission.setUpdateTime(CommonUtil.getCurrentDateTime());
+        this.baseMapper.updateById(permission);
+    }
+
+    private void beforeEdit(EditNodeReqVo reqVo) {
+        Integer permissionId = reqVo.getPermissionId();
+        PermissionEntity permission = this.baseMapper.selectById(permissionId);
+        if (Objects.isNull(permission)) {
+            throw new Blog4jException(ErrorEnum.PERMISSION_INFO_EMPTY_ERROR);
+        }
+
+        LambdaQueryWrapper<PermissionEntity> wrapper = new LambdaQueryWrapper<PermissionEntity>()
+                .ne(PermissionEntity::getPermissionId, permissionId)
+                .eq(PermissionEntity::getPermissionName, reqVo.getPermissionName());
+        if (this.baseMapper.selectCount(wrapper) > 0) {
+            throw new Blog4jException(ErrorEnum.PERMISSION_NAME_REPEAT_ERROR);
+        }
+
+        LambdaQueryWrapper<PermissionEntity> wrapper1 = new LambdaQueryWrapper<PermissionEntity>()
+                .ne(PermissionEntity::getPermissionId, permissionId)
+                .eq(PermissionEntity::getPermissionCode, reqVo.getPermissionCode());
+        if (this.baseMapper.selectCount(wrapper1) > 0) {
+            throw new Blog4jException(ErrorEnum.PERMISSION_CODE_REPEAT_ERROR);
+        }
     }
 
     private void beforeCreateNode(CreateNodeReqVo reqVo) {

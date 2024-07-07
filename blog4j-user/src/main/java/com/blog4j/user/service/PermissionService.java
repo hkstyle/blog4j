@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
+import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
 
 import java.util.List;
@@ -50,4 +51,11 @@ public interface PermissionService extends IService<PermissionEntity> {
      * @param reqVo 信息
      */
     void createNode(CreateNodeReqVo reqVo);
+
+    /**
+     * 编辑权限
+     *
+     * @param reqVo 信息
+     */
+    void editNode(EditNodeReqVo reqVo);
 }
