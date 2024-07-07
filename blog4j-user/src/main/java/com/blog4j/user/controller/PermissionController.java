@@ -4,6 +4,7 @@ import com.blog4j.common.model.Result;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.service.PermissionService;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
+import com.blog4j.user.vo.req.CreateParentNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
 import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
@@ -111,5 +112,17 @@ public class PermissionController {
     public Result getPermissionById(@PathVariable("permissionId") Integer permissionId) {
         PermissionEntity permission = permissionService.getById(permissionId);
         return Result.ok(permission);
+    }
+
+    /**
+     * 添加父节点
+     *
+     * @param reqVo 信息
+     * @return 添加成功
+     */
+    @PostMapping("/createParentNode")
+    public Result createParentNode(@RequestBody @Valid CreateParentNodeReqVo reqVo) {
+        permissionService.createParentNode(reqVo);
+        return Result.ok();
     }
 }

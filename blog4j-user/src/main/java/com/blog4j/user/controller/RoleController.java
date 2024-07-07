@@ -1,5 +1,6 @@
 package com.blog4j.user.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.service.RoleService;
@@ -36,6 +37,7 @@ public class RoleController {
      * @param reqVo 查询条件
      * @return 角色信息
      */
+    //@SaCheckPermission(value = "ROLE:LIST")
     @PostMapping("/roleList")
     public Result roleList(@RequestBody RoleListReqVo reqVo) {
         List<RoleEntity> list = roleService.roleList(reqVo);
@@ -60,6 +62,7 @@ public class RoleController {
      * @param reqVo 角色信息
      * @return 创建成功
      */
+    @SaCheckPermission(value = "ROLE:ADD")
     @PostMapping("/create")
     public Result create(@RequestBody CreateRoleReqVo reqVo) {
         roleService.create(reqVo);
@@ -72,6 +75,7 @@ public class RoleController {
      * @param reqVo 角色信息
      * @return 创建成功
      */
+    @SaCheckPermission(value = "ROLE:EDIT")
     @PostMapping("/edit")
     public Result edit(@RequestBody EditRoleReqVo reqVo) {
         roleService.edit(reqVo);
@@ -84,6 +88,7 @@ public class RoleController {
      * @param reqVo 角色信息
      * @return 删除成功
      */
+    @SaCheckPermission(value = "ROLE:DELETE")
     @PostMapping("/delete")
     public Result delete(@RequestBody DeleteRoleReqVo reqVo) {
         roleService.delete(reqVo);

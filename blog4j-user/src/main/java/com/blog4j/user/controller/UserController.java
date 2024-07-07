@@ -1,5 +1,7 @@
 package com.blog4j.user.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.service.UserService;
@@ -37,6 +39,7 @@ public class UserController {
      * @param userId 用户ID
      * @return 用户信息
      */
+    @SaCheckLogin
     @GetMapping("/info/{userId}")
     public Result info(@PathVariable("userId") String userId) {
         UserInfoVo userInfoVo = userService.getUserInfoByUserId(userId);
@@ -49,6 +52,7 @@ public class UserController {
      * @param reqVo 查询条件
      * @return 用户列表
      */
+    @SaCheckPermission(value = "USER:LIST")
     @PostMapping("/list")
     public Result list(@RequestBody UserListReqVo reqVo) {
         List<UserListRespVo> list = userService.userList(reqVo);
@@ -61,6 +65,7 @@ public class UserController {
      * @param reqVo 用户信息
      * @return 创建成功
      */
+    @SaCheckPermission(value = "USER:ADD")
     @PostMapping("/create")
     public Result create(@RequestBody CreateUserReqVo reqVo) {
         userService.create(reqVo);
@@ -73,6 +78,7 @@ public class UserController {
      * @param reqVo 用户信息
      * @return 编辑成功
      */
+    @SaCheckPermission(value = "USER:EDIT")
     @PostMapping("/update")
     public Result update(@RequestBody EditUserReqVo reqVo) {
         userService.edit(reqVo);
@@ -85,6 +91,7 @@ public class UserController {
      * @param reqVo 用户信息
      * @return 删除成功
      */
+    @SaCheckPermission(value = "USER:DELETE")
     @PostMapping("/delete")
     public Result delete(@RequestBody DeleteUserReqVo reqVo) {
         userService.delete(reqVo);

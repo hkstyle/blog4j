@@ -9,11 +9,14 @@ import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.RolePermissionRelEntity;
+import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.mapper.PermissionMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.RolePermissionRelMapper;
+import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.PermissionService;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
+import com.blog4j.user.vo.req.CreateParentNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
 import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
@@ -41,6 +44,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取树形结构的权限列表
@@ -105,7 +111,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         if (CollectionUtil.isNotEmpty(rolePermissionRelList)) {
             Set<Integer> ids = rolePermissionRelList.stream()
                     .map(RolePermissionRelEntity::getId).collect(Collectors.toSet());
-            this.baseMapper.deleteBatchIds(ids);
+            rolePermissionRelMapper.deleteBatchIds(ids);
         }
 
         if (CollectionUtil.isEmpty(permissionIds)) {
@@ -182,6 +188,67 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         BeanUtils.copyProperties(reqVo, permission);
         permission.setUpdateTime(CommonUtil.getCurrentDateTime());
         this.baseMapper.updateById(permission);
+    }
+
+    /**
+     * 根据用户ID获取权限信息
+     *
+     * @param userId 用户ID
+     * @return 权限信息
+     */
+    @Override
+    public List<PermissionEntity> getPermissionListByUserId(String userId) {
+        UserEntity user = userMapper.selectById(userId);
+        if (Objects.isNull(user)) {
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
+        String roleId = user.getRoleId();
+        LambdaQueryWrapper<RolePermissionRelEntity> wrapper = new LambdaQueryWrapper<RolePermissionRelEntity>()
+                .eq(RolePermissionRelEntity::getRoleId, roleId);
+        List<RolePermissionRelEntity> rolePermissionRelList = rolePermissionRelMapper.selectList(wrapper);
+        if (CollectionUtil.isEmpty(rolePermissionRelList)) {
+            return null;
+        }
+        Set<Integer> permissionIds = rolePermissionRelList.stream()
+                .map(RolePermissionRelEntity::getPermissionId).collect(Collectors.toSet());
+        return this.baseMapper.selectBatchIds(permissionIds);
+    }
+
+    /**
+     * 添加父节点
+     *
+     * @param reqVo 信息
+     */
+    @Override
+    public void createParentNode(CreateParentNodeReqVo reqVo) {
+        this.beforeCreateParentNode(reqVo);
+        PermissionEntity permission = PermissionEntity.builder()
+                .permissionCode(reqVo.getPermissionCode())
+                .permissionName(reqVo.getPermissionName())
+                .parentId(0)
+                .updateTime(CommonUtil.getCurrentDateTime())
+                .createTime(CommonUtil.getCurrentDateTime())
+                .build();
+        this.baseMapper.insert(permission);
+    }
+
+    private void beforeCreateParentNode(CreateParentNodeReqVo reqVo) {
+        String permissionName = reqVo.getPermissionName();
+        String permissionCode = reqVo.getPermissionCode();
+
+        // 权限代码不能重复
+        LambdaQueryWrapper<PermissionEntity> wrapper1 = new LambdaQueryWrapper<PermissionEntity>()
+                .eq(PermissionEntity::getPermissionCode, permissionCode);
+        if (this.baseMapper.selectCount(wrapper1) > 0) {
+            throw new Blog4jException(ErrorEnum.PERMISSION_CODE_REPEAT_ERROR);
+        }
+
+        // 权限名称不能重复
+        LambdaQueryWrapper<PermissionEntity> wrapper2 = new LambdaQueryWrapper<PermissionEntity>()
+                .eq(PermissionEntity::getPermissionName, permissionName);
+        if (this.baseMapper.selectCount(wrapper2) > 0) {
+            throw new Blog4jException(ErrorEnum.PERMISSION_NAME_REPEAT_ERROR);
+        }
     }
 
     private void beforeEdit(EditNodeReqVo reqVo) {

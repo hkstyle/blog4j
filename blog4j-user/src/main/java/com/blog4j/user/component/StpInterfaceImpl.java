@@ -1,18 +1,18 @@
 package com.blog4j.user.component;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.alibaba.fastjson.TypeReference;
-import com.blog4j.common.constants.CommonConstant;
-import com.blog4j.common.exception.Blog4jException;
-import com.blog4j.common.model.FResult;
+import cn.hutool.core.collection.CollectionUtil;
 import com.blog4j.common.vo.RoleInfoVo;
-import com.blog4j.user.feign.UserFeignService;
+import com.blog4j.user.entity.PermissionEntity;
+import com.blog4j.user.service.PermissionService;
+import com.blog4j.user.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 98k灬
@@ -24,7 +24,10 @@ import java.util.List;
 @Component
 public class StpInterfaceImpl implements StpInterface {
     @Autowired
-    private UserFeignService userFeignService;
+    private RoleService roleService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     /**
      * 获取用户权限列表
@@ -35,12 +38,11 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object userId, String loginType) {
-        List<String> list = new ArrayList<>();
-        list.add("101");
-        list.add("user.add");
-        list.add("user.update");
-        list.add("user.get");
-        return list;
+        List<PermissionEntity> permissionList = permissionService.getPermissionListByUserId((String) userId);
+        if (CollectionUtil.isNotEmpty(permissionList)) {
+            return permissionList.stream().map(PermissionEntity::getPermissionCode).collect(Collectors.toList());
+        }
+        return null;
     }
 
     /**
@@ -52,17 +54,7 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object userId, String loginType) {
-        FResult result = userFeignService.getRoleInfoByUserId((String)userId);
-        Integer code = result.getCode();
-        String message = result.getMessage();
-        if (code != CommonConstant.SUCCESS_CODE) {
-            log.error("远程调用user模块获取用户角色信息失败, 失败原因：[{}]", message);
-            throw new Blog4jException(code, message);
-        }
-
-        RoleInfoVo roleInfoVo = result.getData(new TypeReference<RoleInfoVo>() {
-        });
-
+        RoleInfoVo roleInfoVo = roleService.getRoleInfoByUserId((String) userId);
         List<String> list = new ArrayList<>();
         list.add(roleInfoVo.getRoleCode());
         return list;

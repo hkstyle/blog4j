@@ -3,6 +3,7 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
+import com.blog4j.user.vo.req.CreateParentNodeReqVo;
 import com.blog4j.user.vo.req.DeletePermissionNodeReqVo;
 import com.blog4j.user.vo.req.EditNodeReqVo;
 import com.blog4j.user.vo.req.SaveRolePermissionRelReqVo;
@@ -58,4 +59,19 @@ public interface PermissionService extends IService<PermissionEntity> {
      * @param reqVo 信息
      */
     void editNode(EditNodeReqVo reqVo);
+
+    /**
+     * 根据用户ID获取权限信息
+     *
+     * @param userId 用户ID
+     * @return 权限信息
+     */
+    List<PermissionEntity> getPermissionListByUserId(String userId);
+
+    /**
+     * 添加父节点
+     *
+     * @param reqVo 信息
+     */
+    void createParentNode(CreateParentNodeReqVo reqVo);
 }
