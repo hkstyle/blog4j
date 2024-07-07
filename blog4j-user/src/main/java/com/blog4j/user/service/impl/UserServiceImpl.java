@@ -10,6 +10,7 @@ import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
+import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
@@ -127,7 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         user.setUserId(IdGeneratorSnowflakeUtil.snowflakeId())
                 .setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
-                .setPassword(PASSWORD)
+                .setPassword(RsaUtil.encrypt(PASSWORD))
                 .setStatus(UserStatusEnum.NORMAL.getCode());
         this.baseMapper.insert(user);
     }

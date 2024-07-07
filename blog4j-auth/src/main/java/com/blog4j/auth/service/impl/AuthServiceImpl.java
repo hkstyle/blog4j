@@ -5,6 +5,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.blog4j.auth.context.LoginContext;
 import com.blog4j.auth.feign.UserFeignService;
 import com.blog4j.auth.service.AuthService;
+import com.blog4j.auth.utils.SecretUtils;
+import com.blog4j.auth.vo.resp.AesKeyAndIvRespVo;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
@@ -50,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         // 远程调用user模块获取用户信息
         UserInfoVo userInfoVo = this.getUserInfo(loginContext);
         String dbPassword = userInfoVo.getPassword();
-        String reqPassword = loginContext.getPassword();
+        String reqPassword = SecretUtils.desEncrypt(loginContext.getPassword());
         String decrypt = RsaUtil.decrypt(dbPassword);
         if (!StringUtils.equals(decrypt, reqPassword)) {
             log.error("password error .");
@@ -71,6 +73,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(String userId) {
         StpUtil.logout(userId);
+    }
+
+    /**
+     * 获取AES前后端加解密的KEY和IV
+     *
+     * @return 前后端加解密的KEY和IV
+     */
+    @Override
+    public AesKeyAndIvRespVo getAesKeyAndIv() {
+        // TODO 调用系统服务获取
+        return AesKeyAndIvRespVo.builder()
+                .iv("63eeac68cf074c8c")
+                .key("63eeac68cf074c8c")
+                .build();
     }
 
     private UserInfoVo getUserInfo(LoginContext loginContext) {

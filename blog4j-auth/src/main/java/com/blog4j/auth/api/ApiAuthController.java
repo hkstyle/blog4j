@@ -6,6 +6,7 @@ import com.blog4j.auth.context.LoginContext;
 import com.blog4j.auth.service.AuthService;
 import com.blog4j.auth.service.CaptchaService;
 import com.blog4j.auth.vo.req.LoginReqVo;
+import com.blog4j.auth.vo.resp.AesKeyAndIvRespVo;
 import com.blog4j.common.model.Result;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
@@ -68,5 +69,12 @@ public class ApiAuthController {
     public Result logout(@PathVariable("userId") String userId) {
         authService.logout(userId);
         return Result.ok();
+    }
+
+    @SaIgnore
+    @GetMapping("/getAesKeyAndIv")
+    public Result getAesKeyAndIv() {
+        AesKeyAndIvRespVo respVo = authService.getAesKeyAndIv();
+        return Result.ok(respVo);
     }
 }
