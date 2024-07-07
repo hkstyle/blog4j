@@ -35,6 +35,7 @@ public enum ErrorEnum {
     ROLE_USED_ERROR(312, "角色被使用，不能删除！"),
     PERMISSION_CODE_REPEAT_ERROR(313, "权限代码不能重复！"),
     PERMISSION_NAME_REPEAT_ERROR(314, "权限名称不能重复！"),
+    PASSWORD_ERROR(315, "密码错误！"),
 
     /**
      * OSS相关

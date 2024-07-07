@@ -2,15 +2,15 @@ package com.blog4j.auth.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.fastjson.TypeReference;
 import com.blog4j.auth.context.LoginContext;
 import com.blog4j.auth.feign.UserFeignService;
 import com.blog4j.auth.service.AuthService;
-import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
+import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.RedisUtil;
+import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -49,8 +49,15 @@ public class AuthServiceImpl implements AuthService {
 
         // 远程调用user模块获取用户信息
         UserInfoVo userInfoVo = this.getUserInfo(loginContext);
+        String dbPassword = userInfoVo.getPassword();
+        String reqPassword = loginContext.getPassword();
+        String decrypt = RsaUtil.decrypt(dbPassword);
+        if (!StringUtils.equals(decrypt, reqPassword)) {
+            log.error("password error .");
+            throw new Blog4jException(ErrorEnum.PASSWORD_ERROR);
+        }
 
-        // TODO 校验密码 密码加密 更新用户最近一次的登录时间
+        // TODO 更新用户最近一次的登录时间
         StpUtil.login(userInfoVo.getUserId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         loginContext.setSaTokenInfo(tokenInfo);
@@ -59,17 +66,8 @@ public class AuthServiceImpl implements AuthService {
     private UserInfoVo getUserInfo(LoginContext loginContext) {
         String userName = loginContext.getUserName();
         FResult result = userFeignService.getUserInfoByUserName(userName);
-        Integer code = result.getCode();
-        String message = result.getMessage();
-        if (code != CommonConstant.SUCCESS_CODE) {
-            log.error("远程调用user模块获取用户信息失败, 失败原因：[{}]", message);
-            throw new Blog4jException(code, message);
-        }
-
-        return result.getData(new TypeReference<UserInfoVo>() {
-        });
+        return CommonUtil.getUserInfo(result);
     }
-
 
     private boolean checkCaptcha(LoginContext loginContext) {
         String captcha = loginContext.getCaptcha();
