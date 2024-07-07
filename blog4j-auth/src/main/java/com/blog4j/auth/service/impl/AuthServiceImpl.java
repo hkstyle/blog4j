@@ -7,12 +7,14 @@ import com.blog4j.auth.feign.UserFeignService;
 import com.blog4j.auth.service.AuthService;
 import com.blog4j.auth.utils.SecretUtils;
 import com.blog4j.auth.vo.resp.AesKeyAndIvRespVo;
+import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.RedisUtil;
 import com.blog4j.common.utils.RsaUtil;
+import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.common.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -59,10 +61,21 @@ public class AuthServiceImpl implements AuthService {
             throw new Blog4jException(ErrorEnum.PASSWORD_ERROR);
         }
 
-        // TODO 更新用户最近一次的登录时间
         StpUtil.login(userInfoVo.getUserId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         loginContext.setSaTokenInfo(tokenInfo);
+
+        EditUserLastLoginTimeReqVo lastLoginTimeReqVo = EditUserLastLoginTimeReqVo.builder()
+                .userId(userInfoVo.getUserId())
+                .lastLoginTime(CommonUtil.getCurrentDateTime())
+                .build();
+        FResult result = userFeignService.updateUserLastLoginTime(lastLoginTimeReqVo);
+        Integer code = result.getCode();
+        String message = result.getMessage();
+        if (code != CommonConstant.SUCCESS_CODE) {
+            log.error("远程调用user模块, 更新用户的最近一次登录时间失败, 失败原因：[{}]", message);
+            throw new Blog4jException(code, message);
+        }
     }
 
     /**

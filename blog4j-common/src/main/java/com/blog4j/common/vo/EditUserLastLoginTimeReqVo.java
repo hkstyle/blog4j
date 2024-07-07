@@ -1,6 +1,9 @@
-package com.blog4j.user.vo.req;
+package com.blog4j.common.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,6 +14,9 @@ import javax.validation.constraints.NotBlank;
  * @Create on : 2024/7/6 15:09
  **/
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class EditUserLastLoginTimeReqVo {
     /**
      * 用户ID

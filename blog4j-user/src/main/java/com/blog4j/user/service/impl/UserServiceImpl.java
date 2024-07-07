@@ -19,6 +19,7 @@ import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
+import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
@@ -159,6 +160,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         // TODO 删除用户名下文章的评论
 
         this.baseMapper.deleteBatchIds(reqVo.getUserIds());
+    }
+
+    /**
+     * 更新用户的最近一次登录时间
+     *
+     * @param reqVo 请求信息
+     */
+    @Override
+    public void updateUserLastLoginTime(EditUserLastLoginTimeReqVo reqVo) {
+        String userId = reqVo.getUserId();
+        String lastLoginTime = reqVo.getLastLoginTime();
+        UserEntity user = this.baseMapper.selectById(userId);
+        if (Objects.isNull(user)) {
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
+        user.setLastLoginTime(lastLoginTime);
+        this.baseMapper.updateById(user);
     }
 
     private void beforeDelete(DeleteUserReqVo reqVo) {

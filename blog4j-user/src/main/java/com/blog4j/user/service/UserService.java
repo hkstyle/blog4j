@@ -5,6 +5,7 @@ import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
+import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
@@ -62,4 +63,11 @@ public interface UserService extends IService<UserEntity> {
      * @param reqVo 用户信息
      */
     void delete(DeleteUserReqVo reqVo);
+
+    /**
+     * 更新用户的最近一次登录时间
+     *
+     * @param reqVo 请求信息
+     */
+    void updateUserLastLoginTime(EditUserLastLoginTimeReqVo reqVo);
 }

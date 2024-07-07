@@ -2,10 +2,8 @@ package com.blog4j.user.api;
 
 import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
-import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.service.UserService;
-import com.blog4j.user.vo.req.EditUserLastLoginTimeReqVo;
-import org.springframework.beans.BeanUtils;
+import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @author 98k灬
@@ -50,8 +50,15 @@ public class ApiUserController {
         return Result.ok(userInfoVo);
     }
 
+    /**
+     * 更新用户的最近一次登录时间
+     *
+     * @param reqVo 请求信息
+     * @return 更新成功
+     */
     @PostMapping("/updateUserLastLoginTime")
-    public Result updateUserLastLoginTime(@RequestBody EditUserLastLoginTimeReqVo reqVo) {
+    public Result updateUserLastLoginTime(@RequestBody @Valid EditUserLastLoginTimeReqVo reqVo) {
+        userService.updateUserLastLoginTime(reqVo);
         return Result.ok();
     }
 
