@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpInterface;
 import com.blog4j.article.feign.UserFeignService;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.vo.PermissionVo;
 import com.blog4j.common.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 98k灬
@@ -33,12 +35,9 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object userId, String loginType) {
-        List<String> list = new ArrayList<>();
-        list.add("101");
-        list.add("user.add");
-        list.add("user.update");
-        list.add("user.get");
-        return list;
+        FResult result = userFeignService.getPermissionListByUserId((String) userId);
+        List<PermissionVo> list = CommonUtil.getPermissionListByUserId(result);
+        return list.stream().map(PermissionVo::getPermissionCode).collect(Collectors.toList());
     }
 
     /**

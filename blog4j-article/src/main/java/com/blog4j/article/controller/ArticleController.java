@@ -1,6 +1,7 @@
 package com.blog4j.article.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.article.context.CreateArticleContext;
@@ -44,7 +45,7 @@ public class ArticleController {
      * @param articleListReqVo 查询条件
      * @return 文章列表
      */
-    @SaCheckLogin
+    @SaCheckPermission(value = "ARTICLE:LIST")
     @PostMapping("/list")
     public Result list(@RequestBody ArticleListReqVo articleListReqVo) {
         PageInfo<ArticleRespVo> pageInfo = articleService.getArticleList(articleListReqVo);
@@ -69,7 +70,7 @@ public class ArticleController {
      * @param articleId 文章ID
      * @return 统一响应体
      */
-    @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN", "COMPOSER"}, mode = SaMode.OR)
+    @SaCheckPermission(value = "ARTICLE:DELETE")
     @DeleteMapping("/delete/{articleId}")
     public Result delete(@PathVariable("articleId") String articleId) {
         articleService.deleteArticle(articleId);
@@ -108,6 +109,7 @@ public class ArticleController {
      * @param reqVo 文章信息
      * @return 统一响应体
      */
+    @SaCheckPermission(value = "ARTICLE:EDIT")
     @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN", "COMPOSER"}, mode = SaMode.OR)
     @PutMapping("/update")
     public Result update(@RequestBody ArticleEditReqVo reqVo) {
@@ -123,6 +125,7 @@ public class ArticleController {
      * @param reqVo 请求
      * @return 创建成功
      */
+    @SaCheckPermission(value = "ARTICLE:ADD")
     @PostMapping("/create")
     @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN", "COMPOSER"}, mode = SaMode.OR)
     public Result create(@RequestBody CreateArticleReqVo reqVo) {

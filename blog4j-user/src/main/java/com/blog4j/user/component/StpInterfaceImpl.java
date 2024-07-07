@@ -2,6 +2,7 @@ package com.blog4j.user.component;
 
 import cn.dev33.satoken.stp.StpInterface;
 import cn.hutool.core.collection.CollectionUtil;
+import com.blog4j.common.vo.PermissionVo;
 import com.blog4j.common.vo.RoleInfoVo;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.service.PermissionService;
@@ -38,9 +39,9 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object userId, String loginType) {
-        List<PermissionEntity> permissionList = permissionService.getPermissionListByUserId((String) userId);
-        if (CollectionUtil.isNotEmpty(permissionList)) {
-            return permissionList.stream().map(PermissionEntity::getPermissionCode).collect(Collectors.toList());
+        List<PermissionVo> list = permissionService.getPermissionListByUserId((String) userId);
+        if (CollectionUtil.isNotEmpty(list)) {
+            return list.stream().map(PermissionVo::getPermissionCode).collect(Collectors.toList());
         }
         return null;
     }

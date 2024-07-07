@@ -1,5 +1,6 @@
 package com.blog4j.article.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.article.vo.req.DeleteCategoryReqVo;
@@ -28,6 +29,7 @@ public class CategoryController {
      * @param reqVo 待删除的分类ID列表
      * @return 删除成功
      */
+    @SaCheckPermission(value = "CATEGORY:DELETE")
     @PostMapping ("/delete")
     public Result delete(@RequestBody DeleteCategoryReqVo reqVo) {
         categoryService.deleteCategory(reqVo.getIds());
@@ -40,6 +42,7 @@ public class CategoryController {
      * @param reqVo 分类信息
      * @return 创建成功
      */
+    @SaCheckPermission(value = "CATEGORY:ADD")
     @PostMapping("/create")
     public Result create(@RequestBody CreateCategoryReqVo reqVo) {
         categoryService.create(reqVo);

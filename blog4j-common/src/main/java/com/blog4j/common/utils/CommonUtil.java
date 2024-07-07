@@ -5,6 +5,7 @@ import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.vo.OrganizationVo;
+import com.blog4j.common.vo.PermissionVo;
 import com.blog4j.common.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,6 +83,24 @@ public class CommonUtil {
         }
 
         return result.getData(new TypeReference<List<OrganizationVo>>() {
+        });
+    }
+
+    /**
+     * 根据用户ID获取权限信息
+     *
+     * @param result 待解析的结果
+     * @return 组织信息
+     */
+    public static List<PermissionVo> getPermissionListByUserId(FResult result) {
+        Integer code = result.getCode();
+        String message = result.getMessage();
+        if (code != CommonConstant.SUCCESS_CODE) {
+            log.error("远程调用user模块, 根据用户ID获取权限信息失败, 失败原因：[{}]", message);
+            throw new Blog4jException(code, message);
+        }
+
+        return result.getData(new TypeReference<List<PermissionVo>>() {
         });
     }
 }

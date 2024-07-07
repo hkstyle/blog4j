@@ -52,4 +52,13 @@ public interface UserFeignService {
      */
     @GetMapping("/api/user/getUserInfoByUserId/{userId}")
     FResult getUserInfoByUserId(@PathVariable("userId") String userId);
+
+    /**
+     * 根据用户ID获取权限信息
+     *
+     * @param userId 用户ID
+     * @return 权限信息
+     */
+    @GetMapping("/api/permission/getPermissionListByUserId/{userId}")
+    FResult getPermissionListByUserId(@PathVariable("userId") String userId);
 }

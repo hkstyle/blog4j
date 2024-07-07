@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.vo.PermissionVo;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.RolePermissionRelEntity;
@@ -197,7 +198,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      * @return 权限信息
      */
     @Override
-    public List<PermissionEntity> getPermissionListByUserId(String userId) {
+    public List<PermissionVo> getPermissionListByUserId(String userId) {
         UserEntity user = userMapper.selectById(userId);
         if (Objects.isNull(user)) {
             throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
@@ -211,7 +212,12 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
         Set<Integer> permissionIds = rolePermissionRelList.stream()
                 .map(RolePermissionRelEntity::getPermissionId).collect(Collectors.toSet());
-        return this.baseMapper.selectBatchIds(permissionIds);
+        List<PermissionEntity> list = this.baseMapper.selectBatchIds(permissionIds);
+        return list.stream().map(item -> {
+            PermissionVo permissionVo = new PermissionVo();
+            BeanUtils.copyProperties(item, permissionVo);
+            return permissionVo;
+        }).collect(Collectors.toList());
     }
 
     /**
