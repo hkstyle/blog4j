@@ -9,5 +9,5 @@ import com.blog4j.user.entity.OrganizationUserRelEntity;
  * @Description : 功能描述
  * @Create on : 2024/6/29 10:57
  **/
-public interface OrganizationUserRelService extends IService<OrganizationUserRelEntity>  {
+public interface OrganizationUserRelService extends IService<OrganizationUserRelEntity> {
 }

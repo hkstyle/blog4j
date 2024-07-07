@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blog4j.user.mapper.RolePermissionRelMapper">
+    <resultMap type="com.blog4j.user.entity.RolePermissionRelEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="permissionId" column="permission_id"/>
+    </resultMap>
+
+    <!-- 批量添加角色与权限的关系 -->
+    <insert id="batchSave">
+        insert into t_role_permission_rel(role_id, permission_id)
+        values
+        <foreach collection="permissionIds" item="permissionId" separator=",">
+            ( #{roleId}, #{permissionId} )
+        </foreach>
+    </insert>
+
+
+</mapper>

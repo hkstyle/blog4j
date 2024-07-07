@@ -23,8 +23,8 @@ public enum ErrorEnum {
      */
     USER_NOT_EXIST_ERROR(301, "用户不存在！"),
     INVALID_CAPTCHA_ERROR(302, "验证码非法！"),
-    ROLE_INFO_EMPTY_ERROR(303, "用户角色信息为空！"),
-    PERMISSION_INFO_EMPTY_ERROR(304, "用户权限信息为空！"),
+    ROLE_INFO_EMPTY_ERROR(303, "角色信息为空！"),
+    PERMISSION_INFO_EMPTY_ERROR(304, "权限信息为空！"),
     ORGANIZATION_INFO_EMPTY_ERROR(305, "组织信息为空！"),
     USERNAME_REPEAT_ERROR(306, "用户名称重复！"),
     PHONE_REPEAT_ERROR(307, "用户手机号码重复！"),
@@ -33,6 +33,8 @@ public enum ErrorEnum {
     ROLE_NAME_REPEAT_ERROR(310, "角色名称不能重复！"),
     ROLE_CODE_REPEAT_ERROR(311, "角色代码不能重复！"),
     ROLE_USED_ERROR(312, "角色被使用，不能删除！"),
+    PERMISSION_CODE_REPEAT_ERROR(313, "权限代码不能重复！"),
+    PERMISSION_NAME_REPEAT_ERROR(314, "权限名称不能重复！"),
 
     /**
      * OSS相关

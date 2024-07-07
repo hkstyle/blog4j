@@ -1,12 +1,17 @@
 package com.blog4j.user.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.util.List;
 
 /**
  * @author 98k灬
@@ -24,7 +29,7 @@ public class PermissionEntity {
     /**
      * 权限ID
      */
-    @TableId
+    @TableId(value = "permission_id", type = IdType.AUTO)
     private Integer permissionId;
 
     /**
@@ -51,4 +56,8 @@ public class PermissionEntity {
      * 创建时间
      */
     private String createTime;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @TableField(exist = false)
+    private List<PermissionEntity> children;
 }
