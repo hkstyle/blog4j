@@ -1,5 +1,6 @@
 package com.blog4j.auth.api;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.blog4j.auth.context.LoginContext;
 import com.blog4j.auth.service.AuthService;
@@ -10,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,5 +61,12 @@ public class ApiAuthController {
         ServletOutputStream out = response.getOutputStream();
         ImageIO.write(image, "jpg", out);
         IOUtils.closeQuietly(out);
+    }
+
+    @SaCheckLogin
+    @GetMapping("/logout/{userId}")
+    public Result logout(@PathVariable("userId") String userId) {
+        authService.logout(userId);
+        return Result.ok();
     }
 }

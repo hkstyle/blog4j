@@ -63,6 +63,16 @@ public class AuthServiceImpl implements AuthService {
         loginContext.setSaTokenInfo(tokenInfo);
     }
 
+    /**
+     * 退出登录
+     *
+     * @param userId 用户ID
+     */
+    @Override
+    public void logout(String userId) {
+        StpUtil.logout(userId);
+    }
+
     private UserInfoVo getUserInfo(LoginContext loginContext) {
         String userName = loginContext.getUserName();
         FResult result = userFeignService.getUserInfoByUserName(userName);

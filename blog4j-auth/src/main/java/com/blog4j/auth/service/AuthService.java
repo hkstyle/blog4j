@@ -15,4 +15,11 @@ public interface AuthService {
      * @param loginContext 登录信息
      */
     void login(LoginContext loginContext);
+
+    /**
+     * 退出登录
+     *
+     * @param userId 用户ID
+     */
+    void logout(String userId);
 }
