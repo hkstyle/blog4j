@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 /**
  * @author 98k灬
  * @version v1.0.0
- * @Description : 功能描述
+ * @Description : 组织与用户的关系信息
  * @Create on : 2024/6/30 16:45
  **/
 @Builder

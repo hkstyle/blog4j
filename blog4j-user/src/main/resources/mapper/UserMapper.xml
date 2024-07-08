@@ -27,9 +27,13 @@
             u.status as status,
             u.last_login_time as lastLoginTime,
             u.update_time as updateTime,
-            u.create_time as createTime
+            u.create_time as createTime,
+            o.organization_id as organizationId,
+            o.organization_name as organizationName
         from t_user u
         left join t_role r on u.role_id = r.role_id
+        left join t_organization_user_rel our on u.user_id = our.user_id
+        left join t_organization o on o.organization_id = our.organization_id
         where u.deleted = false
         <if test=" userName != null and userName != '' ">
             and u.user_name = #{userName}

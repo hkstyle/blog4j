@@ -62,4 +62,14 @@ public class UserListRespVo {
      * 创建时间
      */
     private String createTime;
+
+    /**
+     * 组织ID
+     */
+    private String organizationId;
+
+    /**
+     * 组织名称
+     */
+    private String organizationName;
 }
