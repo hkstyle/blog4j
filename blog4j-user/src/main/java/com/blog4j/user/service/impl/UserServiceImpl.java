@@ -185,13 +185,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         if (userIds.contains(currentLoginUserId)) {
             throw new Blog4jException(ErrorEnum.DELETE_CURRENT_LOGIN_ERROR);
         }
-        List<UserEntity> userList = userIds.stream().map(userId -> {
-            UserEntity user = this.baseMapper.selectById(userId);
-            if (Objects.isNull(user)) {
-                throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
-            }
-            return user;
-        }).collect(Collectors.toList());
+
+        List<UserEntity> userList = this.baseMapper.selectBatchIds(userIds);
+        if (CollectionUtil.size(userList) != CollectionUtil.size(userIds)) {
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
 
         // 不能删除超级管理员和组织管理员
         Set<String> roleIdSet = userList.stream().map(UserEntity::getRoleId).collect(Collectors.toSet());
@@ -203,8 +201,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 throw new Blog4jException(ErrorEnum.DELETE_ORGANIZATION_ADMIN_ERROR);
             }
         }
-
-
     }
 
     private UserEntity beforeUpdate(EditUserReqVo reqVo) {

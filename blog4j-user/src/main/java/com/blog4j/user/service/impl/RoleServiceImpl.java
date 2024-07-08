@@ -1,5 +1,6 @@
 package com.blog4j.user.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
@@ -117,11 +118,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity> impleme
 
     private void beforeDelete(DeleteRoleReqVo reqVo) {
         List<String> roleIds = reqVo.getRoleIds();
-        for (String roleId : roleIds) {
-            RoleEntity role = this.baseMapper.selectById(roleId);
-            if (Objects.isNull(role)) {
-                throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
-            }
+        List<RoleEntity> roleList = this.baseMapper.selectBatchIds(roleIds);
+        if (CollectionUtil.size(roleList) != CollectionUtil.size(roleIds)) {
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
         }
 
         LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<UserEntity>()
