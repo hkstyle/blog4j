@@ -67,6 +67,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         this.checkCategory(categoryId);
 
         LambdaQueryWrapper<ArticleEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(ArticleEntity::getCreateTime);
         if (StringUtils.isNotBlank(categoryId)) {
             wrapper.eq(ArticleEntity::getCategoryId, articleListReqVo.getCategoryId());
         }

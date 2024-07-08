@@ -8,11 +8,13 @@ import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
+import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,5 +75,17 @@ public class OrganizationController {
         }
         userService.create(reqVo);
         return Result.ok();
+    }
+
+    /**
+     * 根据组织ID查询组织信息
+     *
+     * @param organizationId 组织ID
+     * @return 组织信息
+     */
+    @GetMapping("/info/{organizationId}")
+    public Result info(@PathVariable("organizationId") String organizationId) {
+        OrganizationInfoRespVo respVo = organizationService.info(organizationId);
+        return Result.ok(respVo);
     }
 }

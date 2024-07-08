@@ -10,6 +10,7 @@ import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.service.OrganizationService;
+import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,5 +85,22 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
         return organizationUserRelEntityList.stream().map(OrganizationUserRelEntity::getUserId)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 根据组织ID查询组织信息
+     *
+     * @param organizationId 组织ID
+     * @return 组织信息
+     */
+    @Override
+    public OrganizationInfoRespVo info(String organizationId) {
+        OrganizationEntity organization = this.baseMapper.selectById(organizationId);
+        if (Objects.isNull(organization)) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+        }
+        OrganizationInfoRespVo respVo = new OrganizationInfoRespVo();
+        BeanUtils.copyProperties(organization, respVo);
+        return respVo;
     }
 }

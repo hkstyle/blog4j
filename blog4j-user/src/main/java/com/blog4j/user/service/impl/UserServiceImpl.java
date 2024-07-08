@@ -192,6 +192,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         // TODO 删除用户名下文章的评论
 
+        // TODO 如果该用户是某个组织下的  也要删除用户与组织的关系
+
         this.baseMapper.deleteBatchIds(reqVo.getUserIds());
     }
 
