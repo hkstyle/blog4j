@@ -70,4 +70,12 @@ public interface UserService extends IService<UserEntity> {
      * @param reqVo 请求信息
      */
     void updateUserLastLoginTime(EditUserLastLoginTimeReqVo reqVo);
+
+    /**
+     * 查询组织用户
+     *
+     * @param reqVo 查询条件
+     * @return 组织用户
+     */
+    List<UserListRespVo> organizationUserList(UserListReqVo reqVo);
 }

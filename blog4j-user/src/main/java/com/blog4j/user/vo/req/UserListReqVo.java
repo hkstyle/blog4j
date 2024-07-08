@@ -2,6 +2,7 @@ package com.blog4j.user.vo.req;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -33,4 +34,9 @@ public class UserListReqVo {
      * 状态
      */
     private Integer status;
+
+    /**
+     * 组织ID
+     */
+    private String organizationId;
 }

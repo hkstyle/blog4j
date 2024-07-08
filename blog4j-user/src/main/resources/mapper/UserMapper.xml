@@ -36,7 +36,10 @@
         left join t_organization o on o.organization_id = our.organization_id
         where u.deleted = false
         <if test=" userName != null and userName != '' ">
-            and u.user_name = #{userName}
+            and u.user_name like concat ('%', #{userName}, '%')
+        </if>
+        <if test=" organizationId != null and organizationId != '' ">
+            and o.organization_id = #{organizationId}
         </if>
         <if test=" status != null and status > 0 ">
             and u.status = #{status}

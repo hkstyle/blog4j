@@ -21,7 +21,10 @@ public interface UserMapper extends BaseMapper<UserEntity> {
      *
      * @param userName 用户名称
      * @param status 用户状态
+     * @param organizationId 组织ID
      * @return 用户列表
      */
-    List<UserListRespVo> userList(@Param("userName") String userName, @Param("status") Integer status);
+    List<UserListRespVo> userList(@Param("userName") String userName,
+                                  @Param("status") Integer status,
+                                  @Param("organizationId") String organizationId);
 }

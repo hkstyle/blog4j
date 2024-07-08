@@ -12,8 +12,10 @@ import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.UserService;
@@ -28,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +49,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private OrganizationUserRelMapper organizationUserRelMapper;
 
     /**
      * 根据用户名获取用户信息
@@ -113,7 +119,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Override
     public List<UserListRespVo> userList(UserListReqVo reqVo) {
         PageHelper.startPage(reqVo.getPageNo(), reqVo.getPageSize());
-        return this.baseMapper.userList(reqVo.getUserName(), reqVo.getStatus());
+        return this.baseMapper.userList(reqVo.getUserName(), reqVo.getStatus(), reqVo.getOrganizationId());
+    }
+
+    /**
+     * 查询组织用户
+     *
+     * @param reqVo 查询条件
+     * @return 组织用户
+     */
+    @Override
+    public List<UserListRespVo> organizationUserList(UserListReqVo reqVo) {
+        if (StringUtils.isBlank(reqVo.getOrganizationId())) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+        PageHelper.startPage(reqVo.getPageNo(), reqVo.getPageSize());
+        return this.baseMapper.userList(reqVo.getUserName(), reqVo.getStatus(), reqVo.getOrganizationId());
     }
 
     /**
@@ -121,17 +142,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
      *
      * @param reqVo 用户信息
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void create(CreateUserReqVo reqVo) {
         this.beforeCreate(reqVo);
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(reqVo, user);
-        user.setUserId(IdGeneratorSnowflakeUtil.snowflakeId())
+        String userId = IdGeneratorSnowflakeUtil.snowflakeId();
+        user.setUserId(userId)
                 .setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
                 .setPassword(RsaUtil.encrypt(PASSWORD))
                 .setStatus(UserStatusEnum.NORMAL.getCode());
         this.baseMapper.insert(user);
+
+        String organizationId = reqVo.getOrganizationId();
+        if (StringUtils.isNotBlank(organizationId)) {
+            // todo 不能超过组织最大容纳人数
+            OrganizationUserRelEntity organizationUserRel = OrganizationUserRelEntity.builder()
+                    .userId(userId)
+                    .organizationId(organizationId)
+                    .build();
+            organizationUserRelMapper.insert(organizationUserRel);
+        }
     }
 
     /**

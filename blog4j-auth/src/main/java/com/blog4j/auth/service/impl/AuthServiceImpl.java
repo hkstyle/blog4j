@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String captchaVal = (String) val;
-        if (!StringUtils.equals(captcha, captchaVal)) {
+        if (!StringUtils.equalsIgnoreCase(captcha, captchaVal)) {
             return false;
         }
 

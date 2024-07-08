@@ -45,3 +45,7 @@ sa-token:
   token-name: Authentication
   timeout: 86400
   is-concurrent: false
+
+logging:
+  level:
+    com.blog4j.user.mapper: debug

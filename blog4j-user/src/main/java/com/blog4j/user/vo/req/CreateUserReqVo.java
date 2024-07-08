@@ -35,4 +35,9 @@ public class CreateUserReqVo {
      */
     @NotBlank(message = "用户头像不能为空")
     private String avatar;
+
+    /**
+     * 组织ID
+     */
+    private String organizationId;
 }

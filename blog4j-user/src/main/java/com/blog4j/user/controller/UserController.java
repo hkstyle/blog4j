@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class UserController {
      */
     @SaCheckPermission(value = "USER:LIST")
     @PostMapping("/list")
-    public Result list(@RequestBody UserListReqVo reqVo) {
+    public Result list(@RequestBody @Valid UserListReqVo reqVo) {
         List<UserListRespVo> list = userService.userList(reqVo);
         return Result.ok(new PageInfo<>(list));
     }
@@ -67,7 +68,7 @@ public class UserController {
      */
     @SaCheckPermission(value = "USER:ADD")
     @PostMapping("/create")
-    public Result create(@RequestBody CreateUserReqVo reqVo) {
+    public Result create(@RequestBody @Valid CreateUserReqVo reqVo) {
         userService.create(reqVo);
         return Result.ok();
     }
