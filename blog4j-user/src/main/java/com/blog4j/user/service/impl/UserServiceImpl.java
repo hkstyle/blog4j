@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.enums.OrganizationStatusEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
@@ -12,9 +13,11 @@ import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
@@ -52,6 +55,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private OrganizationUserRelMapper organizationUserRelMapper;
+
+    @Autowired
+    private OrganizationMapper organizationMapper;
 
     /**
      * 根据用户名获取用户信息
@@ -158,12 +164,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         String organizationId = reqVo.getOrganizationId();
         if (StringUtils.isNotBlank(organizationId)) {
-            // todo 不能超过组织最大容纳人数
+            OrganizationEntity organization = organizationMapper.selectById(organizationId);
+            if (Objects.isNull(organization)) {
+                throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+            }
+
+            if (Objects.equals(OrganizationStatusEnum.LOCK.getCode(), organization.getStatus())) {
+                throw new Blog4jException(ErrorEnum.ORGANIZATION_LOCK_ERROR);
+            }
+
+            this.checkOrganizationCapacity(organization);
             OrganizationUserRelEntity organizationUserRel = OrganizationUserRelEntity.builder()
                     .userId(userId)
                     .organizationId(organizationId)
                     .build();
             organizationUserRelMapper.insert(organizationUserRel);
+        }
+    }
+
+    private void checkOrganizationCapacity(OrganizationEntity organization) {
+        // 获取该组织的最大容纳人数
+        int capacity = organization.getCapacity();
+        // 获取该组织名下已有的成员人数
+        LambdaQueryWrapper<OrganizationUserRelEntity> wrapper = new LambdaQueryWrapper<OrganizationUserRelEntity>()
+                .eq(OrganizationUserRelEntity::getOrganizationId, organization.getOrganizationId());
+        Integer count = organizationUserRelMapper.selectCount(wrapper);
+        if (count == capacity) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_MAX_CAPACITY_ERROR);
         }
     }
 

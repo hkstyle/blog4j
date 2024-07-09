@@ -12,6 +12,7 @@
         <result property="organizationAdmin" column="organization_admin"/>
         <result property="organizationAdminName" column="organization_admin_name"/>
         <result property="slogan" column="slogan"/>
+        <result property="status" column="status"/>
         <result property="capacity" column="capacity"/>
         <result property="deleted" column="deleted"/>
         <result property="updateTime" column="update_time"/>

@@ -64,4 +64,9 @@ public class OrganizationInfoRespVo {
      * 创建时间
      */
     private String createTime;
+
+    /**
+     * 组织状态
+     */
+    private Integer status;
 }

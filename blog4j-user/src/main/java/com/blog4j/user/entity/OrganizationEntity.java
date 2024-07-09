@@ -89,6 +89,11 @@ public class OrganizationEntity {
     private String updateTime;
 
     /**
+     * 组织状态(1:正常  2::锁定)
+     */
+    private Integer status;
+
+    /**
      * 创建时间
      */
     private String createTime;

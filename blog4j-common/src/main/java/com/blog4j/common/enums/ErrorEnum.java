@@ -36,6 +36,8 @@ public enum ErrorEnum {
     PERMISSION_CODE_REPEAT_ERROR(313, "权限代码不能重复！"),
     PERMISSION_NAME_REPEAT_ERROR(314, "权限名称不能重复！"),
     PASSWORD_ERROR(315, "密码错误！"),
+    ORGANIZATION_LOCK_ERROR(316, "组织已被锁定！"),
+    ORGANIZATION_MAX_CAPACITY_ERROR(317, "组织成员超出上限！"),
 
     /**
      * OSS相关
