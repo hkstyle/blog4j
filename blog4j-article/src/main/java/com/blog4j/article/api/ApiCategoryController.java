@@ -4,6 +4,7 @@ import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.common.model.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +23,9 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/api/category")
+@RequiredArgsConstructor
 public class ApiCategoryController {
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     /**
      * 获取文章分类信息列表

@@ -3,6 +3,7 @@ package com.blog4j.article.api;
 import com.blog4j.article.service.LabelService;
 import com.blog4j.article.vo.resp.LabelRespVo;
 import com.blog4j.common.model.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +20,9 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/api/label")
+@RequiredArgsConstructor
 public class ApiLabelController {
-    @Autowired
-    private LabelService labelService;
+    private final LabelService labelService;
 
     /**
      * 根据分类ID查询标签信息列表

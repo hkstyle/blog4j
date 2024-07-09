@@ -5,6 +5,7 @@ import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.article.vo.req.DeleteCategoryReqVo;
 import com.blog4j.common.model.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RequestMapping("/category")
 @RestController
+@RequiredArgsConstructor
 public class CategoryController {
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     /**
      * 删除分类信息

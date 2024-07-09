@@ -14,6 +14,7 @@ import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.blog4j.common.model.Result;
 import com.github.pagehelper.PageInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,9 +36,9 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/")
+@RequiredArgsConstructor
 public class ArticleController {
-    @Autowired
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
     /**
      * 获取文章列表(后台管理端)
