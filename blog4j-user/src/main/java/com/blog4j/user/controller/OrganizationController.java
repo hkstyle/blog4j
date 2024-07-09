@@ -7,6 +7,7 @@ import com.blog4j.common.model.Result;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
@@ -39,13 +40,15 @@ public class OrganizationController {
     private UserService userService;
 
     /**
-     * 获取所有的组织信息
+     * 组织列表查询
      *
-     * @return 组织信息
+     * @param reqVo 查询条件
+     * @return 组织列表
      */
-    @GetMapping("/list")
-    public Result list() {
-        return Result.ok(organizationService.list());
+    @PostMapping("/list")
+    public Result list(@RequestBody OrganizationListReqVo reqVo) {
+        List<OrganizationInfoRespVo> list = organizationService.organizationList(reqVo);
+        return Result.ok(new PageInfo<>(list));
     }
 
     /**

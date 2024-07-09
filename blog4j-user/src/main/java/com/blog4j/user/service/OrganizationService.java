@@ -3,6 +3,7 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
+import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 
 import java.util.List;
@@ -37,4 +38,12 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @return 组织信息
      */
     OrganizationInfoRespVo info(String organizationId);
+
+    /**
+     * 组织列表查询
+     *
+     * @param reqVo 查询条件
+     * @return 组织列表
+     */
+    List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo);
 }

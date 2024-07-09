@@ -56,6 +56,11 @@ public class OrganizationInfoRespVo {
     private String slogan;
 
     /**
+     * 组织状态
+     */
+    private Integer status;
+
+    /**
      * 更新时间
      */
     private String updateTime;
@@ -64,9 +69,4 @@ public class OrganizationInfoRespVo {
      * 创建时间
      */
     private String createTime;
-
-    /**
-     * 组织状态
-     */
-    private Integer status;
 }

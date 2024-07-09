@@ -1,5 +1,6 @@
 package com.blog4j.user.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
@@ -10,7 +11,10 @@ import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.service.OrganizationService;
+import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
+import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,5 +106,37 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         OrganizationInfoRespVo respVo = new OrganizationInfoRespVo();
         BeanUtils.copyProperties(organization, respVo);
         return respVo;
+    }
+
+    /**
+     * 组织列表查询
+     *
+     * @param reqVo 查询条件
+     * @return 组织列表
+     */
+    @Override
+    public List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
+        LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
+        if (Objects.nonNull(reqVo.getStatus())) {
+            wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
+        }
+
+        if (StringUtils.isNotBlank(reqVo.getOrganizationName())) {
+            wrapper.like(OrganizationEntity::getOrganizationName, reqVo.getOrganizationName());
+        }
+
+        if (Objects.nonNull(reqVo.getPageNo()) && Objects.nonNull(reqVo.getPageSize())) {
+            PageHelper.startPage(reqVo.getPageNo(), reqVo.getPageSize());
+        }
+
+        List<OrganizationEntity> organizationEntityList = this.baseMapper.selectList(wrapper);
+        if (CollectionUtil.isEmpty(organizationEntityList)) {
+            return null;
+        }
+        return organizationEntityList.stream().map(item -> {
+            OrganizationInfoRespVo respVo = new OrganizationInfoRespVo();
+            BeanUtils.copyProperties(item, respVo);
+            return respVo;
+        }).collect(Collectors.toList());
     }
 }
