@@ -7,6 +7,7 @@ import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
+import com.blog4j.common.vo.DeleteUserArticleVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -68,4 +69,11 @@ public interface ArticleService extends IService<ArticleEntity>  {
      * @param context 创建文章信息的上下文信息
      */
     void create(CreateArticleContext context);
+
+    /**
+     * 删除用户名下的文章信息
+     *
+     * @param vo 用户集合
+     */
+    void deleteUserArticle(DeleteUserArticleVo vo);
 }

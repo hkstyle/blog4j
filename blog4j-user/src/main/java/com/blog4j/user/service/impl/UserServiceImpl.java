@@ -4,19 +4,23 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.OrganizationStatusEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
+import com.blog4j.common.vo.DeleteUserArticleVo;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.feign.ArticleFeignService;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
@@ -58,6 +62,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private OrganizationMapper organizationMapper;
+
+    @Autowired
+    private ArticleFeignService articleFeignService;
 
     /**
      * 根据用户名获取用户信息
@@ -216,12 +223,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Override
     public void delete(DeleteUserReqVo reqVo) {
         this.beforeDelete(reqVo);
-        // TODO 删除用户名下的文章
-
-        // TODO 删除用户名下文章的评论
-
+        // 删除用户名下的文章
+        this.deleteUserArticle(reqVo);
+        // 删除用户的组织关系
         this.deleteOrganizationRel(reqVo);
-
         this.baseMapper.deleteBatchIds(reqVo.getUserIds());
     }
 
@@ -240,6 +245,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         user.setLastLoginTime(lastLoginTime);
         this.baseMapper.updateById(user);
+    }
+
+    private void deleteUserArticle(DeleteUserReqVo reqVo) {
+        List<String> userIds = reqVo.getUserIds();
+        FResult result = articleFeignService
+                .deleteUserArticle(DeleteUserArticleVo.builder().userIds(userIds).build());
+        Integer code = result.getCode();
+        String message = result.getMessage();
+        if (code != CommonConstant.SUCCESS_CODE) {
+            log.error("远程调用article模块, 删除用户名下的文章信息失败");
+            throw new Blog4jException(code, message);
+        }
     }
 
     private void deleteOrganizationRel(DeleteUserReqVo reqVo) {

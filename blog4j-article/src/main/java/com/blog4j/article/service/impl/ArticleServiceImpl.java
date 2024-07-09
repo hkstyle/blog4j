@@ -23,6 +23,7 @@ import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
+import com.blog4j.common.vo.DeleteUserArticleVo;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.common.vo.UserInfoVo;
 import com.github.pagehelper.PageHelper;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -256,7 +258,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         this.baseMapper.insert(article);
     }
 
+    /**
+     * 删除用户名下的文章信息
+     *
+     * @param vo 用户集合
+     */
+    @Override
+    public void deleteUserArticle(DeleteUserArticleVo vo) {
+        List<String> userIds = vo.getUserIds();
+        LambdaQueryWrapper<ArticleEntity> wrapper = new LambdaQueryWrapper<ArticleEntity>()
+                .in(ArticleEntity::getAuthorId, userIds);
+        List<ArticleEntity> articleList = this.baseMapper.selectList(wrapper);
+        if (CollectionUtil.isEmpty(articleList)) {
+            return;
+        }
+        Set<String> articleIds = articleList.stream()
+                .map(ArticleEntity::getArticleId).collect(Collectors.toSet());
+        this.baseMapper.deleteBatchIds(articleIds);
 
+        // TODO 删除评论
+    }
 
     // ------------------ private -------------------------------------------------------------
 
