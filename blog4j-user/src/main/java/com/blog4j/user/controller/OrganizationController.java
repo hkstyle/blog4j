@@ -1,13 +1,16 @@
 package com.blog4j.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
+import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
+import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
@@ -45,6 +48,7 @@ public class OrganizationController {
      * @param reqVo 查询条件
      * @return 组织列表
      */
+    @SaCheckPermission(value = "ORGANIZATION:LIST")
     @PostMapping("/list")
     public Result list(@RequestBody OrganizationListReqVo reqVo) {
         List<OrganizationInfoRespVo> list = organizationService.organizationList(reqVo);
@@ -73,6 +77,7 @@ public class OrganizationController {
     @SaCheckPermission(value = "ORGANIZATION:USER:ADD")
     @PostMapping("/createOrganizationUser")
     public Result createOrganizationUser(@RequestBody @Valid CreateUserReqVo reqVo) {
+        // todo 创建组织用户不是创建一个新用户  而是从已有用户中选择用户加入该组织
         if (StringUtils.isBlank(reqVo.getOrganizationId())) {
             throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
@@ -90,5 +95,46 @@ public class OrganizationController {
     public Result info(@PathVariable("organizationId") String organizationId) {
         OrganizationInfoRespVo respVo = organizationService.info(organizationId);
         return Result.ok(respVo);
+    }
+
+    /**
+     * 更新组织的状态
+     *
+     * @param status 状态
+     * @param organizationId 组织ID
+     * @return 更新成功
+     */
+    @SaCheckRole(value = "SUPER_ADMIN")
+    @GetMapping("/updateOrganizationStatus/{status}/{organizationId}")
+    public Result updateOrganizationStatus(@PathVariable("status") Integer status,
+                                           @PathVariable("organizationId") String organizationId) {
+        organizationService.updateOrganizationStatus(status, organizationId);
+        return Result.ok();
+    }
+
+    /**
+     * 删除组织信息
+     *
+     * @param reqVo 待删除的组织ID集合
+     * @return 删除成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:DELETE")
+    @PostMapping("/delete")
+    public Result delete(@RequestBody @Valid DeleteOrganizationReqVo reqVo) {
+        organizationService.delete(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 移除组织的用户
+     *
+     * @param reqVo 请求信息
+     * @return 移除成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:USER:DELETE")
+    @PostMapping("/removeOrganizationUser")
+    public Result removeOrganizationUser(@RequestBody @Valid RemoveOrganizationUserReqVo reqVo) {
+        organizationService.removeOrganizationUser(reqVo);
+        return Result.ok();
     }
 }

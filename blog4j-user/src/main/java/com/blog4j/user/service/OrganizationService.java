@@ -3,7 +3,9 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
+import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
+import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 
 import java.util.List;
@@ -46,4 +48,26 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @return 组织列表
      */
     List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo);
+
+    /**
+     * 更新组织的状态
+     *
+     * @param status 状态
+     * @param organizationId 组织ID
+     */
+    void updateOrganizationStatus(Integer status, String organizationId);
+
+    /**
+     * 删除组织信息
+     *
+     * @param reqVo 待删除的组织ID集合
+     */
+    void delete(DeleteOrganizationReqVo reqVo);
+
+    /**
+     * 移除组织的用户
+     *
+     * @param reqVo 请求信息
+     */
+    void removeOrganizationUser(RemoveOrganizationUserReqVo reqVo);
 }

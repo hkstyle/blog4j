@@ -4,23 +4,30 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.enums.OrganizationStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.service.OrganizationService;
+import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
+import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -132,12 +139,92 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
         List<OrganizationEntity> organizationEntityList = this.baseMapper.selectList(wrapper);
         if (CollectionUtil.isEmpty(organizationEntityList)) {
-            return null;
+            return new ArrayList<>();
         }
         return organizationEntityList.stream().map(item -> {
             OrganizationInfoRespVo respVo = new OrganizationInfoRespVo();
             BeanUtils.copyProperties(item, respVo);
             return respVo;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * 更新组织的状态
+     *
+     * @param status         状态
+     * @param organizationId 组织ID
+     */
+    @Override
+    public void updateOrganizationStatus(Integer status, String organizationId) {
+        if (!Objects.equals(status, OrganizationStatusEnum.LOCK.getCode()) &&
+                !Objects.equals(status, OrganizationStatusEnum.NORMAL.getCode())) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        OrganizationEntity organization = this.baseMapper.selectById(organizationId);
+        if (Objects.isNull(organization)) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+        }
+
+        organization.setStatus(status).setUpdateTime(CommonUtil.getCurrentDateTime());
+        this.baseMapper.updateById(organization);
+    }
+
+    /**
+     * 删除组织信息
+     *
+     * @param reqVo 待删除的组织ID集合
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(DeleteOrganizationReqVo reqVo) {
+        List<String> organizationIds = reqVo.getOrganizationIds();
+        // 删除这些组织下的用户的关系
+        LambdaQueryWrapper<OrganizationUserRelEntity> wrapper = new LambdaQueryWrapper<OrganizationUserRelEntity>()
+                .in(OrganizationUserRelEntity::getOrganizationId, organizationIds);
+        List<OrganizationUserRelEntity> organizationUserRelEntityList
+                = organizationUserRelMapper.selectList(wrapper);
+        if (CollectionUtil.isNotEmpty(organizationUserRelEntityList)) {
+            Set<Integer> ids = organizationUserRelEntityList.stream()
+                    .map(OrganizationUserRelEntity::getId).collect(Collectors.toSet());
+            organizationUserRelMapper.deleteBatchIds(ids);
+        }
+
+        this.baseMapper.deleteBatchIds(organizationIds);
+    }
+
+    /**
+     * 移除组织的用户
+     *
+     * @param reqVo 请求信息
+     */
+    @Override
+    public void removeOrganizationUser(RemoveOrganizationUserReqVo reqVo) {
+        String organizationId = reqVo.getOrganizationId();
+        List<String> userIds = reqVo.getUserIds();
+
+        OrganizationEntity organization = this.baseMapper.selectById(organizationId);
+        if (Objects.isNull(organization)) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+        }
+
+        if (Objects.equals(OrganizationStatusEnum.LOCK.getCode(), organization.getStatus())) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_LOCK_ERROR);
+        }
+
+        // 不能删除该组织的管理员
+        if (userIds.contains(organization.getOrganizationAdmin())) {
+            throw new Blog4jException(ErrorEnum.DELETE_ORGANIZATION_ADMIN_ERROR);
+        }
+
+        LambdaQueryWrapper<OrganizationUserRelEntity> wrapper = new LambdaQueryWrapper<OrganizationUserRelEntity>()
+                .eq(OrganizationUserRelEntity::getOrganizationId, organizationId)
+                .in(OrganizationUserRelEntity::getUserId, userIds);
+        List<OrganizationUserRelEntity> organizationUserRelEntityList = organizationUserRelMapper.selectList(wrapper);
+        if (CollectionUtil.isNotEmpty(organizationUserRelEntityList)) {
+            Set<Integer> ids = organizationUserRelEntityList.stream()
+                    .map(OrganizationUserRelEntity::getId).collect(Collectors.toSet());
+            organizationUserRelMapper.deleteBatchIds(ids);
+        }
     }
 }

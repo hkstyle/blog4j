@@ -180,6 +180,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 throw new Blog4jException(ErrorEnum.ORGANIZATION_LOCK_ERROR);
             }
 
+            // TODO 判断该用户加入了多少个组织  每个用户加入的组织数有限
             this.checkOrganizationCapacity(organization);
             OrganizationUserRelEntity organizationUserRel = OrganizationUserRelEntity.builder()
                     .userId(userId)

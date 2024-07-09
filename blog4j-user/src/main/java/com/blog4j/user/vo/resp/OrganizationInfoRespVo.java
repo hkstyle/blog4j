@@ -69,4 +69,9 @@ public class OrganizationInfoRespVo {
      * 创建时间
      */
     private String createTime;
+
+    /**
+     * 组织最大容纳人数
+     */
+    private Integer capacity;
 }
