@@ -212,6 +212,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
      *
      * @param reqVo 用户信息
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(DeleteUserReqVo reqVo) {
         this.beforeDelete(reqVo);
@@ -219,7 +220,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         // TODO 删除用户名下文章的评论
 
-        // TODO 如果该用户是某个组织下的  也要删除用户与组织的关系
+        this.deleteOrganizationRel(reqVo);
 
         this.baseMapper.deleteBatchIds(reqVo.getUserIds());
     }
@@ -239,6 +240,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         user.setLastLoginTime(lastLoginTime);
         this.baseMapper.updateById(user);
+    }
+
+    private void deleteOrganizationRel(DeleteUserReqVo reqVo) {
+        List<String> userIds = reqVo.getUserIds();
+        LambdaQueryWrapper<OrganizationUserRelEntity> wrapper = new LambdaQueryWrapper<OrganizationUserRelEntity>()
+                .in(OrganizationUserRelEntity::getUserId, userIds);
+        List<OrganizationUserRelEntity> organizationUserRelList
+                = organizationUserRelMapper.selectList(wrapper);
+        if (CollectionUtil.isEmpty(organizationUserRelList)) {
+            return;
+        }
+
+        Set<Integer> ids = organizationUserRelList.stream()
+                .map(OrganizationUserRelEntity::getId).collect(Collectors.toSet());
+        organizationUserRelMapper.deleteBatchIds(ids);
     }
 
     private void beforeDelete(DeleteUserReqVo reqVo) {
