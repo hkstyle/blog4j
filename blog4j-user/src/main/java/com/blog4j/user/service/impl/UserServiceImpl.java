@@ -168,38 +168,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 .setPassword(RsaUtil.encrypt(PASSWORD))
                 .setStatus(UserStatusEnum.NORMAL.getCode());
         this.baseMapper.insert(user);
-
-        String organizationId = reqVo.getOrganizationId();
-        if (StringUtils.isNotBlank(organizationId)) {
-            OrganizationEntity organization = organizationMapper.selectById(organizationId);
-            if (Objects.isNull(organization)) {
-                throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
-            }
-
-            if (Objects.equals(OrganizationStatusEnum.LOCK.getCode(), organization.getStatus())) {
-                throw new Blog4jException(ErrorEnum.ORGANIZATION_LOCK_ERROR);
-            }
-
-            // TODO 判断该用户加入了多少个组织  每个用户加入的组织数有限
-            this.checkOrganizationCapacity(organization);
-            OrganizationUserRelEntity organizationUserRel = OrganizationUserRelEntity.builder()
-                    .userId(userId)
-                    .organizationId(organizationId)
-                    .build();
-            organizationUserRelMapper.insert(organizationUserRel);
-        }
-    }
-
-    private void checkOrganizationCapacity(OrganizationEntity organization) {
-        // 获取该组织的最大容纳人数
-        int capacity = organization.getCapacity();
-        // 获取该组织名下已有的成员人数
-        LambdaQueryWrapper<OrganizationUserRelEntity> wrapper = new LambdaQueryWrapper<OrganizationUserRelEntity>()
-                .eq(OrganizationUserRelEntity::getOrganizationId, organization.getOrganizationId());
-        Integer count = organizationUserRelMapper.selectCount(wrapper);
-        if (count == capacity) {
-            throw new Blog4jException(ErrorEnum.ORGANIZATION_MAX_CAPACITY_ERROR);
-        }
     }
 
     /**

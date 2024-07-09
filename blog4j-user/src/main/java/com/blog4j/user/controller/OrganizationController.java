@@ -69,23 +69,6 @@ public class OrganizationController {
     }
 
     /**
-     * 创建组织用户信息
-     *
-     * @param reqVo 用户信息
-     * @return 创建成功
-     */
-    @SaCheckPermission(value = "ORGANIZATION:USER:ADD")
-    @PostMapping("/createOrganizationUser")
-    public Result createOrganizationUser(@RequestBody @Valid CreateUserReqVo reqVo) {
-        // todo 创建组织用户不是创建一个新用户  而是从已有用户中选择用户加入该组织
-        if (StringUtils.isBlank(reqVo.getOrganizationId())) {
-            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
-        }
-        userService.create(reqVo);
-        return Result.ok();
-    }
-
-    /**
      * 根据组织ID查询组织信息
      *
      * @param organizationId 组织ID
