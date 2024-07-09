@@ -117,6 +117,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     @Override
     public List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
         LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(OrganizationEntity::getStatus);
         if (Objects.nonNull(reqVo.getStatus())) {
             wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
         }
