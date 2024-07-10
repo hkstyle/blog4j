@@ -108,6 +108,11 @@ public class OrganizationEntity {
      */
     private String createTime;
 
+    /**
+     * 审批时间
+     */
+    private String approveTime;
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     private List<OrganizationEntity> children;

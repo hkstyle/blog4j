@@ -16,11 +16,14 @@ import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
+import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
+import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.OrganizationService;
+import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
@@ -54,6 +57,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     /**
      * 根据用户ID获取组织信息
@@ -136,7 +142,8 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     @Override
     public List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
         LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.orderByAsc(OrganizationEntity::getStatus);
+        wrapper.eq(OrganizationEntity::getStatus, OrganizationStatusEnum.NORMAL.getCode());
+        wrapper.eq(OrganizationEntity::getApproveStatus, OrganizationApproveStatus.PASS.getCode());
         if (Objects.nonNull(reqVo.getStatus())) {
             wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
         }
@@ -264,6 +271,57 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
                 .approveStatus(OrganizationApproveStatus.WAIT_APPROVE.getCode())
                 .build();
         this.baseMapper.insert(organization);
+    }
+
+    /**
+     * 审批组织
+     *
+     * @param reqVo 审批信息
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void approveOrganization(ApproveOrganizationReqVo reqVo) {
+        Integer approveStatus = reqVo.getApproveStatus();
+        String organizationId = reqVo.getOrganizationId();
+        String approveMessage = reqVo.getApproveMessage();
+
+        OrganizationEntity organization = this.baseMapper.selectById(organizationId);
+        if (Objects.isNull(organization)) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+        }
+
+        if (Objects.equals(approveStatus, OrganizationApproveStatus.PASS.getCode())) {
+            String organizationCreater = organization.getOrganizationCreater();
+            UserEntity user = userMapper.selectById(organizationCreater);
+            if (Objects.isNull(user)) {
+                throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+            }
+
+            LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<RoleEntity>()
+                    .eq(RoleEntity::getRoleCode, RoleEnum.ORGANIZATION_ADMIN.getDesc());
+            RoleEntity role = roleMapper.selectOne(wrapper);
+            if (Objects.isNull(role)) {
+                throw new Blog4jException(ErrorEnum.SYSTEM_ERROR);
+            }
+
+            user.setRoleId(role.getRoleId());
+            userMapper.updateById(user);
+
+            organization.setApproveStatus(approveStatus)
+                    .setApproveMessage(approveMessage)
+                    .setApproveTime(CommonUtil.getCurrentDateTime())
+                    .setUpdateTime(CommonUtil.getCurrentDateTime())
+                    .setOrganizationAdmin(organization.getOrganizationCreater())
+                    .setOrganizationAdminName(organization.getOrganizationCreaterName())
+                    .setStatus(OrganizationStatusEnum.NORMAL.getCode());
+        } else {
+            organization.setApproveStatus(approveStatus)
+                    .setApproveMessage(approveMessage)
+                    .setApproveTime(CommonUtil.getCurrentDateTime())
+                    .setUpdateTime(CommonUtil.getCurrentDateTime());
+        }
+        this.baseMapper.updateById(organization);
+
     }
 
     private UserEntity beforeCreate(CreateOrganizationReqVo reqVo) {

@@ -7,6 +7,7 @@ import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
+import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
@@ -132,6 +133,19 @@ public class OrganizationController {
     @PostMapping("/create")
     public Result create(@RequestBody @Valid CreateOrganizationReqVo reqVo) {
         organizationService.create(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 审批组织
+     *
+     * @param reqVo 审批信息
+     * @return 审批成功
+     */
+    @SaCheckRole(value = "SUPER_ADMIN")
+    @PostMapping("/approveOrganization")
+    public Result approveOrganization(@RequestBody @Valid ApproveOrganizationReqVo reqVo) {
+        organizationService.approveOrganization(reqVo);
         return Result.ok();
     }
 }
