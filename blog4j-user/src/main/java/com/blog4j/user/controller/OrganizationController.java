@@ -7,6 +7,7 @@ import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
+import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
@@ -118,6 +119,19 @@ public class OrganizationController {
     @PostMapping("/removeOrganizationUser")
     public Result removeOrganizationUser(@RequestBody @Valid RemoveOrganizationUserReqVo reqVo) {
         organizationService.removeOrganizationUser(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 创建组织信息
+     *
+     * @param reqVo 组织信息
+     * @return 创建成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:ADD")
+    @PostMapping("/create")
+    public Result create(@RequestBody @Valid CreateOrganizationReqVo reqVo) {
+        organizationService.create(reqVo);
         return Result.ok();
     }
 }

@@ -1,18 +1,27 @@
 package com.blog4j.user.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.enums.OrganizationApproveStatus;
 import com.blog4j.common.enums.OrganizationStatusEnum;
+import com.blog4j.common.enums.RoleEnum;
+import com.blog4j.common.enums.UserStatusEnum;
+import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
+import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
+import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.service.OrganizationService;
+import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
@@ -42,6 +51,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Autowired
     private OrganizationUserRelMapper organizationUserRelMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 根据用户ID获取组织信息
@@ -226,5 +238,65 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
                     .map(OrganizationUserRelEntity::getId).collect(Collectors.toSet());
             organizationUserRelMapper.deleteBatchIds(ids);
         }
+    }
+
+    /**
+     * 创建组织信息
+     *
+     * @param reqVo 组织信息
+     */
+    @Override
+    public void create(CreateOrganizationReqVo reqVo) {
+        UserEntity user = this.beforeCreate(reqVo);
+        OrganizationEntity organization = OrganizationEntity.builder()
+                .organizationId(IdGeneratorSnowflakeUtil.snowflakeId())
+                .capacity(reqVo.getCapacity())
+                .organizationName(reqVo.getOrganizationName())
+                .organizationAvatar(reqVo.getOrganizationAvatar())
+                .organizationCreater(user.getUserId())
+                .organizationCreaterAvatar(user.getAvatar())
+                .organizationCreaterName(user.getUserName())
+                .slogan(reqVo.getSlogan())
+                .status(OrganizationStatusEnum.LOCK.getCode())
+                .updateTime(CommonUtil.getCurrentDateTime())
+                .createTime(CommonUtil.getCurrentDateTime())
+                .deleted(YesOrNoEnum.NO.getCode())
+                .approveStatus(OrganizationApproveStatus.WAIT_APPROVE.getCode())
+                .build();
+        this.baseMapper.insert(organization);
+    }
+
+    private UserEntity beforeCreate(CreateOrganizationReqVo reqVo) {
+        String organizationName = reqVo.getOrganizationName();
+        LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<OrganizationEntity>()
+                .eq(OrganizationEntity::getOrganizationName, organizationName);
+        Integer count = this.baseMapper.selectCount(wrapper);
+        if (count > 0) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_NAME_REPEAT_ERROR);
+        }
+
+        // TODO 组织容纳人数校验
+
+        String userId = StpUtil.getLoginIdAsString();
+        UserEntity user = userMapper.selectById(userId);
+        if (Objects.isNull(user)) {
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
+
+        if (Objects.equals(user.getStatus(), UserStatusEnum.LOCK.getCode())) {
+            throw new Blog4jException(ErrorEnum.USER_LOCK_ERROR);
+        }
+
+        List<String> roleList = StpUtil.getRoleList();
+        String role = roleList.get(0);
+        if (!StringUtils.equals(RoleEnum.SUPER_ADMIN.getDesc(), role)) {
+            // 非超级管理员 一个用户只能创建一个组织
+            LambdaQueryWrapper<OrganizationEntity> wrapper1 = new LambdaQueryWrapper<OrganizationEntity>()
+                    .eq(OrganizationEntity::getOrganizationAdmin, userId);
+            if (this.baseMapper.selectCount(wrapper1) > 0) {
+                throw new Blog4jException(ErrorEnum.USER_ORGANIZATION_MAX_ERROR);
+            }
+        }
+        return user;
     }
 }

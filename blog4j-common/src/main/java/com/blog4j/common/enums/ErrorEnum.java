@@ -38,6 +38,9 @@ public enum ErrorEnum {
     PASSWORD_ERROR(315, "密码错误！"),
     ORGANIZATION_LOCK_ERROR(316, "组织已被锁定！"),
     ORGANIZATION_MAX_CAPACITY_ERROR(317, "组织成员超出上限！"),
+    ORGANIZATION_NAME_REPEAT_ERROR(318, "组织名称重复！"),
+    USER_LOCK_ERROR(319, "用户已被锁定！"),
+    USER_ORGANIZATION_MAX_ERROR(320, "用户创建组织的数量超出上限！"),
 
     /**
      * OSS相关

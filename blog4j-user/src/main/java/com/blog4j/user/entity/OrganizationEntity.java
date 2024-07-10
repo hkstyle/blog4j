@@ -94,6 +94,16 @@ public class OrganizationEntity {
     private Integer status;
 
     /**
+     * 组织审批状态(1: 待审批  2:审批通过 3:审批拒绝)
+     */
+    private Integer approveStatus;
+
+    /**
+     * 审批留言
+     */
+    private String approveMessage;
+
+    /**
      * 创建时间
      */
     private String createTime;

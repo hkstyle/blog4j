@@ -3,6 +3,7 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
+import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
@@ -70,4 +71,11 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @param reqVo 请求信息
      */
     void removeOrganizationUser(RemoveOrganizationUserReqVo reqVo);
+
+    /**
+     * 创建组织信息
+     *
+     * @param reqVo 组织信息
+     */
+    void create(CreateOrganizationReqVo reqVo);
 }
