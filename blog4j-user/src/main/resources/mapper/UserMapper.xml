@@ -9,7 +9,10 @@
         <result property="password" column="password"/>
         <result property="avatar" column="avatar"/>
         <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
         <result property="status" column="status"/>
+        <result property="address" column="address"/>
+        <result property="sex" column="sex"/>
         <result property="deleted" column="deleted"/>
         <result property="lastLoginTime" column="last_login_time"/>
         <result property="updateTime" column="update_time"/>
@@ -24,6 +27,9 @@
             r.role_name as roleName,
             u.avatar as avatar,
             u.phone as phone,
+            u.email as email,
+            u.address as address,
+            u.sex as sex,
             u.status as status,
             u.last_login_time as lastLoginTime,
             u.update_time as updateTime,

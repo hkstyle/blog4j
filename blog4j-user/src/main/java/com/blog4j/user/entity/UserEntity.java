@@ -49,6 +49,11 @@ public class UserEntity {
     private String phone;
 
     /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
      * 用户头像
      */
     private String avatar;
@@ -56,7 +61,17 @@ public class UserEntity {
     /**
      * 用户状态(1:正常 2:锁定)
      */
-    private int status;
+    private Integer status;
+
+    /**
+     * 性别(1:男  2:女 3:保密)
+     */
+    private Integer sex;
+
+    /**
+     * 地址
+     */
+    private String address;
 
     /**
      * 用户是否已删除(1:删除 0:未删除)

@@ -2,11 +2,11 @@ package com.blog4j.user.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
-import com.blog4j.common.enums.OrganizationStatusEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
@@ -16,7 +16,6 @@ import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.vo.DeleteUserArticleVo;
 import com.blog4j.common.vo.UserInfoVo;
-import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
@@ -25,6 +24,7 @@ import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
+import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
@@ -38,7 +38,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -59,9 +65,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private OrganizationUserRelMapper organizationUserRelMapper;
-
-    @Autowired
-    private OrganizationMapper organizationMapper;
 
     @Autowired
     private ArticleFeignService articleFeignService;
@@ -214,6 +217,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         user.setLastLoginTime(lastLoginTime);
         this.baseMapper.updateById(user);
+    }
+
+    /**
+     * 用户批量导入
+     *
+     * @param multipartFile 文件
+     * @return 解析之后的用户信息
+     */
+    @Override
+    public List<UserExcel> importUser(MultipartFile multipartFile) {
+        List<UserExcel> dataList;
+        try {
+            File file = convertMultipartFileToFile(multipartFile);
+            InputStream inputStream = Files.newInputStream(file.toPath());
+            dataList = EasyExcel.read(inputStream)
+                    .head(UserExcel.class)
+                    .sheet()
+                    .doReadSync();
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.UPLOAD_FILE_ERROR);
+        }
+        return dataList;
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(multipartFile.getBytes());
+        }
+        return file;
     }
 
     private void deleteUserArticle(DeleteUserReqVo reqVo) {

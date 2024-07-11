@@ -3,12 +3,14 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -78,4 +80,12 @@ public interface UserService extends IService<UserEntity> {
      * @return 组织用户
      */
     List<UserListRespVo> organizationUserList(UserListReqVo reqVo);
+
+    /**
+     * 用户批量导入
+     *
+     * @param multipartFile 文件
+     * @return 解析之后的用户信息
+     */
+    List<UserExcel> importUser(MultipartFile multipartFile);
 }

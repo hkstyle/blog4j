@@ -1,5 +1,6 @@
 package com.blog4j.oss.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * @author 98k灬
@@ -48,5 +52,17 @@ public class OssController {
     public Result delete(@RequestParam String filePath) {
         ossService.delete(filePath);
         return Result.ok();
+    }
+
+    /**
+     * 下载用户导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    @SaCheckLogin
+    @GetMapping("/downloadUserImportTemplate")
+    public Result downloadUserImportTemplate() {
+        String path = ossService.downloadUserImportTemplate();
+        return Result.ok(path);
     }
 }

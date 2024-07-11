@@ -5,6 +5,7 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.comm.ResponseMessage;
+import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectResult;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
@@ -17,6 +18,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -111,5 +117,20 @@ public class OssServiceImpl implements OssService {
                 ossClient.shutdown();
             }
         }
+    }
+
+    /**
+     * 下载用户导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    @Override
+    public String downloadUserImportTemplate() {
+
+
+        // TODO 从系统服务获取 判断每个用户每天下载的次数
+        return "https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/20240711/user_import_template.xlsx";
+
+
     }
 }

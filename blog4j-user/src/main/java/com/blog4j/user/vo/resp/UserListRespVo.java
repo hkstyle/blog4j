@@ -46,7 +46,17 @@ public class UserListRespVo {
     /**
      * 用户状态(1:正常 2:锁定)
      */
-    private int status;
+    private Integer status;
+
+    /**
+     * 性别
+     */
+    private Integer sex;
+
+    /**
+     * 地址
+     */
+    private String address;
 
     /**
      * 用户最后一次登录时间

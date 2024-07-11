@@ -2,6 +2,8 @@ package com.blog4j.oss.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author 98k灬
  * @version v1.0.0
@@ -23,4 +25,11 @@ public interface OssService {
      * @param filePath 文件路径
      */
     void delete(String filePath);
+
+    /**
+     * 下载用户导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    String downloadUserImportTemplate();
 }
