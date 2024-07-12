@@ -35,8 +35,6 @@ public class ImportUserExcelListener implements ReadListener<UserExcel> {
 
     @Override
     public void invoke(UserExcel userExcel, AnalysisContext context) {
-        /*ReadRowHolder readRowHolder = context.readRowHolder();
-        Integer rowIndex = readRowHolder.getRowIndex();*/
         IMPORT_COUNT++;
         log.info("解析到一条数据:{}", JSON.toJSONString(userExcel));
         String errMsg = this.checkUserExcelData(userExcel);
