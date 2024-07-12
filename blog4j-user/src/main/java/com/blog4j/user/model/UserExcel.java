@@ -1,5 +1,6 @@
 package com.blog4j.user.model;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.blog4j.user.converter.UserSexConverter;
 import lombok.Data;
@@ -26,4 +27,10 @@ public class UserExcel {
 
     @ExcelProperty("地址")
     private String address;
+
+    /**
+     * 错误信息
+     */
+    @ExcelIgnore
+    private String errMsg;
 }

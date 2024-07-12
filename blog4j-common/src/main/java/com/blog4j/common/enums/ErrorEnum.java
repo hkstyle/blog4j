@@ -13,6 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorEnum {
     SYSTEM_ERROR(100, "系统异常！"),
+    IO_ERROR(101, "IO异常！"),
 
     INVALID_PARAMETER_ERROR(300, "参数非法！"),
     NO_PERMISSION_ERROR(403, "权限不足，请联系管理员！"),
@@ -41,6 +42,7 @@ public enum ErrorEnum {
     ORGANIZATION_NAME_REPEAT_ERROR(318, "组织名称重复！"),
     USER_LOCK_ERROR(319, "用户已被锁定！"),
     USER_ORGANIZATION_MAX_ERROR(320, "用户创建组织的数量超出上限！"),
+    IMPORT_USER_MAX_COUNT_ERROR(321, "导入用户条数超出上限！"),
 
     /**
      * OSS相关

@@ -3,6 +3,7 @@ package com.blog4j.user.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.constants.CommonConstant;
@@ -11,6 +12,7 @@ import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
+import com.blog4j.common.model.Result;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
@@ -20,6 +22,7 @@ import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.feign.ArticleFeignService;
+import com.blog4j.user.listener.ImportUserExcelListener;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
@@ -45,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -227,16 +231,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
      */
     @Override
     public List<UserExcel> importUser(MultipartFile multipartFile) {
-        List<UserExcel> dataList;
+        List<UserExcel> dataList = new ArrayList<>();
         try {
             File file = convertMultipartFileToFile(multipartFile);
             InputStream inputStream = Files.newInputStream(file.toPath());
-            dataList = EasyExcel.read(inputStream)
-                    .head(UserExcel.class)
-                    .sheet()
+            dataList = EasyExcel.read(inputStream, UserExcel.class, new ImportUserExcelListener(dataList))
+                    .headRowNumber(1)
+                    .sheet(0)
                     .doReadSync();
-        } catch (Exception exception) {
-            throw new Blog4jException(ErrorEnum.UPLOAD_FILE_ERROR);
+        } catch (IOException ioException) {
+            throw new Blog4jException(ErrorEnum.IO_ERROR);
         }
         return dataList;
     }
