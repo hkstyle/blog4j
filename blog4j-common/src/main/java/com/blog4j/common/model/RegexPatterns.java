@@ -3,7 +3,7 @@ package com.blog4j.common.model;
 /**
  * @author 98k灬
  * @version v1.0.0
- * @Description : 功能描述
+ * @Description : 正则表达式
  * @Create on : 2024/7/12 12:47
  **/
 public class RegexPatterns {
