@@ -25,6 +25,7 @@
             u.user_id as userId,
             u.user_name as userName,
             r.role_name as roleName,
+            r.role_id as roleId,
             u.avatar as avatar,
             u.phone as phone,
             u.email as email,

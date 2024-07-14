@@ -26,14 +26,14 @@ public class UserInfoVo implements Serializable {
     private String userId;
 
     /**
+     * 角色名称
+     */
+    private String roleName;
+
+    /**
      * 角色ID
      */
     private String roleId;
-
-    /**
-     * 角色代码描述
-     */
-    private String roleCode;
 
     /**
      * 用户名
@@ -41,14 +41,19 @@ public class UserInfoVo implements Serializable {
     private String userName;
 
     /**
-     * 用户密码
+     * 角色代码
      */
-    private String password;
+    private String roleCode;
 
     /**
      * 用户手机号码
      */
     private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
 
     /**
      * 用户头像
@@ -58,7 +63,17 @@ public class UserInfoVo implements Serializable {
     /**
      * 用户状态(1:正常 2:锁定)
      */
-    private int status;
+    private Integer status;
+
+    /**
+     * 性别
+     */
+    private Integer sex;
+
+    /**
+     * 地址
+     */
+    private String address;
 
     /**
      * 用户最后一次登录时间
@@ -74,4 +89,14 @@ public class UserInfoVo implements Serializable {
      * 创建时间
      */
     private String createTime;
+
+    /**
+     * 组织ID
+     */
+    private String organizationId;
+
+    /**
+     * 组织名称
+     */
+    private String organizationName;
 }

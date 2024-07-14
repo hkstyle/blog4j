@@ -29,6 +29,11 @@ public class UserListRespVo {
     private String roleName;
 
     /**
+     * 角色ID
+     */
+    private String roleId;
+
+    /**
      * 用户名
      */
     private String userName;
@@ -37,6 +42,11 @@ public class UserListRespVo {
      * 用户手机号码
      */
     private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
 
     /**
      * 用户头像

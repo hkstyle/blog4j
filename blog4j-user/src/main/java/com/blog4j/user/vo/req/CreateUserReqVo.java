@@ -1,7 +1,9 @@
 package com.blog4j.user.vo.req;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -16,7 +18,6 @@ public class CreateUserReqVo {
     /**
      * 角色ID
      */
-    @NotBlank(message = "用户角色不能为空")
     private String roleId;
 
     /**
@@ -40,4 +41,26 @@ public class CreateUserReqVo {
      * 组织ID
      */
     private String organizationId;
+
+    /**
+     * 邮箱
+     */
+    @Email(message = "邮箱不合法")
+    private String email;
+
+    /**
+     * 状态
+     */
+    @Range(min = 1, max = 2)
+    private Integer status;
+
+    /**
+     * 地址
+     */
+    private String address;
+
+    /**
+     * 性别
+     */
+    private Integer sex;
 }

@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
+import com.blog4j.common.enums.UserSexEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
+import com.blog4j.common.utils.ValidateUtil;
 import com.blog4j.common.vo.DeleteUserArticleVo;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
@@ -118,11 +120,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         RoleEntity roleEntity = roleMapper.selectById(userEntity.getRoleId());
         UserInfoVo userInfoVo = new UserInfoVo();
-        userInfoVo.setUserId(userId)
-                .setUserName(userEntity.getUserName())
-                .setAvatar(userEntity.getAvatar())
-                .setRoleCode(roleEntity.getRoleCode())
-                .setPhone(userEntity.getPhone())
+        BeanUtils.copyProperties(userEntity, userInfoVo);
+        userInfoVo.setRoleCode(roleEntity.getRoleCode())
+                .setRoleName(roleEntity.getRoleName())
                 .setRoleId(userEntity.getRoleId());
         return userInfoVo;
     }
@@ -171,6 +171,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 .setCreateTime(CommonUtil.getCurrentDateTime())
                 .setPassword(RsaUtil.encrypt(PASSWORD))
                 .setStatus(UserStatusEnum.NORMAL.getCode());
+        if (StringUtils.isBlank(reqVo.getRoleId())) {
+            LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<RoleEntity>()
+                    .eq(RoleEntity::getRoleCode, RoleEnum.VISITOR.getDesc());
+            RoleEntity role = roleMapper.selectOne(wrapper);
+            if (Objects.isNull(role)) {
+                throw new Blog4jException(ErrorEnum.SYSTEM_ERROR);
+            }
+            user.setRoleId(role.getRoleId());
+        }
         this.baseMapper.insert(user);
     }
 
@@ -330,10 +339,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         // 角色是否合法
-        RoleEntity role = roleMapper.selectById(reqVo.getRoleId());
-        if (Objects.isNull(role)) {
-            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        if (StringUtils.isNotBlank(reqVo.getRoleId())) {
+            RoleEntity role = roleMapper.selectById(reqVo.getRoleId());
+            if (Objects.isNull(role)) {
+                throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+            }
         }
+
+        if (StringUtils.isNotBlank(reqVo.getPhone()) && !ValidateUtil.isValidMobile(reqVo.getPhone())) {
+            throw new Blog4jException(ErrorEnum.PHONE_ERROR);
+        }
+
+        Integer sex = reqVo.getSex();
+        if (Objects.nonNull(sex)) {
+            if (!Objects.equals(sex, UserSexEnum.MAN.getCode()) &&
+                    !Objects.equals(sex, UserSexEnum.WOMAN.getCode()) &&
+                    !Objects.equals(sex, UserSexEnum.SECRET.getCode())) {
+                throw new Blog4jException(ErrorEnum.SEX_ERROR);
+            }
+        }
+
         return user;
     }
 
@@ -354,9 +379,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             }
         }
 
-        RoleEntity role = roleMapper.selectById(reqVo.getRoleId());
-        if (Objects.isNull(role)) {
-            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        // 角色是否合法
+        if (StringUtils.isNotBlank(reqVo.getRoleId())) {
+            RoleEntity role = roleMapper.selectById(reqVo.getRoleId());
+            if (Objects.isNull(role)) {
+                throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+            }
+        }
+
+        if (StringUtils.isNotBlank(reqVo.getPhone()) && !ValidateUtil.isValidMobile(reqVo.getPhone())) {
+            throw new Blog4jException(ErrorEnum.PHONE_ERROR);
+        }
+
+        Integer sex = reqVo.getSex();
+        if (Objects.nonNull(sex)) {
+            if (!Objects.equals(sex, UserSexEnum.MAN.getCode()) &&
+                    !Objects.equals(sex, UserSexEnum.WOMAN.getCode()) &&
+                    !Objects.equals(sex, UserSexEnum.SECRET.getCode())) {
+                throw new Blog4jException(ErrorEnum.SEX_ERROR);
+            }
         }
     }
 
