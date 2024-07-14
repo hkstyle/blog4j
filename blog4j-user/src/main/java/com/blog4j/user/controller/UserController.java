@@ -6,6 +6,7 @@ import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.UserService;
+import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
@@ -113,5 +114,18 @@ public class UserController {
     public Result importUser(@RequestParam("file") MultipartFile file) {
         List<UserExcel> list = userService.importUser(file);
         return Result.ok(list);
+    }
+
+    /**
+     * 批量创建用户信息
+     *
+     * @param reqVo 用户信息
+     * @return 创建成功
+     */
+    @SaCheckPermission(value = "USER:ADD")
+    @PostMapping("/batchCreate")
+    public Result batchCreate(@RequestBody @Valid BatchCreateUserReqVo reqVo) {
+        userService.batchCreate(reqVo);
+        return Result.ok();
     }
 }

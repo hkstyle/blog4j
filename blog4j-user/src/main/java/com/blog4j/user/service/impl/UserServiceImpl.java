@@ -10,6 +10,7 @@ import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserSexEnum;
 import com.blog4j.common.enums.UserStatusEnum;
+import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
@@ -28,6 +29,7 @@ import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.UserService;
+import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
@@ -162,6 +164,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void create(CreateUserReqVo reqVo) {
+        this.baseMapper.insert(this.createUser(reqVo));
+    }
+
+    private UserEntity createUser(CreateUserReqVo reqVo) {
         this.beforeCreate(reqVo);
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(reqVo, user);
@@ -170,6 +176,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                 .setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
                 .setPassword(RsaUtil.encrypt(PASSWORD))
+                .setDeleted(YesOrNoEnum.NO.getCode())
                 .setStatus(UserStatusEnum.NORMAL.getCode());
         if (StringUtils.isBlank(reqVo.getRoleId())) {
             LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<RoleEntity>()
@@ -180,7 +187,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             }
             user.setRoleId(role.getRoleId());
         }
-        this.baseMapper.insert(user);
+
+        if (StringUtils.isBlank(reqVo.getAvatar())) {
+            // TODO 默认头像从系统服务获取
+            user.setAvatar("https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/20240706/a033e2f1be.jpg");
+        }
+        return user;
     }
 
     /**
@@ -249,6 +261,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             throw new Blog4jException(ErrorEnum.IO_ERROR);
         }
         return dataList;
+    }
+
+    /**
+     * 批量创建用户信息
+     *
+     * @param reqVo 用户信息
+     */
+    @Override
+    public void batchCreate(BatchCreateUserReqVo reqVo) {
+        List<CreateUserReqVo> list = reqVo.getList();
+        List<UserEntity> userList = list.stream().map(item -> {
+            CreateUserReqVo userReqVo = new CreateUserReqVo();
+            BeanUtils.copyProperties(item, userReqVo);
+            return this.createUser(userReqVo);
+        }).collect(Collectors.toList());
+        this.baseMapper.batchInsert(userList);
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {

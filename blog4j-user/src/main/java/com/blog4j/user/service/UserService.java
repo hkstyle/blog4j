@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.model.UserExcel;
+import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
@@ -88,4 +89,11 @@ public interface UserService extends IService<UserEntity> {
      * @return 解析之后的用户信息
      */
     List<UserExcel> importUser(MultipartFile multipartFile);
+
+    /**
+     * 批量创建用户信息
+     *
+     * @param reqVo 用户信息
+     */
+    void batchCreate(BatchCreateUserReqVo reqVo);
 }

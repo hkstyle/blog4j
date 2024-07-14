@@ -19,6 +19,20 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
+    <!-- 批量保存用户信息 -->
+    <insert id="batchInsert">
+        insert into t_user (user_id, role_id, user_name,
+                            password, avatar, phone, email,
+                            status, address, sex, deleted,
+                            last_login_time, update_time, create_time)
+        values
+        <foreach collection="userList" item="user" separator=",">
+            (#{user.userId}, #{user.roleId}, #{user.userName}, #{user.password}, #{user.avatar},
+             #{user.phone}, #{user.email}, #{user.status}, #{user.address}, #{user.sex},
+             #{user.deleted}, #{user.lastLoginTime}, #{user.updateTime}, #{user.createTime})
+        </foreach>
+    </insert>
+
     <!-- 查询用户列表 -->
     <select id="userList" resultType="com.blog4j.user.vo.resp.UserListRespVo">
         select
