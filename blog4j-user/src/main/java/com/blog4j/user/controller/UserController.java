@@ -10,6 +10,7 @@ import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
+import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageInfo;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -127,5 +129,17 @@ public class UserController {
     public Result batchCreate(@RequestBody @Valid BatchCreateUserReqVo reqVo) {
         userService.batchCreate(reqVo);
         return Result.ok();
+    }
+
+    /**
+     * 用户导出
+     *
+     * @param exportUserReqVo 用户ID
+     */
+    @SaCheckPermission(value = "USER:EXPORT")
+    @PostMapping("/exportUser")
+    public void exportUser(@RequestBody @Valid ExportUserReqVo exportUserReqVo,
+                           HttpServletResponse response) {
+        userService.exportUser(exportUserReqVo, response);
     }
 }

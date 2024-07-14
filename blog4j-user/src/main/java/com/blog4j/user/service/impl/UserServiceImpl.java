@@ -3,6 +3,9 @@ package com.blog4j.user.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.constants.CommonConstant;
@@ -34,9 +37,11 @@ import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
 import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
+import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +49,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -277,6 +286,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             return this.createUser(userReqVo);
         }).collect(Collectors.toList());
         this.baseMapper.batchInsert(userList);
+    }
+
+    /**
+     * 用户导出
+     *
+     * @param exportUserReqVo 用户ID
+     */
+    @Override
+    public void exportUser(ExportUserReqVo exportUserReqVo, HttpServletResponse response) {
+        List<UserEntity> userList = this.baseMapper.selectBatchIds(exportUserReqVo.getUserIds());
+        if (CollectionUtil.isEmpty(userList)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        List<UserExcel> userExcelList = userList.stream().map(item -> {
+            UserExcel userExcel = new UserExcel();
+            BeanUtils.copyProperties(item, userExcel);
+            return userExcel;
+        }).collect(Collectors.toList());
+        ServletOutputStream outputStream;
+        try {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding(CharEncoding.UTF_8);
+            outputStream = response.getOutputStream();
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.EXPORT_USER_ERROR);
+        }
+        EasyExcel.write(outputStream)
+                .head(UserExcel.class)
+                .excelType(ExcelTypeEnum.XLSX)
+                .sheet()
+                .doWrite(userExcelList);
+
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {

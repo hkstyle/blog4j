@@ -44,7 +44,8 @@ public enum ErrorEnum {
     USER_ORGANIZATION_MAX_ERROR(320, "用户创建组织的数量超出上限！"),
     IMPORT_USER_MAX_COUNT_ERROR(321, "导入用户条数超出上限！"),
     PHONE_ERROR(322, "手机号码不合法！"),
-    SEX_ERROR(322, "性别不合法！"),
+    SEX_ERROR(323, "性别不合法！"),
+    EXPORT_USER_ERROR(324, "用户信息导出失败！"),
 
     /**
      * OSS相关
