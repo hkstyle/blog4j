@@ -17,6 +17,7 @@ import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.utils.ExcelUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.utils.ValidateUtil;
@@ -82,6 +83,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private ArticleFeignService articleFeignService;
+
+    @Autowired
+    private ExcelUtil excelUtil;
 
     /**
      * 根据用户名获取用户信息
@@ -305,20 +309,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             BeanUtils.copyProperties(item, userExcel);
             return userExcel;
         }).collect(Collectors.toList());
-        ServletOutputStream outputStream;
+        String path = excelUtil.export(userExcelList, UserExcel.class, "用户信息");
         try {
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding(CharEncoding.UTF_8);
-            outputStream = response.getOutputStream();
+            ExcelUtil.exportExcel(response, path);
         } catch (Exception exception) {
             throw new Blog4jException(ErrorEnum.EXPORT_USER_ERROR);
         }
-        EasyExcel.write(outputStream)
-                .head(UserExcel.class)
-                .excelType(ExcelTypeEnum.XLSX)
-                .sheet()
-                .doWrite(userExcelList);
-
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {

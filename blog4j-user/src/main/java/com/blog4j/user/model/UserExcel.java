@@ -2,6 +2,7 @@ package com.blog4j.user.model;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.blog4j.user.converter.UserSexConverter;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import lombok.Data;
  * @Description : 功能描述
  * @Create on : 2024/7/11 21:12
  **/
+@ColumnWidth(40)
 @Data
 public class UserExcel {
     @ExcelProperty("用户名称")
