@@ -15,14 +15,15 @@ public enum OrganizationStatusEnum {
     /**
      * 正常
      */
-    NORMAL(1),
+    NORMAL(1, "正常"),
 
     /**
      * 锁定
      */
-    LOCK(2),
+    LOCK(2, "锁定"),
 
         ;
 
     private final int code;
+    private final String desc;
 }

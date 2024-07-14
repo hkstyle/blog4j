@@ -6,10 +6,12 @@ import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
+import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -86,4 +88,12 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @param reqVo 审批信息
      */
     void approveOrganization(ApproveOrganizationReqVo reqVo);
+
+    /**
+     * 组织导出
+     *
+     * @param exportOrganizationReqVo 组织ID
+     * @param response 响应
+     */
+    void exportOrganization(ExportOrganizationReqVo exportOrganizationReqVo, HttpServletResponse response);
 }

@@ -15,18 +15,19 @@ public enum OrganizationApproveStatus {
     /**
      * 待审批
      */
-    WAIT_APPROVE(1),
+    WAIT_APPROVE(1, "待审批"),
 
     /**
      * 审批通过
      */
-    PASS(2),
+    PASS(2, "审批通过"),
 
     /**
      * 审批拒绝
      */
-    REJECT(3),
+    REJECT(3, "审批拒绝"),
     ;
 
     private final int code;
+    private final String desc;
 }

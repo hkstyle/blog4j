@@ -46,6 +46,7 @@ public enum ErrorEnum {
     PHONE_ERROR(322, "手机号码不合法！"),
     SEX_ERROR(323, "性别不合法！"),
     EXPORT_USER_ERROR(324, "用户信息导出失败！"),
+    EXPORT_ORGANIZATION_ERROR(325, "组织信息导出失败！"),
 
     /**
      * OSS相关

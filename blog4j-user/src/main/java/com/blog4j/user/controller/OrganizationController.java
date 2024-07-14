@@ -11,6 +11,8 @@ import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
+import com.blog4j.user.vo.req.ExportOrganizationReqVo;
+import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -147,5 +150,18 @@ public class OrganizationController {
     public Result approveOrganization(@RequestBody @Valid ApproveOrganizationReqVo reqVo) {
         organizationService.approveOrganization(reqVo);
         return Result.ok();
+    }
+
+    /**
+     * 组织导出
+     *
+     * @param exportOrganizationReqVo 组织ID
+     * @param response 响应
+     */
+    @SaCheckPermission(value = "ORGANIZATION:EXPORT")
+    @PostMapping("/exportOrganization")
+    public void exportOrganization(@RequestBody @Valid ExportOrganizationReqVo exportOrganizationReqVo,
+                           HttpServletResponse response) {
+        organizationService.exportOrganization(exportOrganizationReqVo, response);
     }
 }

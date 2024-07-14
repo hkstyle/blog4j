@@ -12,6 +12,7 @@ import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.utils.ExcelUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
@@ -22,10 +23,13 @@ import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
+import com.blog4j.user.model.ExportOrganizationExcel;
+import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
+import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
@@ -36,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -60,6 +65,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private ExcelUtil excelUtil;
 
     /**
      * 根据用户ID获取组织信息
@@ -322,6 +330,34 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         }
         this.baseMapper.updateById(organization);
 
+    }
+
+    /**
+     * 组织导出
+     *
+     * @param exportOrganizationReqVo 组织ID
+     * @param response 响应
+     */
+    @Override
+    public void exportOrganization(ExportOrganizationReqVo exportOrganizationReqVo, HttpServletResponse response) {
+        List<String> organizationIds = exportOrganizationReqVo.getOrganizationIds();
+        List<OrganizationEntity> organizationList = this.baseMapper.selectBatchIds(organizationIds);
+        if (CollectionUtil.isEmpty(organizationList)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        List<ExportOrganizationExcel> excelList = organizationList.stream().map(item -> {
+            ExportOrganizationExcel excel = new ExportOrganizationExcel();
+            BeanUtils.copyProperties(item, excel);
+            return excel;
+        }).collect(Collectors.toList());
+
+        String path = excelUtil.export(excelList, ExportOrganizationExcel.class, "组织信息");
+        try {
+            ExcelUtil.exportExcel(response, path);
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.EXPORT_ORGANIZATION_ERROR);
+        }
     }
 
     private UserEntity beforeCreate(CreateOrganizationReqVo reqVo) {
