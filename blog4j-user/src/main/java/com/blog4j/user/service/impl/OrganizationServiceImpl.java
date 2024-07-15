@@ -151,8 +151,6 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     @Override
     public List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
         LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(OrganizationEntity::getStatus, OrganizationStatusEnum.NORMAL.getCode());
-        wrapper.eq(OrganizationEntity::getApproveStatus, OrganizationApproveStatus.PASS.getCode());
         if (Objects.nonNull(reqVo.getStatus())) {
             wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
         }
@@ -306,15 +304,26 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
                 throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
             }
 
-            LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<RoleEntity>()
-                    .eq(RoleEntity::getRoleCode, RoleEnum.ORGANIZATION_ADMIN.getDesc());
-            RoleEntity role = roleMapper.selectOne(wrapper);
-            if (Objects.isNull(role)) {
-                throw new Blog4jException(ErrorEnum.SYSTEM_ERROR);
+            // 组织创建者的角色ID
+            String roleId = user.getRoleId();
+            RoleEntity roleEntity = roleMapper.selectById(roleId);
+            if (Objects.isNull(roleEntity)) {
+                throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
             }
 
-            user.setRoleId(role.getRoleId());
-            userMapper.updateById(user);
+            // 当组织创建者不是超级管理员也不是组织管理员  将该用户的角色升级为组织管理员
+            if (!StringUtils.equals(roleEntity.getRoleCode(), RoleEnum.SUPER_ADMIN.getDesc())
+                && !StringUtils.equals(roleEntity.getRoleCode(), RoleEnum.ORGANIZATION_ADMIN.getDesc())  ) {
+                LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<RoleEntity>()
+                        .eq(RoleEntity::getRoleCode, RoleEnum.ORGANIZATION_ADMIN.getDesc());
+                RoleEntity role = roleMapper.selectOne(wrapper);
+                if (Objects.isNull(role)) {
+                    throw new Blog4jException(ErrorEnum.SYSTEM_ERROR);
+                }
+
+                user.setRoleId(role.getRoleId());
+                userMapper.updateById(user);
+            }
 
             organization.setApproveStatus(approveStatus)
                     .setApproveMessage(approveMessage)
@@ -323,14 +332,15 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
                     .setOrganizationAdmin(organization.getOrganizationCreater())
                     .setOrganizationAdminName(organization.getOrganizationCreaterName())
                     .setStatus(OrganizationStatusEnum.NORMAL.getCode());
-        } else {
+        } else if (Objects.equals(approveStatus, OrganizationApproveStatus.REJECT.getCode())) {
             organization.setApproveStatus(approveStatus)
                     .setApproveMessage(approveMessage)
                     .setApproveTime(CommonUtil.getCurrentDateTime())
                     .setUpdateTime(CommonUtil.getCurrentDateTime());
+        } else {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
         this.baseMapper.updateById(organization);
-
     }
 
     /**
