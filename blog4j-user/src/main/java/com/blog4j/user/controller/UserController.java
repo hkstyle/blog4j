@@ -2,6 +2,8 @@ package com.blog4j.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.vo.UserInfoVo;
 import com.blog4j.user.model.UserExcel;
@@ -136,7 +138,7 @@ public class UserController {
      *
      * @param exportUserReqVo 用户ID
      */
-    @SaCheckPermission(value = "USER:EXPORT")
+    @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN"}, mode = SaMode.OR)
     @PostMapping("/exportUser")
     public void exportUser(@RequestBody @Valid ExportUserReqVo exportUserReqVo,
                            HttpServletResponse response) {

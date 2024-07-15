@@ -29,6 +29,7 @@ import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
+import com.blog4j.user.vo.req.EditOrganizationReqVo;
 import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
@@ -358,6 +359,16 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         } catch (Exception exception) {
             throw new Blog4jException(ErrorEnum.EXPORT_ORGANIZATION_ERROR);
         }
+    }
+
+    /**
+     * 编辑组织信息
+     *
+     * @param reqVo 请求信息
+     */
+    @Override
+    public void edit(EditOrganizationReqVo reqVo) {
+
     }
 
     private UserEntity beforeCreate(CreateOrganizationReqVo reqVo) {

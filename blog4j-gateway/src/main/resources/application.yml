@@ -34,3 +34,9 @@ spring:
             - Path=/oss/**
           filters:
             - RewritePath=/oss/(?<segment>.*),/$\{segment}
+        - id: system_route
+          uri: http://localhost:9400/
+          predicates:
+            - Path=/system/**
+          filters:
+            - RewritePath=/system/(?<segment>.*),/$\{segment}

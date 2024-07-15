@@ -2,24 +2,21 @@ package com.blog4j.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.blog4j.common.enums.ErrorEnum;
-import com.blog4j.common.exception.Blog4jException;
+import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
-import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
+import com.blog4j.user.vo.req.EditOrganizationReqVo;
 import com.blog4j.user.vo.req.ExportOrganizationReqVo;
-import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -158,10 +155,23 @@ public class OrganizationController {
      * @param exportOrganizationReqVo 组织ID
      * @param response 响应
      */
-    @SaCheckPermission(value = "ORGANIZATION:EXPORT")
+    @SaCheckRole(value = {"SUPER_ADMIN", "ORGANIZATION_ADMIN"}, mode = SaMode.OR)
     @PostMapping("/exportOrganization")
     public void exportOrganization(@RequestBody @Valid ExportOrganizationReqVo exportOrganizationReqVo,
                            HttpServletResponse response) {
         organizationService.exportOrganization(exportOrganizationReqVo, response);
+    }
+
+    /**
+     * 编辑组织信息
+     *
+     * @param reqVo 请求信息
+     * @return 编辑成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:EDIT")
+    @PostMapping("/edit")
+    public Result edit(@RequestBody @Valid EditOrganizationReqVo reqVo) {
+        organizationService.edit(reqVo);
+        return Result.ok();
     }
 }
