@@ -415,6 +415,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         // TODO 判断最大容纳人数是否超出上限  从系统服务获取
 
         BeanUtils.copyProperties(reqVo, organization);
+        organization.setUpdateTime(CommonUtil.getCurrentDateTime());
         this.baseMapper.updateById(organization);
     }
 
