@@ -133,4 +133,16 @@ public class OssServiceImpl implements OssService {
 
 
     }
+
+    /**
+     * 下载组织导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    @Override
+    public String downloadOrganizationImportTemplate() {
+        // TODO 从系统服务获取 判断每个用户每天下载的次数
+
+        return "https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/template/organization_import_template.xlsx";
+    }
 }

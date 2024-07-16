@@ -4,9 +4,12 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
+import com.blog4j.user.model.ImportOrganizationExcel;
+import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
+import com.blog4j.user.vo.req.BatchCreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.EditOrganizationReqVo;
@@ -23,7 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -172,6 +177,32 @@ public class OrganizationController {
     @PostMapping("/edit")
     public Result edit(@RequestBody @Valid EditOrganizationReqVo reqVo) {
         organizationService.edit(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 组织批量导入
+     *
+     * @param file 文件
+     * @return 导入成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:IMPORT")
+    @PostMapping("/importOrganization")
+    public Result importOrganization(@RequestParam("file") MultipartFile file) {
+        List<ImportOrganizationExcel> list = organizationService.importOrganization(file);
+        return Result.ok(list);
+    }
+
+    /**
+     * 批量创建组织信息
+     *
+     * @param reqVo 组织信息
+     * @return 创建成功
+     */
+    @SaCheckPermission(value = "ORGANIZATION:ADD")
+    @PostMapping("/batchCreate")
+    public Result batchCreate(@RequestBody @Valid BatchCreateOrganizationReqVo reqVo) {
+        organizationService.batchCreate(reqVo);
         return Result.ok();
     }
 }

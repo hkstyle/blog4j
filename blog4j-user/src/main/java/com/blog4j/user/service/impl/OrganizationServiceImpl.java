@@ -2,6 +2,7 @@ package com.blog4j.user.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
@@ -19,14 +20,16 @@ import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.listener.ImportOrganizationExcelListener;
 import com.blog4j.user.mapper.OrganizationMapper;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
 import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.model.ExportOrganizationExcel;
-import com.blog4j.user.model.UserExcel;
+import com.blog4j.user.model.ImportOrganizationExcel;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
+import com.blog4j.user.vo.req.BatchCreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.EditOrganizationReqVo;
@@ -40,8 +43,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +77,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Autowired
     private ExcelUtil excelUtil;
+
+    @Autowired
+    private OrganizationMapper organizationMapper;
 
     /**
      * 根据用户ID获取组织信息
@@ -153,6 +164,10 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(reqVo.getStatus())) {
             wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
+        }
+
+        if (Objects.nonNull(reqVo.getApproveStatus())) {
+            wrapper.eq(OrganizationEntity::getApproveStatus, reqVo.getApproveStatus());
         }
 
         if (StringUtils.isNotBlank(reqVo.getOrganizationName())) {
@@ -378,6 +393,38 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
      */
     @Override
     public void edit(EditOrganizationReqVo reqVo) {
+
+    }
+
+    /**
+     * 组织批量导入
+     *
+     * @param multipartFile 文件
+     * @return 导入成功
+     */
+    @Override
+    public List<ImportOrganizationExcel> importOrganization(MultipartFile multipartFile) {
+        List<ImportOrganizationExcel> dataList = new ArrayList<>();
+        try {
+            File file = CommonUtil.convertMultipartFileToFile(multipartFile);
+            InputStream inputStream = Files.newInputStream(file.toPath());
+            dataList = EasyExcel.read(inputStream, ImportOrganizationExcel.class, new ImportOrganizationExcelListener(dataList, organizationMapper))
+                    .headRowNumber(1)
+                    .sheet(0)
+                    .doReadSync();
+        } catch (IOException ioException) {
+            throw new Blog4jException(ErrorEnum.IO_ERROR);
+        }
+        return dataList;
+    }
+
+    /**
+     * 批量创建组织信息
+     *
+     * @param reqVo 组织信息
+     */
+    @Override
+    public void batchCreate(BatchCreateOrganizationReqVo reqVo) {
 
     }
 

@@ -3,7 +3,9 @@ package com.blog4j.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.common.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
+import com.blog4j.user.model.ImportOrganizationExcel;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
+import com.blog4j.user.vo.req.BatchCreateOrganizationReqVo;
 import com.blog4j.user.vo.req.CreateOrganizationReqVo;
 import com.blog4j.user.vo.req.DeleteOrganizationReqVo;
 import com.blog4j.user.vo.req.EditOrganizationReqVo;
@@ -11,6 +13,7 @@ import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -104,4 +107,19 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @param reqVo 请求信息
      */
     void edit(EditOrganizationReqVo reqVo);
+
+    /**
+     * 组织批量导入
+     *
+     * @param file 文件
+     * @return 导入成功
+     */
+    List<ImportOrganizationExcel> importOrganization(MultipartFile file);
+
+    /**
+     * 批量创建组织信息
+     *
+     * @param reqVo 组织信息
+     */
+    void batchCreate(BatchCreateOrganizationReqVo reqVo);
 }

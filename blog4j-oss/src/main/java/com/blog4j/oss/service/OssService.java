@@ -32,4 +32,11 @@ public interface OssService {
      * @return 文件存储路径
      */
     String downloadUserImportTemplate();
+
+    /**
+     * 下载组织导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    String downloadOrganizationImportTemplate();
 }

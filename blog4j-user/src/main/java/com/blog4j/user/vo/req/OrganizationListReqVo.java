@@ -29,4 +29,9 @@ public class OrganizationListReqVo {
      * 组织状态
      */
     private Integer status;
+
+    /**
+     * 审批状态
+     */
+    private Integer approveStatus;
 }

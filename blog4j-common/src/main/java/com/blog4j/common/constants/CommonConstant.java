@@ -41,4 +41,11 @@ public class CommonConstant {
      * 日期格式化
      */
     public static final String DATE_FORMAT = "yyyyMMdd";
+
+    /**
+     * 逗号
+     */
+    public static final String COMMA = ",";
+
+
 }

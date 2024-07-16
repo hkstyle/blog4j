@@ -4,7 +4,6 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.blog4j.user.converter.OrganizationApproveStatusConverter;
 import com.blog4j.user.converter.OrganizationStatusConverter;
-import com.blog4j.user.converter.UserSexConverter;
 import lombok.Data;
 
 /**

@@ -65,4 +65,16 @@ public class OssController {
         String path = ossService.downloadUserImportTemplate();
         return Result.ok(path);
     }
+
+    /**
+     * 下载组织导入模板文件
+     *
+     * @return 文件存储路径
+     */
+    @SaCheckLogin
+    @GetMapping("/downloadOrganizationImportTemplate")
+    public Result downloadOrganizationImportTemplate() {
+        String path = ossService.downloadOrganizationImportTemplate();
+        return Result.ok(path);
+    }
 }

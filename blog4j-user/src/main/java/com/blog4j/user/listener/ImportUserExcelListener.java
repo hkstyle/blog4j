@@ -3,10 +3,15 @@ package com.blog4j.user.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.UserSexEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.ValidateUtil;
+import com.blog4j.user.entity.UserEntity;
+import com.blog4j.user.mapper.UserMapper;
 import com.blog4j.user.model.UserExcel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -29,8 +34,10 @@ public class ImportUserExcelListener implements ReadListener<UserExcel> {
     private static int IMPORT_COUNT = 0;
 
     List<UserExcel> res;
-    public ImportUserExcelListener(List<UserExcel> res) {
+    UserMapper userMapper;
+    public ImportUserExcelListener(List<UserExcel> res, UserMapper userMapper) {
         this.res = res;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -64,25 +71,62 @@ public class ImportUserExcelListener implements ReadListener<UserExcel> {
         String phone = userExcel.getPhone();
         String email = userExcel.getEmail();
 
-        if (StringUtils.isNotBlank(userName) && userName.length() > 20) {
-            sb.append("用户名称校验失败,");
+        // 校验用户名称
+        if (StringUtils.isBlank(userName)) {
+            sb.append(ErrorEnum.USER_NAME_EMPTY_ERROR.getErrorMsg())
+                    .append(CommonConstant.COMMA);
+        } else {
+            LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<UserEntity>()
+                    .eq(UserEntity::getUserName, userName);
+            Integer count = userMapper.selectCount(wrapper);
+            if (count > 0) {
+                sb.append(ErrorEnum.USERNAME_REPEAT_ERROR.getErrorMsg())
+                        .append(CommonConstant.COMMA);
+            }
         }
 
+        // 校验用户性别
         if (Objects.nonNull(sex)
                 && !Objects.equals(sex, UserSexEnum.MAN.getCode())
                 && !Objects.equals(sex, UserSexEnum.WOMAN.getCode())
                 && !Objects.equals(sex, UserSexEnum.SECRET.getCode())) {
-            sb.append("用户性别校验失败,");
+            sb.append(ErrorEnum.SEX_ERROR.getErrorMsg())
+                    .append(CommonConstant.COMMA);
         }
 
-        if (StringUtils.isNotBlank(phone) && !ValidateUtil.isValidMobile(phone)) {
-            sb.append("用户手机号码校验失败,");
+        // 校验手机号
+        if (StringUtils.isNotBlank(phone)) {
+            if (!ValidateUtil.isValidMobile(phone)) {
+                sb.append(ErrorEnum.PHONE_ERROR.getErrorMsg())
+                        .append(CommonConstant.COMMA);
+            } else {
+                LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<UserEntity>()
+                        .eq(UserEntity::getPhone, phone);
+                Integer count = userMapper.selectCount(wrapper);
+                if (count > 0) {
+                    sb.append(ErrorEnum.PHONE_REPEAT_ERROR.getErrorMsg())
+                            .append(CommonConstant.COMMA);
+                }
+            }
         }
 
-        if (StringUtils.isNotBlank(email) && !ValidateUtil.isValidEmail(email)) {
-            sb.append("用户邮箱校验失败");
+        // 校验邮箱
+        if (StringUtils.isNotBlank(email)) {
+            if (!ValidateUtil.isValidEmail(email)) {
+                sb.append(ErrorEnum.EMAIL_ERROR.getErrorMsg())
+                        .append(CommonConstant.COMMA);
+            } else {
+                LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<UserEntity>()
+                        .eq(UserEntity::getEmail, email);
+                Integer count = userMapper.selectCount(wrapper);
+                if (count > 0) {
+                    sb.append(ErrorEnum.EMAIL_REPEAT_ERROR.getErrorMsg())
+                            .append(CommonConstant.COMMA);
+                }
+            }
         }
 
-        return sb.toString();
+        String errMsgStr = sb.toString();
+        return CommonUtil.handleString(errMsgStr);
     }
 }

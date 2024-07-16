@@ -80,6 +80,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Autowired
     private ExcelUtil excelUtil;
 
+    @Autowired
+    private UserMapper userMapper;
+
     /**
      * 根据用户名获取用户信息
      *
@@ -257,9 +260,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     public List<UserExcel> importUser(MultipartFile multipartFile) {
         List<UserExcel> dataList = new ArrayList<>();
         try {
-            File file = convertMultipartFileToFile(multipartFile);
+            File file = CommonUtil.convertMultipartFileToFile(multipartFile);
             InputStream inputStream = Files.newInputStream(file.toPath());
-            dataList = EasyExcel.read(inputStream, UserExcel.class, new ImportUserExcelListener(dataList))
+            dataList = EasyExcel.read(inputStream, UserExcel.class, new ImportUserExcelListener(dataList, userMapper))
                     .headRowNumber(1)
                     .sheet(0)
                     .doReadSync();
@@ -308,14 +311,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         } catch (Exception exception) {
             throw new Blog4jException(ErrorEnum.EXPORT_USER_ERROR);
         }
-    }
-
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(multipartFile.getBytes());
-        }
-        return file;
     }
 
     private void deleteUserArticle(DeleteUserReqVo reqVo) {
