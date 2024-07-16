@@ -401,7 +401,34 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
      */
     @Override
     public void edit(EditOrganizationReqVo reqVo) {
+        String organizationId = reqVo.getOrganizationId();
+        Integer capacity = reqVo.getCapacity();
+        OrganizationEntity organization = this.baseMapper.selectById(organizationId);
+        if (Objects.isNull(organization)) {
+            throw new Blog4jException(ErrorEnum.ORGANIZATION_INFO_EMPTY_ERROR);
+        }
 
+        String userId = StpUtil.getLoginIdAsString();
+        if (!this.checkUserIsSuperAdmin(userId) && !StringUtils.equals(userId, organization.getOrganizationAdmin())) {
+            throw new Blog4jException(ErrorEnum.NO_PERMISSION_ERROR);
+        }
+        // TODO 判断最大容纳人数是否超出上限  从系统服务获取
+
+        BeanUtils.copyProperties(reqVo, organization);
+        this.baseMapper.updateById(organization);
+    }
+
+    private boolean checkUserIsSuperAdmin(String userId) {
+        UserEntity user = userMapper.selectById(userId);
+        if (Objects.isNull(user)) {
+            throw new Blog4jException(ErrorEnum.USER_NOT_EXIST_ERROR);
+        }
+        String roleId = user.getRoleId();
+        RoleEntity role = roleMapper.selectById(roleId);
+        if (Objects.isNull(role)) {
+            throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
+        }
+        return StringUtils.equals(role.getRoleCode(), RoleEnum.SUPER_ADMIN.getDesc());
     }
 
     /**

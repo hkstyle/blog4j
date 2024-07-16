@@ -3,6 +3,7 @@ package com.blog4j.user.vo.req;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author 98k灬
@@ -25,6 +26,6 @@ public class EditOrganizationReqVo {
 
     private String slogan;
 
-    @NotBlank(message = "容纳人数不能为空")
+    @NotNull(message = "容纳人数不能为空")
     private Integer capacity;
 }
