@@ -5,7 +5,6 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
 import com.blog4j.user.model.ImportOrganizationExcel;
-import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.service.OrganizationService;
 import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;
@@ -58,8 +57,8 @@ public class OrganizationController {
     @SaCheckPermission(value = "ORGANIZATION:LIST")
     @PostMapping("/list")
     public Result list(@RequestBody OrganizationListReqVo reqVo) {
-        List<OrganizationInfoRespVo> list = organizationService.organizationList(reqVo);
-        return Result.ok(new PageInfo<>(list));
+        PageInfo<OrganizationInfoRespVo> pageInfo = organizationService.organizationList(reqVo);
+        return Result.ok(pageInfo);
     }
 
     /**

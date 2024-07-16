@@ -13,6 +13,7 @@ import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
+import com.github.pagehelper.PageInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +56,7 @@ public interface OrganizationService extends IService<OrganizationEntity>  {
      * @param reqVo 查询条件
      * @return 组织列表
      */
-    List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo);
+    PageInfo<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo);
 
     /**
      * 更新组织的状态

@@ -37,7 +37,9 @@ import com.blog4j.user.vo.req.ExportOrganizationReqVo;
 import com.blog4j.user.vo.req.OrganizationListReqVo;
 import com.blog4j.user.vo.req.RemoveOrganizationUserReqVo;
 import com.blog4j.user.vo.resp.OrganizationInfoRespVo;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +162,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
      * @return 组织列表
      */
     @Override
-    public List<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
+    public PageInfo<OrganizationInfoRespVo> organizationList(OrganizationListReqVo reqVo) {
         LambdaQueryWrapper<OrganizationEntity> wrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(reqVo.getStatus())) {
             wrapper.eq(OrganizationEntity::getStatus, reqVo.getStatus());
@@ -174,19 +176,25 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             wrapper.like(OrganizationEntity::getOrganizationName, reqVo.getOrganizationName());
         }
 
-        if (Objects.nonNull(reqVo.getPageNo()) && Objects.nonNull(reqVo.getPageSize())) {
-            PageHelper.startPage(reqVo.getPageNo(), reqVo.getPageSize());
+        if (reqVo.getQueryType() == 1) {
+            wrapper.orderByDesc(OrganizationEntity::getCreateTime);
+        } else {
+            wrapper.ne(OrganizationEntity::getStatus, OrganizationStatusEnum.LOCK.getCode());
+            wrapper.ne(OrganizationEntity::getApproveStatus, OrganizationApproveStatus.REJECT.getCode());
         }
-
+        Page<Object> page = PageHelper.startPage(reqVo.getPageNo(), reqVo.getPageSize());
         List<OrganizationEntity> organizationEntityList = this.baseMapper.selectList(wrapper);
         if (CollectionUtil.isEmpty(organizationEntityList)) {
-            return new ArrayList<>();
+            return null;
         }
-        return organizationEntityList.stream().map(item -> {
+        List<OrganizationInfoRespVo> list = organizationEntityList.stream().map(item -> {
             OrganizationInfoRespVo respVo = new OrganizationInfoRespVo();
             BeanUtils.copyProperties(item, respVo);
             return respVo;
         }).collect(Collectors.toList());
+        PageInfo<OrganizationInfoRespVo> pageInfo = new PageInfo<>(list);
+        pageInfo.setTotal(page.getTotal());
+        return pageInfo;
     }
 
     /**
