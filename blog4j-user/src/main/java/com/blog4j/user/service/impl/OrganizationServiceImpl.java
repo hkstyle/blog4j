@@ -425,7 +425,14 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
      */
     @Override
     public void batchCreate(BatchCreateOrganizationReqVo reqVo) {
-
+        List<CreateOrganizationReqVo> organizationList = reqVo.getList();
+        organizationList.forEach(item -> {
+            CreateOrganizationReqVo vo = new CreateOrganizationReqVo();
+            BeanUtils.copyProperties(item, vo);
+            // TODO 从系统服务获取默认头像
+            vo.setOrganizationAvatar("https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/20240706/62c461eab1.jpg");
+            this.create(vo);
+        });
     }
 
     private UserEntity beforeCreate(CreateOrganizationReqVo reqVo) {
