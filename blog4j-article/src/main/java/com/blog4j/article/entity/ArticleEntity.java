@@ -74,6 +74,46 @@ public class ArticleEntity {
     private int status;
 
     /**
+     * 审批状态(1:待审批  2:审批通过  3:审批拒绝)
+     */
+    private Integer approveStatus;
+
+    /**
+     * 审批人用户ID
+     */
+    private String approveUserId;
+
+    /**
+     * 审批人用户名称
+     */
+    private String approveUserName;
+
+    /**
+     * 审批时间
+     */
+    private String approveTime;
+
+    /**
+     * 审批留言
+     */
+    private String approveMessage;
+
+    /**
+     * 文章类型(1:原创  2:转载)
+     */
+    private Integer articleType;
+
+    /**
+     * 转载的链接
+     */
+    private String curationLink;
+
+    /**
+     * 摘要
+     */
+    private String summary;
+
+    /**
      * 文章公开类型(1:仅对自己公开  2:仅对组织内成员公开 3:所有人公开)
      */
     private int publicType;
@@ -91,7 +131,12 @@ public class ArticleEntity {
     /**
      * 是否允许评论
      */
-    private int allowComment;
+    private Integer allowComment;
+
+    /**
+     * 是否允许下载
+     */
+    private Integer allowDownload;
 
     /**
      * 是否定时发布
