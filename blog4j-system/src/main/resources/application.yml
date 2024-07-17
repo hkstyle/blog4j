@@ -6,8 +6,8 @@ spring:
     allow-circular-references: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sh-cdb-b593hl8o.sql.tencentcdb.com:63556/blog4j-user?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
-    username: blog4j_user_dev
+    url: jdbc:mysql://sh-cdb-b593hl8o.sql.tencentcdb.com:63556/blog4j-system?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+    username: root
     password: 4897458Hk!@
   application:
     name: blog4j-system
