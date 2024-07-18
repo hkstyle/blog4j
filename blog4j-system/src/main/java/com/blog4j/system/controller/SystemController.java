@@ -6,6 +6,7 @@ import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.vo.SystemBaseConfigVo;
 import com.blog4j.system.entity.SystemEntity;
 import com.blog4j.system.entity.WebInfoEntity;
 import com.blog4j.system.service.SystemService;
@@ -46,7 +47,9 @@ public class SystemController {
     @GetMapping("/getBaseSystemConfig")
     public Result getBaseSystemConfig() {
         SystemEntity system = systemService.getOne(null);
-        return Result.ok(system);
+        SystemBaseConfigVo configVo = new SystemBaseConfigVo();
+        BeanUtils.copyProperties(system, configVo);
+        return Result.ok(configVo);
     }
 
     /**

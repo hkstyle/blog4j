@@ -141,7 +141,17 @@ public class ArticleEntity {
     /**
      * 是否定时发布
      */
-    private int timedRelease;
+    private Integer timedRelease;
+
+    /**
+     * 浏览数
+     */
+    private Integer views;
+
+    /**
+     * 点赞数
+     */
+    private Integer likes;
 
     /**
      * 是否已被删除

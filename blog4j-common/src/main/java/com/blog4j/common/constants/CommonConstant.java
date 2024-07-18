@@ -47,5 +47,8 @@ public class CommonConstant {
      */
     public static final String COMMA = ",";
 
-
+    /**
+     * 认证token名称
+     */
+    public static final String AUTHENTICATION = "Authentication";
 }

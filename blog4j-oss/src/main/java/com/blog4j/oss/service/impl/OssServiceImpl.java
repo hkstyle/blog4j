@@ -10,10 +10,15 @@ import com.aliyun.oss.model.PutObjectResult;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
+import com.blog4j.common.model.FResult;
+import com.blog4j.common.utils.CommonUtil;
+import com.blog4j.common.vo.SystemBaseConfigVo;
+import com.blog4j.oss.feign.SystemFeignService;
 import com.blog4j.oss.service.OssService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +54,9 @@ public class OssServiceImpl implements OssService {
 
     @Value("${aliyun.oss.bucketDomain}")
     private String bucketDomain;
+
+    @Autowired
+    private SystemFeignService systemFeignService;
 
     /**
      * 上传文件
@@ -126,12 +134,10 @@ public class OssServiceImpl implements OssService {
      */
     @Override
     public String downloadUserImportTemplate() {
-
-
+        FResult result = systemFeignService.getBaseSystemConfig();
+        SystemBaseConfigVo baseSystemConfig = CommonUtil.getBaseSystemConfig(result);
         // TODO 从系统服务获取 判断每个用户每天下载的次数
-        return "https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/20240711/user_import_template.xlsx";
-
-
+        return baseSystemConfig.getUserImportTemplatePath();
     }
 
     /**
@@ -142,7 +148,8 @@ public class OssServiceImpl implements OssService {
     @Override
     public String downloadOrganizationImportTemplate() {
         // TODO 从系统服务获取 判断每个用户每天下载的次数
-
-        return "https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/template/organization_import_template.xlsx";
+        FResult result = systemFeignService.getBaseSystemConfig();
+        SystemBaseConfigVo baseSystemConfig = CommonUtil.getBaseSystemConfig(result);
+        return baseSystemConfig.getOrganizationImportTemplatePath();
     }
 }
