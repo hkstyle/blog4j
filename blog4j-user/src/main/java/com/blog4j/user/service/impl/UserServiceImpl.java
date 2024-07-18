@@ -5,25 +5,23 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.blog4j.common.constants.CommonConstant;
+import com.blog4j.api.client.FeignArticle;
+import com.blog4j.api.vo.UserInfoVo;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserSexEnum;
 import com.blog4j.common.enums.UserStatusEnum;
 import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
-import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.ExcelUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.utils.ValidateUtil;
-import com.blog4j.common.vo.DeleteUserArticleVo;
-import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.api.vo.DeleteUserArticleVo;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
-import com.blog4j.user.feign.ArticleFeignService;
 import com.blog4j.user.listener.ImportUserExcelListener;
 import com.blog4j.user.mapper.OrganizationUserRelMapper;
 import com.blog4j.user.mapper.RoleMapper;
@@ -33,7 +31,7 @@ import com.blog4j.user.service.UserService;
 import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
-import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
+import com.blog4j.api.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
@@ -48,7 +46,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -75,7 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     private OrganizationUserRelMapper organizationUserRelMapper;
 
     @Autowired
-    private ArticleFeignService articleFeignService;
+    private FeignArticle feignArticle;
 
     @Autowired
     private ExcelUtil excelUtil;
@@ -315,14 +312,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     private void deleteUserArticle(DeleteUserReqVo reqVo) {
         List<String> userIds = reqVo.getUserIds();
-        FResult result = articleFeignService
-                .deleteUserArticle(DeleteUserArticleVo.builder().userIds(userIds).build());
-        Integer code = result.getCode();
-        String message = result.getMessage();
-        if (code != CommonConstant.SUCCESS_CODE) {
-            log.error("远程调用article模块, 删除用户名下的文章信息失败");
-            throw new Blog4jException(code, message);
-        }
+        feignArticle.deleteUserArticle(DeleteUserArticleVo.builder().userIds(userIds).build());
     }
 
     private void deleteOrganizationRel(DeleteUserReqVo reqVo) {

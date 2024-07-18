@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
-import com.blog4j.common.vo.PermissionVo;
+import com.blog4j.api.vo.PermissionVo;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.RolePermissionRelEntity;

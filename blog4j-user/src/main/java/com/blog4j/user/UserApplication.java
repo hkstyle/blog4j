@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @Create on : 2024/6/20 12:45
  **/
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.blog4j.user.feign")
+@EnableFeignClients(basePackages = "com.blog4j")
 @EnableDiscoveryClient
 public class UserApplication {
     public static void main(String[] args) {

@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  **/
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "com.blog4j.oss.feign")
+@EnableFeignClients(basePackages = "com.blog4j")
 public class OssApplication {
     public static void main(String[] args) {
         SpringApplication.run(OssApplication.class, args);

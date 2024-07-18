@@ -1,4 +1,4 @@
-package com.blog4j.common.vo;
+package com.blog4j.api.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

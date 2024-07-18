@@ -1,13 +1,13 @@
 package com.blog4j.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.api.vo.UserInfoVo;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.model.UserExcel;
 import com.blog4j.user.vo.req.BatchCreateUserReqVo;
 import com.blog4j.user.vo.req.CreateUserReqVo;
 import com.blog4j.user.vo.req.DeleteUserReqVo;
-import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
+import com.blog4j.api.vo.EditUserLastLoginTimeReqVo;
 import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;

@@ -1,11 +1,9 @@
 package com.blog4j.article.component;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.blog4j.article.feign.UserFeignService;
-import com.blog4j.common.model.FResult;
-import com.blog4j.common.utils.CommonUtil;
-import com.blog4j.common.vo.PermissionVo;
-import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.api.client.FeignUser;
+import com.blog4j.api.vo.UserInfoVo;
+import com.blog4j.api.vo.PermissionVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class StpInterfaceImpl implements StpInterface {
     @Autowired
-    private UserFeignService userFeignService;
+    private FeignUser feignUser;
 
     /**
      * 获取用户权限列表
@@ -35,8 +33,7 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object userId, String loginType) {
-        FResult result = userFeignService.getPermissionListByUserId((String) userId);
-        List<PermissionVo> list = CommonUtil.getPermissionListByUserId(result);
+        List<PermissionVo> list = feignUser.getPermissionListByUserId((String) userId);
         return list.stream().map(PermissionVo::getPermissionCode).collect(Collectors.toList());
     }
 
@@ -49,8 +46,7 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object userId, String loginType) {
-        FResult result = userFeignService.getUserInfoByUserId((String)userId);
-        UserInfoVo userInfoVo = CommonUtil.getUserInfo(result);
+        UserInfoVo userInfoVo = feignUser.getUserInfoByUserId((String)userId);
         List<String> list = new ArrayList<>();
         list.add(userInfoVo.getRoleCode());
         return list;

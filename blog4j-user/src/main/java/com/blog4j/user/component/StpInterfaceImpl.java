@@ -2,9 +2,8 @@ package com.blog4j.user.component;
 
 import cn.dev33.satoken.stp.StpInterface;
 import cn.hutool.core.collection.CollectionUtil;
-import com.blog4j.common.vo.PermissionVo;
-import com.blog4j.common.vo.RoleInfoVo;
-import com.blog4j.user.entity.PermissionEntity;
+import com.blog4j.api.vo.PermissionVo;
+import com.blog4j.api.vo.RoleInfoVo;
 import com.blog4j.user.service.PermissionService;
 import com.blog4j.user.service.RoleService;
 import lombok.extern.slf4j.Slf4j;

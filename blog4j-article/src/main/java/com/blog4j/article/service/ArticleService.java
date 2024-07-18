@@ -7,7 +7,7 @@ import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
-import com.blog4j.common.vo.DeleteUserArticleVo;
+import com.blog4j.api.vo.DeleteUserArticleVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

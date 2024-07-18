@@ -5,15 +5,12 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.comm.ResponseMessage;
-import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectResult;
+import com.blog4j.api.client.FeignSystem;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
-import com.blog4j.common.model.FResult;
-import com.blog4j.common.utils.CommonUtil;
-import com.blog4j.common.vo.SystemBaseConfigVo;
-import com.blog4j.oss.feign.SystemFeignService;
+import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.oss.service.OssService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -23,11 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -56,7 +48,7 @@ public class OssServiceImpl implements OssService {
     private String bucketDomain;
 
     @Autowired
-    private SystemFeignService systemFeignService;
+    private FeignSystem feignSystem;
 
     /**
      * 上传文件
@@ -134,9 +126,8 @@ public class OssServiceImpl implements OssService {
      */
     @Override
     public String downloadUserImportTemplate() {
-        FResult result = systemFeignService.getBaseSystemConfig();
-        SystemBaseConfigVo baseSystemConfig = CommonUtil.getBaseSystemConfig(result);
-        // TODO 从系统服务获取 判断每个用户每天下载的次数
+        SystemBaseConfigVo baseSystemConfig = feignSystem.getBaseSystemConfig();
+        // TODO 判断每个用户每天下载的次数
         return baseSystemConfig.getUserImportTemplatePath();
     }
 
@@ -147,9 +138,8 @@ public class OssServiceImpl implements OssService {
      */
     @Override
     public String downloadOrganizationImportTemplate() {
-        // TODO 从系统服务获取 判断每个用户每天下载的次数
-        FResult result = systemFeignService.getBaseSystemConfig();
-        SystemBaseConfigVo baseSystemConfig = CommonUtil.getBaseSystemConfig(result);
+        // TODO 判断每个用户每天下载的次数
+        SystemBaseConfigVo baseSystemConfig = feignSystem.getBaseSystemConfig();
         return baseSystemConfig.getOrganizationImportTemplatePath();
     }
 }

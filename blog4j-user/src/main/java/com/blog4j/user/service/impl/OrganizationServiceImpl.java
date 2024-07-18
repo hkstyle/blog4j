@@ -15,7 +15,7 @@ import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.ExcelUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
-import com.blog4j.common.vo.OrganizationVo;
+import com.blog4j.api.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.entity.OrganizationUserRelEntity;
 import com.blog4j.user.entity.RoleEntity;

@@ -1,7 +1,7 @@
 package com.blog4j.user.api;
 
+import com.blog4j.api.vo.RoleInfoVo;
 import com.blog4j.common.model.Result;
-import com.blog4j.common.vo.RoleInfoVo;
 import com.blog4j.user.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +29,8 @@ public class ApiRoleController {
      */
     @GetMapping("/getRoleInfoByUserId/{userId}")
     public Result getRoleInfoByUserId(@PathVariable("userId") String userId) {
-        RoleInfoVo roleInfoVo = roleService.getRoleInfoByUserId(userId);
-        return Result.ok(roleInfoVo);
+        RoleInfoVo info = roleService.getRoleInfoByUserId(userId);
+        return Result.ok(info);
     }
 
 }

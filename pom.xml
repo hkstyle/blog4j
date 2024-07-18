@@ -25,6 +25,7 @@
         <module>blog4j-article</module>
         <module>blog4j-oss</module>
         <module>blog4j-system</module>
+        <module>blog4j-api</module>
     </modules>
 
     <properties>

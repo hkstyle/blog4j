@@ -1,7 +1,7 @@
 package com.blog4j.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.blog4j.common.vo.RoleInfoVo;
+import com.blog4j.api.vo.RoleInfoVo;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.vo.req.CreateRoleReqVo;
 import com.blog4j.user.vo.req.DeleteRoleReqVo;

@@ -7,7 +7,7 @@ import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
-import com.blog4j.common.vo.RoleInfoVo;
+import com.blog4j.api.vo.RoleInfoVo;
 import com.blog4j.user.entity.RoleEntity;
 import com.blog4j.user.entity.UserEntity;
 import com.blog4j.user.mapper.RoleMapper;

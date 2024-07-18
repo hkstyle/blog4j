@@ -1,7 +1,7 @@
 package com.blog4j.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.blog4j.common.vo.OrganizationVo;
+import com.blog4j.api.vo.OrganizationVo;
 import com.blog4j.user.entity.OrganizationEntity;
 import com.blog4j.user.model.ImportOrganizationExcel;
 import com.blog4j.user.vo.req.ApproveOrganizationReqVo;

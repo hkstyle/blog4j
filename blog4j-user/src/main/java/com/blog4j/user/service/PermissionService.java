@@ -1,7 +1,7 @@
 package com.blog4j.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.blog4j.common.vo.PermissionVo;
+import com.blog4j.api.vo.PermissionVo;
 import com.blog4j.user.entity.PermissionEntity;
 import com.blog4j.user.vo.req.CreateNodeReqVo;
 import com.blog4j.user.vo.req.CreateParentNodeReqVo;

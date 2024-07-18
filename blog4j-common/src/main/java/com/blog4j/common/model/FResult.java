@@ -7,6 +7,7 @@ import com.blog4j.common.enums.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -17,7 +18,7 @@ import java.util.HashMap;
  **/
 @AllArgsConstructor
 @NoArgsConstructor
-public class FResult extends HashMap<String, Object> {
+public class FResult extends HashMap<String, Object> implements Serializable {
     /**
      * 响应码
      */
@@ -38,8 +39,8 @@ public class FResult extends HashMap<String, Object> {
      *
      * @return  响应
      */
-    public static Result ok() {
-        return new Result(CommonConstant.SUCCESS_CODE, CommonConstant.SUCCESS_DESC, null);
+    public static FResult ok() {
+        return new FResult(CommonConstant.SUCCESS_CODE, CommonConstant.SUCCESS_DESC, null);
     }
 
     /**
@@ -48,8 +49,8 @@ public class FResult extends HashMap<String, Object> {
      * @param data 数据
      * @return 响应
      */
-    public static Result ok(Object data) {
-        return new Result(CommonConstant.SUCCESS_CODE, CommonConstant.SUCCESS_DESC, data);
+    public static FResult ok(Object data) {
+        return new FResult(CommonConstant.SUCCESS_CODE, CommonConstant.SUCCESS_DESC, data);
     }
 
     /**
@@ -58,8 +59,8 @@ public class FResult extends HashMap<String, Object> {
      * @param message 失败描述
      * @return 响应
      */
-    public static Result error(String message) {
-        return new Result(CommonConstant.FAIL_CODE, message, null);
+    public static FResult error(String message) {
+        return new FResult(CommonConstant.FAIL_CODE, message, null);
     }
 
     /**
@@ -69,8 +70,8 @@ public class FResult extends HashMap<String, Object> {
      * @param message 响应描述
      * @return 响应
      */
-    public static Result build(int code, String message) {
-        return new Result(code, message, null);
+    public static FResult build(int code, String message) {
+        return new FResult(code, message, null);
     }
 
     /**
@@ -79,8 +80,8 @@ public class FResult extends HashMap<String, Object> {
      * @param errorEnum 枚举错误
      * @return  响应
      */
-    public static Result error(ErrorEnum errorEnum) {
-        return new Result(errorEnum.getErrorCode(), errorEnum.getErrorMsg(), null);
+    public static FResult error(ErrorEnum errorEnum) {
+        return new FResult(errorEnum.getErrorCode(), errorEnum.getErrorMsg(), null);
     }
 
     //利用fastjson进行反序列化

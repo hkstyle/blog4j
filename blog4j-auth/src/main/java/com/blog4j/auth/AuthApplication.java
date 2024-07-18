@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  **/
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "com.blog4j.auth.feign")
+@EnableFeignClients(basePackages = "com.blog4j")
 public class AuthApplication {
     /**
      * 启动

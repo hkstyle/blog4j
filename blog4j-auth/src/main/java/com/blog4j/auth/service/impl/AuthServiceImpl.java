@@ -2,20 +2,18 @@ package com.blog4j.auth.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import com.blog4j.api.client.FeignUser;
+import com.blog4j.api.vo.UserInfoVo;
 import com.blog4j.auth.context.LoginContext;
-import com.blog4j.auth.feign.UserFeignService;
 import com.blog4j.auth.service.AuthService;
 import com.blog4j.auth.utils.SecretUtils;
 import com.blog4j.auth.vo.resp.AesKeyAndIvRespVo;
-import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
-import com.blog4j.common.model.FResult;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.RedisUtil;
 import com.blog4j.common.utils.RsaUtil;
-import com.blog4j.common.vo.EditUserLastLoginTimeReqVo;
-import com.blog4j.common.vo.UserInfoVo;
+import com.blog4j.api.vo.EditUserLastLoginTimeReqVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,7 @@ import java.util.Objects;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
     @Autowired
-    private UserFeignService userFeignService;
+    private FeignUser feignUser;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -52,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 远程调用user模块获取用户信息
-        UserInfoVo userInfoVo = this.getUserInfo(loginContext);
+        UserInfoVo userInfoVo = feignUser.getUserInfoByUserName(loginContext.getUserName());
         String dbPassword = userInfoVo.getPassword();
         String reqPassword = SecretUtils.desEncrypt(loginContext.getPassword());
         String decrypt = RsaUtil.decrypt(dbPassword);
@@ -69,13 +67,7 @@ public class AuthServiceImpl implements AuthService {
                 .userId(userInfoVo.getUserId())
                 .lastLoginTime(CommonUtil.getCurrentDateTime())
                 .build();
-        FResult result = userFeignService.updateUserLastLoginTime(lastLoginTimeReqVo);
-        Integer code = result.getCode();
-        String message = result.getMessage();
-        if (code != CommonConstant.SUCCESS_CODE) {
-            log.error("远程调用user模块, 更新用户的最近一次登录时间失败, 失败原因：[{}]", message);
-            throw new Blog4jException(code, message);
-        }
+        feignUser.updateUserLastLoginTime(lastLoginTimeReqVo);
     }
 
     /**
@@ -100,12 +92,6 @@ public class AuthServiceImpl implements AuthService {
                 .iv("63eeac68cf074c8c")
                 .key("63eeac68cf074c8c")
                 .build();
-    }
-
-    private UserInfoVo getUserInfo(LoginContext loginContext) {
-        String userName = loginContext.getUserName();
-        FResult result = userFeignService.getUserInfoByUserName(userName);
-        return CommonUtil.getUserInfo(result);
     }
 
     private boolean checkCaptcha(LoginContext loginContext) {
