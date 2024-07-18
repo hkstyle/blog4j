@@ -2,8 +2,6 @@ package com.blog4j.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import cn.dev33.satoken.annotation.SaMode;
-import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.vo.SystemBaseConfigVo;
