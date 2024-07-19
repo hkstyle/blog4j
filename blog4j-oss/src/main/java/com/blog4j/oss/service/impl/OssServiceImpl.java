@@ -12,6 +12,7 @@ import com.aliyun.oss.common.comm.ResponseMessage;
 import com.aliyun.oss.model.PutObjectResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.blog4j.api.client.FeignSystem;
+import com.blog4j.api.vo.OssBaseConfigVo;
 import com.blog4j.common.constants.CacheConstants;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
@@ -29,11 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -49,28 +50,26 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class OssServiceImpl implements OssService {
-    @Value("${aliyun.oss.endPoint}")
     private String endPoint;
-
-    @Value("${aliyun.oss.accessKeyId}")
     private String accessKeyId;
-
-    @Value("${aliyun.oss.accessKeySecret}")
     private String accessKeySecret;
-
-    @Value("${aliyun.oss.bucketName}")
     private String bucketName;
-
-    @Value("${aliyun.oss.bucketDomain}")
     private String bucketDomain;
-
     private final FeignSystem feignSystem;
-
     private final RedisUtil redisUtil;
-
     private final RecordMapper recordMapper;
-
     private final ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void init() {
+        OssBaseConfigVo ossBaseConfigVo = this.getOssBaseConfigVo();
+        this.endPoint = ossBaseConfigVo.getEndPoint();
+        this.accessKeyId = ossBaseConfigVo.getAccessKeyId();
+        this.accessKeySecret = ossBaseConfigVo.getAccessKeySecret();
+        this.bucketName = ossBaseConfigVo.getBucketName();
+        this.bucketDomain = ossBaseConfigVo.getBucketDomain();
+        log.info("OSS的基础配置信息加载成功！");
+    }
 
     /**
      * 上传文件
@@ -188,6 +187,21 @@ public class OssServiceImpl implements OssService {
             JSONArray jsonArray = JSON.parseArray((String) val);
             JSONObject jsonObject = JSON.parseObject(objectMapper.writeValueAsString(jsonArray.get(1)));
             return JSON.toJavaObject(jsonObject, SystemBaseConfigVo.class);
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.PARSE_ERROR);
+        }
+    }
+
+    private OssBaseConfigVo getOssBaseConfigVo() {
+        Object val = redisUtil.get(CacheConstants.SYSTEM_OSS_BASE_CONFIG_KEY);
+        if (Objects.isNull(val)) {
+            return feignSystem.getOssBaseConfig();
+        }
+
+        try {
+            JSONArray jsonArray = JSON.parseArray((String) val);
+            JSONObject jsonObject = JSON.parseObject(objectMapper.writeValueAsString(jsonArray.get(1)));
+            return JSON.toJavaObject(jsonObject, OssBaseConfigVo.class);
         } catch (Exception exception) {
             throw new Blog4jException(ErrorEnum.PARSE_ERROR);
         }

@@ -1,11 +1,14 @@
 package com.blog4j.system.api;
 
+import com.blog4j.api.vo.OssBaseConfigVo;
 import com.blog4j.api.vo.WebInfoVo;
 import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.common.model.Result;
 import com.blog4j.system.entity.WebInfoEntity;
+import com.blog4j.system.service.OssBaseConfigService;
 import com.blog4j.system.service.SystemService;
 import com.blog4j.system.service.WebInfoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ApiSystemController {
-    @Autowired
-    private SystemService systemService;
-
-    @Autowired
-    private WebInfoService webInfoService;
+    private final SystemService systemService;
+    private final WebInfoService webInfoService;
+    private final OssBaseConfigService ossBaseConfigService;
 
     /**
      * 获取系统基础配置信息
@@ -49,5 +51,16 @@ public class ApiSystemController {
         WebInfoVo webInfoVo = new WebInfoVo();
         BeanUtils.copyProperties(webInfo, webInfoVo);
         return Result.ok(webInfoVo);
+    }
+
+    /**
+     * 获取OSS基础配置信息
+     *
+     * @return OSS基础配置信息
+     */
+    @GetMapping("/getOssBaseConfig")
+    public Result getOssBaseConfig() {
+        OssBaseConfigVo ossBaseConfigVo = ossBaseConfigService.getOssBaseConfig();
+        return Result.ok(ossBaseConfigVo);
     }
 }

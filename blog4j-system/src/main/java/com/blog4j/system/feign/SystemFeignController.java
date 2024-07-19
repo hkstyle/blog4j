@@ -1,12 +1,16 @@
 package com.blog4j.system.feign;
 
 import com.blog4j.api.client.FeignSystem;
+import com.blog4j.api.vo.OssBaseConfigVo;
 import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.api.vo.WebInfoVo;
+import com.blog4j.system.entity.OssBaseConfigEntity;
 import com.blog4j.system.entity.SystemEntity;
 import com.blog4j.system.entity.WebInfoEntity;
+import com.blog4j.system.service.OssBaseConfigService;
 import com.blog4j.system.service.SystemService;
 import com.blog4j.system.service.WebInfoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequestMapping("/feign")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SystemFeignController implements FeignSystem {
-    @Autowired
-    private SystemService systemService;
-
-    @Autowired
-    private WebInfoService webInfoService;
+    private final SystemService systemService;
+    private final WebInfoService webInfoService;
+    private final OssBaseConfigService ossBaseConfigService;
 
     /**
      * 获取系统基础配置信息
@@ -53,5 +56,18 @@ public class SystemFeignController implements FeignSystem {
         WebInfoVo webInfoVo = new WebInfoVo();
         BeanUtils.copyProperties(webInfo, webInfoVo);
         return webInfoVo;
+    }
+
+    /**
+     * 获取OSS基础配置信息
+     *
+     * @return OSS基础配置信息
+     */
+    @GetMapping("/getOssBaseConfig")
+    public OssBaseConfigVo getOssBaseConfig() {
+        OssBaseConfigEntity ossBaseConfig = ossBaseConfigService.getOne(null);
+        OssBaseConfigVo ossBaseConfigVo = new OssBaseConfigVo();
+        BeanUtils.copyProperties(ossBaseConfig, ossBaseConfigVo);
+        return ossBaseConfigVo;
     }
 }

@@ -21,4 +21,9 @@ public class CacheConstants {
      * 系统基础配置的缓存名
      */
     public static final String SYSTEM_BASE_CONFIG_KEY = SYSTEM + SPLIT + "baseConfig";
+
+    /**
+     * OSS基础配置的缓存名
+     */
+    public static final String SYSTEM_OSS_BASE_CONFIG_KEY = SYSTEM + SPLIT + "ossBaseConfig";
 }

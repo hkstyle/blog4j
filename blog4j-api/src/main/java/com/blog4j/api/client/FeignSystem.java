@@ -1,5 +1,6 @@
 package com.blog4j.api.client;
 
+import com.blog4j.api.vo.OssBaseConfigVo;
 import com.blog4j.api.vo.WebInfoVo;
 import com.blog4j.api.vo.SystemBaseConfigVo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -28,4 +29,12 @@ public interface FeignSystem {
      */
     @GetMapping("/getWebInfo")
     WebInfoVo getWebInfo();
+
+    /**
+     * 获取OSS基础配置信息
+     *
+     * @return OSS基础配置信息
+     */
+    @GetMapping("/getOssBaseConfig")
+    OssBaseConfigVo getOssBaseConfig();
 }
