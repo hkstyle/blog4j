@@ -2,6 +2,10 @@ server:
   port: 9400
 
 spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 2592000000 # 30天
   main:
     allow-circular-references: true
   datasource:

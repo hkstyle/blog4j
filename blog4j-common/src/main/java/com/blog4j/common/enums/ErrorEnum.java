@@ -14,6 +14,7 @@ import lombok.Getter;
 public enum ErrorEnum {
     SYSTEM_ERROR(100, "系统异常！"),
     IO_ERROR(101, "IO异常！"),
+    PARSE_ERROR(102, "解析异常！"),
 
     INVALID_PARAMETER_ERROR(300, "参数非法！"),
     NO_PERMISSION_ERROR(403, "权限不足，请联系管理员！"),
@@ -54,6 +55,7 @@ public enum ErrorEnum {
     USER_NAME_CHECK_ERROR(330, "用户名称校验失败"),
     EMAIL_ERROR(331, "邮箱不合法"),
     EMAIL_REPEAT_ERROR(332, "用户邮箱重复"),
+    USER_DOWNLOAD_TIMES_ERROR(334, "用户每日下载次数超出上限"),
 
     /**
      * OSS相关

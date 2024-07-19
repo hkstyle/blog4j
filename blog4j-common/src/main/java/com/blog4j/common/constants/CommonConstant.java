@@ -40,6 +40,11 @@ public class CommonConstant {
     /**
      * 日期格式化
      */
+    public static final String COMPLETE_DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * 日期格式化
+     */
     public static final String DATE_FORMAT = "yyyyMMdd";
 
     /**

@@ -3,7 +3,6 @@ package com.blog4j.system.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.blog4j.common.model.Result;
 import com.blog4j.common.utils.CommonUtil;
-import com.blog4j.system.entity.SystemEntity;
 import com.blog4j.system.entity.WebInfoEntity;
 import com.blog4j.system.service.SystemService;
 import com.blog4j.system.service.WebInfoService;
@@ -41,10 +40,8 @@ public class SystemController {
      */
     @SaCheckRole(value = "SUPER_ADMIN")
     @PostMapping("/saveBaseSystemConfig")
-    public Result save(@RequestBody @Valid SaveSystemReqVo reqVo) {
-        SystemEntity system = new SystemEntity();
-        BeanUtils.copyProperties(reqVo, system);
-        systemService.updateById(system);
+    public Result saveBaseSystemConfig(@RequestBody @Valid SaveSystemReqVo reqVo) {
+        systemService.saveBaseSystemConfig(reqVo);
         return Result.ok();
     }
 

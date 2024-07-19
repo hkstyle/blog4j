@@ -3,7 +3,6 @@ package com.blog4j.system.api;
 import com.blog4j.api.vo.WebInfoVo;
 import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.common.model.Result;
-import com.blog4j.system.entity.SystemEntity;
 import com.blog4j.system.entity.WebInfoEntity;
 import com.blog4j.system.service.SystemService;
 import com.blog4j.system.service.WebInfoService;
@@ -35,9 +34,7 @@ public class ApiSystemController {
      */
     @GetMapping("/getBaseSystemConfig")
     public Result getBaseSystemConfig() {
-        SystemEntity system = systemService.getOne(null);
-        SystemBaseConfigVo configVo = new SystemBaseConfigVo();
-        BeanUtils.copyProperties(system, configVo);
+        SystemBaseConfigVo configVo = systemService.getBaseSystemConfig();
         return Result.ok(configVo);
     }
 

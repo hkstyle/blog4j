@@ -2,6 +2,8 @@ package com.blog4j.api.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author 98k灬
  * @version v1.0.0
@@ -9,7 +11,7 @@ import lombok.Data;
  * @Create on : 2024/7/18 12:31
  **/
 @Data
-public class SystemBaseConfigVo {
+public class SystemBaseConfigVo implements Serializable {
     private Integer id;
 
     /**

@@ -1,26 +1,41 @@
 package com.blog4j.oss.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.comm.ResponseMessage;
 import com.aliyun.oss.model.PutObjectResult;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.blog4j.api.client.FeignSystem;
+import com.blog4j.common.constants.CacheConstants;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
+import com.blog4j.common.enums.RecordTimesEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.api.vo.SystemBaseConfigVo;
+import com.blog4j.common.utils.RedisUtil;
+import com.blog4j.oss.entity.RecordEntity;
+import com.blog4j.oss.mapper.RecordMapper;
 import com.blog4j.oss.service.OssService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -31,6 +46,7 @@ import java.util.UUID;
  **/
 @Service
 @Slf4j
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class OssServiceImpl implements OssService {
     @Value("${aliyun.oss.endPoint}")
     private String endPoint;
@@ -47,8 +63,13 @@ public class OssServiceImpl implements OssService {
     @Value("${aliyun.oss.bucketDomain}")
     private String bucketDomain;
 
-    @Autowired
-    private FeignSystem feignSystem;
+    private final FeignSystem feignSystem;
+
+    private final RedisUtil redisUtil;
+
+    private final RecordMapper recordMapper;
+
+    private final ObjectMapper objectMapper;
 
     /**
      * 上传文件
@@ -124,11 +145,12 @@ public class OssServiceImpl implements OssService {
      *
      * @return 文件存储路径
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String downloadUserImportTemplate() {
-        SystemBaseConfigVo baseSystemConfig = feignSystem.getBaseSystemConfig();
-        // TODO 判断每个用户每天下载的次数
-        return baseSystemConfig.getUserImportTemplatePath();
+        SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
+        this.checkDownloadTimes(StpUtil.getLoginIdAsString(), systemBaseConfig);
+        return systemBaseConfig.getUserImportTemplatePath();
     }
 
     /**
@@ -138,8 +160,64 @@ public class OssServiceImpl implements OssService {
      */
     @Override
     public String downloadOrganizationImportTemplate() {
-        // TODO 判断每个用户每天下载的次数
-        SystemBaseConfigVo baseSystemConfig = feignSystem.getBaseSystemConfig();
-        return baseSystemConfig.getOrganizationImportTemplatePath();
+        SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
+        this.checkDownloadTimes(StpUtil.getLoginIdAsString(), systemBaseConfig);
+        return systemBaseConfig.getOrganizationImportTemplatePath();
+    }
+
+    private SystemBaseConfigVo getSystemBaseConfig()  {
+        Object val = redisUtil.get(CacheConstants.SYSTEM_BASE_CONFIG_KEY);
+        if (Objects.isNull(val)) {
+            return feignSystem.getBaseSystemConfig();
+        }
+
+        try {
+            JSONArray jsonArray = JSON.parseArray((String) val);
+            JSONObject jsonObject = JSON.parseObject(objectMapper.writeValueAsString(jsonArray.get(1)));
+            return JSON.toJavaObject(jsonObject, SystemBaseConfigVo.class);
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.PARSE_ERROR);
+        }
+    }
+
+    /**
+     * 检查用户当日下载的次数是否超出上限
+     *
+     * @param userId 用户ID
+     * @param systemBaseConfig 系统基础配置信息
+     */
+    private synchronized void checkDownloadTimes(String userId, SystemBaseConfigVo systemBaseConfig) {
+        LambdaQueryWrapper<RecordEntity> wrapper = new LambdaQueryWrapper<RecordEntity>()
+                .eq(RecordEntity::getUserId, userId)
+                .eq(RecordEntity::getType, RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode());
+        RecordEntity record = recordMapper.selectOne(wrapper);
+        SimpleDateFormat sdf = new SimpleDateFormat(CommonConstant.COMPLETE_DATE_FORMAT);
+        String currentDate = sdf.format(new Date());
+        if (Objects.nonNull(record)) {
+            if (StringUtils.equals(currentDate, record.getDate())) {
+                Integer count = record.getTimes();
+                if (count >= systemBaseConfig.getDownloadDayTimes()) {
+                    throw new Blog4jException(ErrorEnum.USER_DOWNLOAD_TIMES_ERROR);
+                } else {
+                    record.setTimes(count + 1);
+                    recordMapper.updateById(record);
+                }
+            } else {
+                recordMapper.deleteById(record.getId());
+                this.insertFirstRecord(currentDate, userId);
+            }
+        } else {
+            this.insertFirstRecord(currentDate, userId);
+        }
+    }
+
+    private void insertFirstRecord(String currentDate, String userId) {
+        RecordEntity record = RecordEntity.builder()
+                .type(RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode())
+                .userId(userId)
+                .date(currentDate)
+                .times(1)
+                .build();
+        recordMapper.insert(record);
     }
 }
