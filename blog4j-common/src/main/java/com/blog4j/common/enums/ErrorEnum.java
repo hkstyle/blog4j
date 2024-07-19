@@ -55,13 +55,17 @@ public enum ErrorEnum {
     USER_NAME_CHECK_ERROR(330, "用户名称校验失败"),
     EMAIL_ERROR(331, "邮箱不合法"),
     EMAIL_REPEAT_ERROR(332, "用户邮箱重复"),
-    USER_DOWNLOAD_TIMES_ERROR(334, "用户每日下载次数超出上限"),
+    USER_DOWNLOAD_TIMES_ERROR(333, "用户每日下载次数超出上限"),
+    USER_UPLOAD_TIMES_ERROR(333, "用户每日上传次数超出上限"),
+
 
     /**
      * OSS相关
      */
     UPLOAD_FILE_ERROR(501, "文件上传失败！"),
     FILE_MAX_ERROR(502, "文件太大，上传失败！"),
+    NOT_ALLOW_DOWNLOAD_FILE_ERROR(503, "系统未开启下载文件功能，请联系管理员"),
+    NOT_ALLOW_UPLOAD_FILE_ERROR(504, "系统未开启上传文件功能，请联系管理员"),
 
 
     /**

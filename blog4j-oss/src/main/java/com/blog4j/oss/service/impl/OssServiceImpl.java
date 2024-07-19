@@ -16,6 +16,7 @@ import com.blog4j.common.constants.CacheConstants;
 import com.blog4j.common.constants.CommonConstant;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RecordTimesEnum;
+import com.blog4j.common.enums.YesOrNoEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.common.utils.RedisUtil;
@@ -79,6 +80,12 @@ public class OssServiceImpl implements OssService {
      */
     @Override
     public String upload(MultipartFile file) {
+        SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
+        if (!Objects.equals(systemBaseConfig.getOpenUpload(), YesOrNoEnum.YES.getCode())) {
+            throw new Blog4jException(ErrorEnum.NOT_ALLOW_UPLOAD_FILE_ERROR);
+        }
+        this.checkTimes(StpUtil.getLoginIdAsString(), systemBaseConfig, RecordTimesEnum.USER_UPLOAD_TIMES.getCode());
+
         // 上传文件所在目录名，当天上传的文件放到当天日期的目录下。
         String folderName = "Blog4j/" + DateFormatUtils.format(new Date(), CommonConstant.DATE_FORMAT);
         String fileName = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
@@ -149,7 +156,10 @@ public class OssServiceImpl implements OssService {
     @Override
     public String downloadUserImportTemplate() {
         SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
-        this.checkDownloadTimes(StpUtil.getLoginIdAsString(), systemBaseConfig);
+        if (!Objects.equals(systemBaseConfig.getOpenDownload(), YesOrNoEnum.YES.getCode())) {
+            throw new Blog4jException(ErrorEnum.NOT_ALLOW_DOWNLOAD_FILE_ERROR);
+        }
+        this.checkTimes(StpUtil.getLoginIdAsString(), systemBaseConfig, RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode());
         return systemBaseConfig.getUserImportTemplatePath();
     }
 
@@ -161,7 +171,10 @@ public class OssServiceImpl implements OssService {
     @Override
     public String downloadOrganizationImportTemplate() {
         SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
-        this.checkDownloadTimes(StpUtil.getLoginIdAsString(), systemBaseConfig);
+        if (!Objects.equals(systemBaseConfig.getOpenDownload(), YesOrNoEnum.YES.getCode())) {
+            throw new Blog4jException(ErrorEnum.NOT_ALLOW_DOWNLOAD_FILE_ERROR);
+        }
+        this.checkTimes(StpUtil.getLoginIdAsString(), systemBaseConfig, RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode());
         return systemBaseConfig.getOrganizationImportTemplatePath();
     }
 
@@ -181,39 +194,49 @@ public class OssServiceImpl implements OssService {
     }
 
     /**
-     * 检查用户当日下载的次数是否超出上限
+     * 检查用户当日上传或者下载的次数是否超出上限
      *
      * @param userId 用户ID
      * @param systemBaseConfig 系统基础配置信息
+     * @param type 上传或者下载
      */
-    private synchronized void checkDownloadTimes(String userId, SystemBaseConfigVo systemBaseConfig) {
+    private synchronized void checkTimes(String userId, SystemBaseConfigVo systemBaseConfig, Integer type) {
         LambdaQueryWrapper<RecordEntity> wrapper = new LambdaQueryWrapper<RecordEntity>()
-                .eq(RecordEntity::getUserId, userId)
-                .eq(RecordEntity::getType, RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode());
+                .eq(RecordEntity::getUserId, userId);
+        if (Objects.equals(RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode(), type)) {
+            wrapper.eq(RecordEntity::getType, RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode());
+        } else {
+            wrapper.eq(RecordEntity::getType, RecordTimesEnum.USER_UPLOAD_TIMES.getCode());
+        }
+
         RecordEntity record = recordMapper.selectOne(wrapper);
         SimpleDateFormat sdf = new SimpleDateFormat(CommonConstant.COMPLETE_DATE_FORMAT);
         String currentDate = sdf.format(new Date());
         if (Objects.nonNull(record)) {
             if (StringUtils.equals(currentDate, record.getDate())) {
                 Integer count = record.getTimes();
-                if (count >= systemBaseConfig.getDownloadDayTimes()) {
-                    throw new Blog4jException(ErrorEnum.USER_DOWNLOAD_TIMES_ERROR);
+                Integer allowTimes = Objects.equals(RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode(), type) ?
+                        systemBaseConfig.getDownloadDayTimes() : systemBaseConfig.getUploadDayTimes();
+                ErrorEnum errorEnum = Objects.equals(RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode(), type) ?
+                        ErrorEnum.USER_DOWNLOAD_TIMES_ERROR : ErrorEnum.USER_UPLOAD_TIMES_ERROR;
+                if (count >= allowTimes) {
+                    throw new Blog4jException(errorEnum);
                 } else {
                     record.setTimes(count + 1);
                     recordMapper.updateById(record);
                 }
             } else {
                 recordMapper.deleteById(record.getId());
-                this.insertFirstRecord(currentDate, userId);
+                this.insertFirstRecord(currentDate, userId, type);
             }
         } else {
-            this.insertFirstRecord(currentDate, userId);
+            this.insertFirstRecord(currentDate, userId, type);
         }
     }
 
-    private void insertFirstRecord(String currentDate, String userId) {
+    private void insertFirstRecord(String currentDate, String userId, Integer type) {
         RecordEntity record = RecordEntity.builder()
-                .type(RecordTimesEnum.USER_DOWNLOAD_TIMES.getCode())
+                .type(type)
                 .userId(userId)
                 .date(currentDate)
                 .times(1)
