@@ -3,10 +3,16 @@ package com.blog4j.user.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.api.client.FeignArticle;
+import com.blog4j.api.client.FeignSystem;
+import com.blog4j.api.vo.SystemBaseConfigVo;
 import com.blog4j.api.vo.UserInfoVo;
+import com.blog4j.common.constants.CacheConstants;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.UserSexEnum;
@@ -16,6 +22,7 @@ import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.ExcelUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
+import com.blog4j.common.utils.RedisUtil;
 import com.blog4j.common.utils.RsaUtil;
 import com.blog4j.common.utils.ValidateUtil;
 import com.blog4j.api.vo.DeleteUserArticleVo;
@@ -36,7 +43,9 @@ import com.blog4j.user.vo.req.EditUserReqVo;
 import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,23 +71,16 @@ import java.util.stream.Collectors;
  * @Create on : 2024/6/22 13:16
  **/
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
-    private static final String PASSWORD = "blog4j@test_123";
-
-    @Autowired
-    private RoleMapper roleMapper;
-
-    @Autowired
-    private OrganizationUserRelMapper organizationUserRelMapper;
-
-    @Autowired
-    private FeignArticle feignArticle;
-
-    @Autowired
-    private ExcelUtil excelUtil;
-
-    @Autowired
-    private UserMapper userMapper;
+    private final RoleMapper roleMapper;
+    private final OrganizationUserRelMapper organizationUserRelMapper;
+    private final FeignArticle feignArticle;
+    private final ExcelUtil excelUtil;
+    private final UserMapper userMapper;
+    private final FeignSystem feignSystem;
+    private final RedisUtil redisUtil;
+    private final ObjectMapper objectMapper;
 
     /**
      * 根据用户名获取用户信息
@@ -178,10 +180,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(reqVo, user);
         String userId = IdGeneratorSnowflakeUtil.snowflakeId();
+        SystemBaseConfigVo systemBaseConfig = this.getSystemBaseConfig();
         user.setUserId(userId)
                 .setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
-                .setPassword(RsaUtil.encrypt(PASSWORD))
+                .setPassword(RsaUtil.encrypt(systemBaseConfig.getInitPassword()))
                 .setDeleted(YesOrNoEnum.NO.getCode())
                 .setStatus(UserStatusEnum.NORMAL.getCode());
         if (StringUtils.isBlank(reqVo.getRoleId())) {
@@ -195,8 +198,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         if (StringUtils.isBlank(reqVo.getAvatar())) {
-            // TODO 默认头像从系统服务获取
-            user.setAvatar("https://blog4j.oss-cn-shanghai.aliyuncs.com/Blog4j/20240706/a033e2f1be.jpg");
+            user.setAvatar(systemBaseConfig.getUserDefaultAvatar());
         }
         return user;
     }
@@ -442,6 +444,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                     !Objects.equals(sex, UserSexEnum.SECRET.getCode())) {
                 throw new Blog4jException(ErrorEnum.SEX_ERROR);
             }
+        }
+    }
+
+    private SystemBaseConfigVo getSystemBaseConfig()  {
+        Object val = redisUtil.get(CacheConstants.SYSTEM_BASE_CONFIG_KEY);
+        if (Objects.isNull(val)) {
+            return feignSystem.getBaseSystemConfig();
+        }
+
+        try {
+            JSONArray jsonArray = JSON.parseArray((String) val);
+            JSONObject jsonObject = JSON.parseObject(objectMapper.writeValueAsString(jsonArray.get(1)));
+            return JSON.toJavaObject(jsonObject, SystemBaseConfigVo.class);
+        } catch (Exception exception) {
+            throw new Blog4jException(ErrorEnum.PARSE_ERROR);
         }
     }
 

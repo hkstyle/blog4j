@@ -105,4 +105,10 @@ public class SaveSystemReqVo {
      */
     @NotNull(message = "单个用户允许加入的组织数不能为空")
     private Integer userJoinOrganizationMaxNum;
+
+    /**
+     * 用户默认头像
+     */
+    @NotBlank(message = "用户默认头像不能为空")
+    private String userDefaultAvatar;
 }

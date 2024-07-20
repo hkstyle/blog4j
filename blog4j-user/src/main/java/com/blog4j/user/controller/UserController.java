@@ -16,6 +16,7 @@ import com.blog4j.user.vo.req.ExportUserReqVo;
 import com.blog4j.user.vo.req.UserListReqVo;
 import com.blog4j.user.vo.resp.UserListRespVo;
 import com.github.pagehelper.PageInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +39,9 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     /**
      * 根据用户ID获取用户信息

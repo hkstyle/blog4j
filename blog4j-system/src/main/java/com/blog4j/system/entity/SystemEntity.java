@@ -94,4 +94,9 @@ public class SystemEntity {
      * 单个用户允许加入的组织数
      */
     private Integer userJoinOrganizationMaxNum;
+
+    /**
+     * 用户默认头像
+     */
+    private String userDefaultAvatar;
 }
