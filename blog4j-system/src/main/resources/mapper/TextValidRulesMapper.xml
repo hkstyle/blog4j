@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blog4j.system.mapper.TextValidRulesMapper">
+    
+    <resultMap type="com.blog4j.system.entity.TextValidRulesEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="textRuleCode" column="text_rule_code"/>
+        <result property="enabled" column="enabled"/>
+        <result property="textRuleDesc" column="text_rule_desc"/>
+        <result property="textRuleConfidence" column="text_rule_confidence"/>
+    </resultMap>
+
+
+</mapper>

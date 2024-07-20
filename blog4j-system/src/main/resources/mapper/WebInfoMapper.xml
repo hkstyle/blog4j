@@ -3,7 +3,12 @@
 
 <mapper namespace="com.blog4j.system.mapper.WebInfoMapper">
     <resultMap type="com.blog4j.system.entity.WebInfoEntity" id="BaseResultMap">
-
+        <result property="id" column="id"/>
+        <result property="webName" column="web_name"/>
+        <result property="webTitle" column="web_title"/>
+        <result property="backgroundImage" column="background_image"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
     </resultMap>
 
 

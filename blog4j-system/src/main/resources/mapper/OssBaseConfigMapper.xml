@@ -3,6 +3,12 @@
 
 <mapper namespace="com.blog4j.system.mapper.OssBaseConfigMapper">
     <resultMap type="com.blog4j.system.entity.OssBaseConfigEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="endPoint" column="end_point"/>
+        <result property="bucketDomain" column="bucket_domain"/>
+        <result property="bucketName" column="bucket_name"/>
+        <result property="accessKeyId" column="access_key_id"/>
+        <result property="accessKeySecret" column="access_key_secret"/>
     </resultMap>
 
 

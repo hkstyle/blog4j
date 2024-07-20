@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blog4j.system.mapper.ImgValidRulesMapper">
+
+    <resultMap type="com.blog4j.system.entity.ImgValidRulesEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="imgRuleCode" column="img_rule_code"/>
+        <result property="enabled" column="enabled"/>
+        <result property="imgRuleDesc" column="img_rule_desc"/>
+        <result property="imgRuleConfidence" column="img_rule_confidence"/>
+    </resultMap>
+
+
+</mapper>

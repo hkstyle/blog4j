@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blog4j.system.mapper.OssExtendConfigMapper">
+    
+    <resultMap type="com.blog4j.system.entity.OssExtendConfigEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="imgSize" column="img_size"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="imgType" column="img_type"/>
+        <result property="fileType" column="file_type"/>
+        <result property="imgStorageDirectory" column="img_storage_directory"/>
+        <result property="fileStorageDirectory" column="file_storage_directory"/>
+    </resultMap>
+
+
+</mapper>

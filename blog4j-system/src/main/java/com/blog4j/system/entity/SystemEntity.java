@@ -99,4 +99,24 @@ public class SystemEntity {
      * 用户默认头像
      */
     private String userDefaultAvatar;
+
+    /**
+     * 发布文章是否需要审批
+     */
+    private Integer articleApproveRequire;
+
+    /**
+     * 审批文章后是否需要邮件通知
+     */
+    private Integer approveArticleOpenEmailNotify;
+
+    /**
+     * 审批组织后是否需要邮件通知
+     */
+    private Integer approveOrganizationOpenEmailNotify;
+
+    /**
+     * 审批角色后是否需要邮件通知
+     */
+    private Integer approveRoleOpenEmailNotify;
 }

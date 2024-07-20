@@ -3,12 +3,27 @@
 
 <mapper namespace="com.blog4j.system.mapper.SystemMapper">
     <resultMap type="com.blog4j.system.entity.SystemEntity" id="BaseResultMap">
-        <!--<result property="roleId" column="role_id"/>
-        <result property="roleName" column="role_name"/>
-        <result property="roleCode" column="role_code"/>
-        <result property="roleDesc" column="role_desc"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="createTime" column="create_time"/>-->
+        <result property="id" column="id"/>
+        <result property="openSms" column="open_sms"/>
+        <result property="openMsm" column="open_msm"/>
+        <result property="openUpload" column="open_upload"/>
+        <result property="openDownload" column="open_download"/>
+        <result property="uploadDayTimes" column="upload_day_times"/>
+        <result property="downloadDayTimes" column="download_day_times"/>
+        <result property="userImportTemplatePath" column="user_import_template_path"/>
+        <result property="organizationImportTemplatePath" column="organization_import_template_path"/>
+        <result property="userDefaultAvatar" column="user_default_avatar"/>
+        <result property="openTextValid" column="open_text_valid"/>
+        <result property="openImgValid" column="open_img_valid"/>
+        <result property="initPassword" column="init_password"/>
+        <result property="aesKey" column="aes_key"/>
+        <result property="aesIv" column="aes_iv"/>
+        <result property="organizationMaxCapacity" column="organization_max_capacity"/>
+        <result property="userJoinOrganizationMaxNum" column="user_join_organization_max_num"/>
+        <result property="articleApproveRequire" column="article_approve_require"/>
+        <result property="approveArticleOpenEmailNotify" column="approve_article_open_email_notify"/>
+        <result property="approveOrganizationOpenEmailNotify" column="approve_organization_open_email_notify"/>
+        <result property="approveRoleOpenEmailNotify" column="approve_role_open_email_notify"/>
     </resultMap>
 
 
