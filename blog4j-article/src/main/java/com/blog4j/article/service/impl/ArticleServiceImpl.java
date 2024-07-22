@@ -20,6 +20,7 @@ import com.blog4j.article.vo.resp.ArticleStatusRespVo;
 import com.blog4j.common.enums.ApproveEnum;
 import com.blog4j.common.enums.ArticlePublicTypeEnum;
 import com.blog4j.common.enums.ArticleStatusEnum;
+import com.blog4j.common.enums.ArticleTypeEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.enums.RoleEnum;
 import com.blog4j.common.enums.YesOrNoEnum;
@@ -278,7 +279,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         article.setArticleId(IdGeneratorSnowflakeUtil.snowflakeId())
                 .setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
-                .setDeleted(YesOrNoEnum.NO.getCode());
+                .setDeleted(YesOrNoEnum.NO.getCode())
+                .setStick(YesOrNoEnum.NO.getCode())
+                .setViews(0)
+                .setLikes(0);
         this.baseMapper.insert(article);
     }
 
@@ -429,6 +433,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             context.setStatus(ArticleStatusEnum.WAIT.getCode());
         }
         context.setStatus(ArticleStatusEnum.ONLINE.getCode());
+
+        Integer articleType = context.getArticleType();
+        if (articleType == ArticleTypeEnum.TRANSPORT.getCode()) {
+            if (StringUtils.isBlank(context.getCurationLink())) {
+                throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+            }
+        }
 
         String userId = StpUtil.getLoginIdAsString();
         context.setUserId(userId);

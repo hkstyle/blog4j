@@ -81,4 +81,32 @@ public class CreateArticleReqVo {
      */
     @NotBlank(message = "文章内容不能为空")
     private String mdContent;
+
+    /**
+     * 文章类型
+     */
+    @NotNull(message = "文章类型不能为空")
+    private Integer articleType;
+
+    /**
+     * 转载链接
+     */
+    private Integer curationLink;
+
+    /**
+     * 是否允许下载
+     */
+    @NotNull(message = "是否允许下载不能为空")
+    private Integer allowDownload;
+
+    /**
+     * 摘要
+     */
+    @NotBlank(message = "摘要不能为空")
+    private String summary;
+
+    /**
+     * 是否置顶
+     */
+    private Integer stick;
 }

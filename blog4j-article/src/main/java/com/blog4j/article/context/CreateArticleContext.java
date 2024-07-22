@@ -87,4 +87,29 @@ public class CreateArticleContext {
      * 作者ID
      */
     private String authorId;
+
+    /**
+     * 文章类型
+     */
+    private Integer articleType;
+
+    /**
+     * 转载链接
+     */
+    private String curationLink;
+
+    /**
+     * 是否允许下载
+     */
+    private Integer allowDownload;
+
+    /**
+     * 摘要
+     */
+    private String summary;
+
+    /**
+     * 是否置顶
+     */
+    private Integer stick;
 }

@@ -114,6 +114,11 @@ public class ArticleEntity {
     private String summary;
 
     /**
+     * 是否置顶
+     */
+    private Integer stick;
+
+    /**
      * 文章公开类型(1:仅对自己公开  2:仅对组织内成员公开 3:所有人公开)
      */
     private int publicType;
