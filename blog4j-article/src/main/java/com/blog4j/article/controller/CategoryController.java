@@ -2,6 +2,7 @@ package com.blog4j.article.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.blog4j.article.service.CategoryService;
+import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.article.vo.req.DeleteCategoryReqVo;
 import com.blog4j.common.model.Result;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @author 98k灬
@@ -32,7 +35,7 @@ public class CategoryController {
      */
     @SaCheckPermission(value = "CATEGORY:DELETE")
     @PostMapping ("/delete")
-    public Result delete(@RequestBody DeleteCategoryReqVo reqVo) {
+    public Result delete(@RequestBody @Valid DeleteCategoryReqVo reqVo) {
         categoryService.deleteCategory(reqVo.getIds());
         return Result.ok();
     }
@@ -45,8 +48,20 @@ public class CategoryController {
      */
     @SaCheckPermission(value = "CATEGORY:ADD")
     @PostMapping("/create")
-    public Result create(@RequestBody CreateCategoryReqVo reqVo) {
+    public Result create(@RequestBody @Valid CreateCategoryReqVo reqVo) {
         categoryService.create(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 编辑分类信息
+     *
+     * @param reqVo 分类信息
+     * @return 编辑成功
+     */
+    @PostMapping("/edit")
+    public Result edit(@RequestBody @Valid CategoryEditReqVo reqVo) {
+        categoryService.edit(reqVo);
         return Result.ok();
     }
 }

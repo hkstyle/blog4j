@@ -281,6 +281,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
                 .setCreateTime(CommonUtil.getCurrentDateTime())
                 .setDeleted(YesOrNoEnum.NO.getCode())
                 .setStick(YesOrNoEnum.NO.getCode())
+                .setApproveStatus(ApproveEnum.PASS.getCode())
                 .setViews(0)
                 .setLikes(0);
         this.baseMapper.insert(article);

@@ -19,9 +19,4 @@ public class CategoryListReqVo {
      * 状态
      */
     private Integer status;
-
-    /**
-     * 作用域
-     */
-    private Integer scope;
 }

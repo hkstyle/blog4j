@@ -2,6 +2,7 @@ package com.blog4j.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blog4j.article.entity.CategoryEntity;
+import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
 
@@ -35,4 +36,19 @@ public interface CategoryService extends IService<CategoryEntity>  {
      * @param reqVo 分类信息
      */
     void create(CreateCategoryReqVo reqVo);
+
+    /**
+     * 根据创建者ID查询分类列表
+     *
+     * @param userId 创建者ID
+     * @return 分类列表
+     */
+    List<CategoryEntity> getInfoByCreaterId(String userId);
+
+    /**
+     * 编辑分类信息
+     *
+     * @param reqVo 分类信息
+     */
+    void edit(CategoryEditReqVo reqVo);
 }

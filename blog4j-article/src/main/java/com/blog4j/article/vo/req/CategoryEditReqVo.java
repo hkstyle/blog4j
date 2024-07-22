@@ -9,10 +9,16 @@ import javax.validation.constraints.NotNull;
  * @author 98k灬
  * @version v1.0.0
  * @Description : 功能描述
- * @Create on : 2024/7/3 22:50
+ * @Create on : 2024/7/22 22:36
  **/
 @Data
-public class CreateCategoryReqVo {
+public class CategoryEditReqVo {
+    /**
+     * 分类ID
+     */
+    @NotBlank(message = "分类ID不能为空")
+    private String categoryId;
+
     /**
      * 分类代码描述
      */

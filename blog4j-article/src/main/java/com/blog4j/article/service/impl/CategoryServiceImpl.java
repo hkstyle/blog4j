@@ -1,18 +1,24 @@
 package com.blog4j.article.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.blog4j.api.client.FeignUser;
+import com.blog4j.api.vo.UserInfoVo;
 import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.mapper.ArticleMapper;
 import com.blog4j.article.mapper.CategoryMapper;
 import com.blog4j.article.service.CategoryService;
+import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
+import com.blog4j.common.enums.CategoryStatusEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +34,10 @@ import java.util.Objects;
  * @Create on : 2024/6/27 22:10
  **/
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEntity> implements CategoryService {
-    @Autowired
-    private ArticleMapper articleMapper;
+    private final ArticleMapper articleMapper;
+    private final FeignUser feignUser;
 
     /**
      * 获取文章分类信息列表
@@ -42,17 +49,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
     public List<CategoryEntity> listCategory(CategoryListReqVo reqVo) {
         String categoryName = reqVo.getCategoryName();
         Integer status = reqVo.getStatus();
-        Integer scope = reqVo.getScope();
         LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.orderByAsc(CategoryEntity::getStatus);
+        wrapper.orderByDesc(CategoryEntity::getCreateTime);
         if (StringUtils.isNotBlank(categoryName)) {
             wrapper.like(CategoryEntity::getCategoryName, categoryName);
         }
         if (Objects.nonNull(status)) {
             wrapper.eq(CategoryEntity::getStatus, status);
-        }
-        if (Objects.nonNull(scope)) {
-            wrapper.eq(CategoryEntity::getScope, scope);
         }
         return this.baseMapper.selectList(wrapper);
     }
@@ -94,11 +97,56 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
      */
     @Override
     public void create(CreateCategoryReqVo reqVo) {
+        Integer status = reqVo.getStatus();
+        if (!Objects.equals(status, CategoryStatusEnum.DISABLE.getCode()) &&
+            !Objects.equals(status, CategoryStatusEnum.NORMAL.getCode())) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        String userId = StpUtil.getLoginIdAsString();
+        UserInfoVo user = feignUser.getUserInfoByUserId(userId);
+
         CategoryEntity category = new CategoryEntity();
         BeanUtils.copyProperties(reqVo, category);
         category.setUpdateTime(CommonUtil.getCurrentDateTime())
                 .setCreateTime(CommonUtil.getCurrentDateTime())
-                .setCategoryId(IdGeneratorSnowflakeUtil.snowflakeId());
+                .setCategoryId(IdGeneratorSnowflakeUtil.snowflakeId())
+                .setCreater(userId)
+                .setCreaterName(user.getUserName())
+                .setStatus(status);
         this.baseMapper.insert(category);
+    }
+
+    /**
+     * 根据创建者ID查询分类列表
+     *
+     * @param userId 创建者ID
+     * @return 分类列表
+     */
+    @Override
+    public List<CategoryEntity> getInfoByCreaterId(String userId) {
+        LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<CategoryEntity>()
+                .eq(CategoryEntity::getCreater, userId)
+                .eq(CategoryEntity::getStatus, CategoryStatusEnum.NORMAL.getCode());
+        return this.baseMapper.selectList(wrapper);
+    }
+
+    /**
+     * 编辑分类信息
+     *
+     * @param reqVo 分类信息
+     */
+    @Override
+    public void edit(CategoryEditReqVo reqVo) {
+        String categoryId = reqVo.getCategoryId();
+        CategoryEntity category = this.baseMapper.selectById(categoryId);
+        if (Objects.isNull(category)) {
+            throw new Blog4jException(ErrorEnum.CATEGORY_INFO_EMPTY_ERROR);
+        }
+
+        CategoryEntity categoryEntity = new CategoryEntity();
+        BeanUtils.copyProperties(reqVo, categoryEntity);
+        categoryEntity.setUpdateTime(CommonUtil.getCurrentDateTime());
+        this.baseMapper.updateById(categoryEntity);
     }
 }

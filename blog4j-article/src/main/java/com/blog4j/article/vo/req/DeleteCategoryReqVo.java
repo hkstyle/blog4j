@@ -2,6 +2,7 @@ package com.blog4j.article.vo.req;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -12,5 +13,6 @@ import java.util.List;
  **/
 @Data
 public class DeleteCategoryReqVo {
+    @NotEmpty(message = "分类ID列表不能为空")
     private List<String> ids;
 }

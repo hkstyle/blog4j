@@ -50,4 +50,16 @@ public class ApiCategoryController {
         CategoryEntity category = categoryService.getById(categoryId);
         return Result.ok(category);
     }
+
+    /**
+     * 根据创建者ID查询分类列表
+     *
+     * @param userId 创建者ID
+     * @return 分类列表
+     */
+    @GetMapping("/getInfoByCreaterId/{userId}")
+    public Result getInfoByCreaterId(@PathVariable("userId") String userId) {
+        List<CategoryEntity> category = categoryService.getInfoByCreaterId(userId);
+        return Result.ok(category);
+    }
 }

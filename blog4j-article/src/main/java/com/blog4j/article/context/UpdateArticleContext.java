@@ -59,6 +59,11 @@ public class UpdateArticleContext {
     private String htmlContent;
 
     /**
+     * 文章内容
+     */
+    private String mdContent;
+
+    /**
      * 文章分类信息
      */
     private CategoryEntity category;
