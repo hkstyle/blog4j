@@ -8,7 +8,7 @@
         <result property="categoryName" column="category_name"/>
         <result property="cover" column="cover"/>
         <result property="title" column="title"/>
-        <result property="content" column="content"/>
+        <result property="mdContent" column="md_content"/>
         <result property="htmlContent" column="html_content"/>
         <result property="authorId" column="author_id"/>
         <result property="authorName" column="author_name"/>

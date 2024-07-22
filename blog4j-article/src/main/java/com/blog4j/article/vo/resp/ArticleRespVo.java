@@ -18,9 +18,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 public class ArticleRespVo {
-    /**
-     * 文章ID
-     */
     private String articleId;
 
     /**
@@ -46,7 +43,7 @@ public class ArticleRespVo {
     /**
      * 文章内容
      */
-    private String content;
+    private String mdContent;
 
     /**
      * html内容
@@ -64,19 +61,89 @@ public class ArticleRespVo {
     private String authorName;
 
     /**
-     * 文章状态
+     * 文章状态(1:草稿 2:待发布 3:已发布)
      */
-    private Integer status;
+    private int status;
 
     /**
-     * 公开类型
+     * 审批状态(1:待审批  2:审批通过  3:审批拒绝)
      */
-    private Integer publicType;
+    private Integer approveStatus;
+
+    /**
+     * 审批人用户ID
+     */
+    private String approveUserId;
+
+    /**
+     * 审批人用户名称
+     */
+    private String approveUserName;
+
+    /**
+     * 审批时间
+     */
+    private String approveTime;
+
+    /**
+     * 审批留言
+     */
+    private String approveMessage;
+
+    /**
+     * 文章类型(1:原创  2:转载)
+     */
+    private Integer articleType;
+
+    /**
+     * 转载的链接
+     */
+    private String curationLink;
+
+    /**
+     * 摘要
+     */
+    private String summary;
+
+    /**
+     * 文章公开类型(1:仅对自己公开  2:仅对组织内成员公开 3:所有人公开)
+     */
+    private int publicType;
+
+    /**
+     * 定时发布的时间
+     */
+    private String cronReleaseTime;
+
+    /**
+     * 发布人用户ID
+     */
+    private String publishUserId;
 
     /**
      * 是否允许评论
      */
     private Integer allowComment;
+
+    /**
+     * 是否允许下载
+     */
+    private Integer allowDownload;
+
+    /**
+     * 是否定时发布
+     */
+    private Integer timedRelease;
+
+    /**
+     * 浏览数
+     */
+    private Integer views;
+
+    /**
+     * 点赞数
+     */
+    private Integer likes;
 
     /**
      * 创建时间

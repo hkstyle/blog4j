@@ -75,4 +75,10 @@ public class CreateArticleReqVo {
      */
     @NotBlank(message = "文章内容不能为空")
     private String htmlContent;
+
+    /**
+     * 文章内容
+     */
+    @NotBlank(message = "文章内容不能为空")
+    private String mdContent;
 }

@@ -64,6 +64,11 @@ public class CreateArticleContext {
     private String htmlContent;
 
     /**
+     * 文章内容
+     */
+    private String mdContent;
+
+    /**
      * 当前登录用户ID
      */
     private String userId;

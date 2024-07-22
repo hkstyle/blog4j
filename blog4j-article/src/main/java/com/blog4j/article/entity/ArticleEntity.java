@@ -51,7 +51,7 @@ public class ArticleEntity {
     /**
      * 文章内容
      */
-    private String content;
+    private String mdContent;
 
     /**
      * html内容

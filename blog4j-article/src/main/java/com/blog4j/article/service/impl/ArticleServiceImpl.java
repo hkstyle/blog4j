@@ -17,6 +17,7 @@ import com.blog4j.article.service.ArticleService;
 import com.blog4j.article.vo.req.ArticleListReqVo;
 import com.blog4j.article.vo.resp.ArticleRespVo;
 import com.blog4j.article.vo.resp.ArticleStatusRespVo;
+import com.blog4j.common.enums.ApproveEnum;
 import com.blog4j.common.enums.ArticlePublicTypeEnum;
 import com.blog4j.common.enums.ArticleStatusEnum;
 import com.blog4j.common.enums.ErrorEnum;
@@ -26,15 +27,17 @@ import com.blog4j.common.exception.Blog4jException;
 import com.blog4j.common.utils.CommonUtil;
 import com.blog4j.common.utils.IdGeneratorSnowflakeUtil;
 import com.blog4j.api.vo.DeleteUserArticleVo;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -47,12 +50,11 @@ import java.util.stream.Collectors;
  * @Create on : 2024/6/28 13:03
  **/
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity> implements ArticleService {
-    @Autowired
-    private CategoryMapper categoryMapper;
-
-    @Autowired
-    private FeignUser feignUser;
+    private final CategoryMapper categoryMapper;
+    private final FeignUser feignUser;
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     /**
      * 获取文章列表
@@ -65,6 +67,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         String categoryId = articleListReqVo.getCategoryId();
         String title = articleListReqVo.getTitle();
         Integer status = articleListReqVo.getStatus();
+        Integer pageNo = articleListReqVo.getPageNo();
+        Integer pageSize = articleListReqVo.getPageSize();
+        if (Objects.isNull(pageSize)) {
+            pageSize = DEFAULT_PAGE_SIZE;
+        }
 
         this.checkCategory(categoryId);
 
@@ -75,14 +82,31 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         }
 
         if (StringUtils.isNotBlank(title)) {
-            wrapper.likeLeft(ArticleEntity::getTitle, articleListReqVo.getTitle());
+            wrapper.like(ArticleEntity::getTitle, articleListReqVo.getTitle());
         }
 
         if (Objects.nonNull(status)) {
             wrapper.eq(ArticleEntity::getStatus, status);
         }
 
-        List<String> roleList = StpUtil.getRoleList();
+        Page<Object> page = PageHelper.startPage(pageNo, pageSize);
+        List<ArticleEntity> articleList = this.baseMapper.selectList(wrapper);
+        //PageInfo<ArticleRespVo> pageInfo = new PageInfo<>();
+        if (CollectionUtils.isEmpty(articleList)) {
+            return new PageInfo<>();
+        }
+
+        List<ArticleRespVo> respVos = articleList.stream().map(item -> {
+            ArticleRespVo articleRespVo = new ArticleRespVo();
+            BeanUtils.copyProperties(item, articleRespVo);
+            return articleRespVo;
+        }).collect(Collectors.toList());
+        PageInfo<ArticleRespVo> pageInfo = new PageInfo<>(respVos);
+        pageInfo.setTotal(page.getTotal());
+        return pageInfo;
+
+
+        /*List<String> roleList = StpUtil.getRoleList();
         if (CollectionUtil.isEmpty(roleList)) {
             throw new Blog4jException(ErrorEnum.ROLE_INFO_EMPTY_ERROR);
         }
@@ -153,7 +177,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
             wrapper.eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode());
             return this.getArticleList(wrapper, articleListReqVo);
         }
-        return new PageInfo<>();
+        return new PageInfo<>();*/
     }
 
     /**
@@ -189,7 +213,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
      */
     @Override
     public void deleteArticle(String articleId) {
-        this.beforeDeleteAndPublish(articleId);
+        this.beforeDeleteAndPublish(articleId, 2);
         this.baseMapper.deleteById(articleId);
         // TODO 删除评论信息
     }
@@ -201,7 +225,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
      */
     @Override
     public void publishArticle(String articleId) {
-        ArticleEntity article = this.beforeDeleteAndPublish(articleId);
+        ArticleEntity article = this.beforeDeleteAndPublish(articleId, 1);
         article.setStatus(ArticleStatusEnum.ONLINE.getCode())
                 .setPublishUserId(StpUtil.getLoginIdAsString())
                 .setUpdateTime(CommonUtil.getCurrentDateTime());
@@ -279,6 +303,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         // TODO 删除评论
     }
 
+    /**
+     * 获取本周排行榜的文章
+     *
+     * @return 文章列表
+     */
+    @Override
+    public List<ArticleEntity> getViewsArticle() {
+        PageHelper.startPage(1, 8);
+        LambdaQueryWrapper<ArticleEntity> wrapper = new LambdaQueryWrapper<ArticleEntity>()
+                .eq(ArticleEntity::getStatus, ArticleStatusEnum.ONLINE.getCode())
+                .eq(ArticleEntity::getPublicType, ArticlePublicTypeEnum.VISIBLE_ALL.getCode())
+                .eq(ArticleEntity::getApproveStatus, ApproveEnum.PASS.getCode())
+                .orderByDesc(ArticleEntity::getViews);
+        return this.baseMapper.selectList(wrapper);
+    }
+
     // ------------------ private -------------------------------------------------------------
 
     private void checkCategory(String categoryId) {
@@ -307,13 +347,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return new PageInfo<>();
     }
 
-    private ArticleEntity beforeDeleteAndPublish(String articleId) {
+    private ArticleEntity beforeDeleteAndPublish(String articleId, Integer type) {
         ArticleEntity article = this.baseMapper.selectById(articleId);
         if (Objects.isNull(article)) {
             throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
         }
 
-        if (article.getStatus() != ArticleStatusEnum.WAIT.getCode()) {
+        if (Objects.equals(type, 1) && article.getStatus() != ArticleStatusEnum.WAIT.getCode()) {
             throw new Blog4jException(ErrorEnum.ARTICLE_STATUS_ILLEGAL);
         }
 

@@ -76,4 +76,11 @@ public interface ArticleService extends IService<ArticleEntity>  {
      * @param vo 用户集合
      */
     void deleteUserArticle(DeleteUserArticleVo vo);
+
+    /**
+     * 获取本周排行榜的文章
+     *
+     * @return 文章列表
+     */
+    List<ArticleEntity> getViewsArticle();
 }

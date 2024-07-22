@@ -27,7 +27,6 @@ public class ArticleListReqVo {
     /**
      * 每页大小
      */
-    @NotNull(message = "每页大小不能为空")
     private Integer pageSize;
 
     /**

@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import com.blog4j.common.model.Result;
 import com.blog4j.oss.service.OssService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +25,9 @@ import java.net.URLEncoder;
  **/
 @RequestMapping("/file")
 @RestController
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class OssController {
-    @Autowired
-    private OssService ossService;
+    private final OssService ossService;
 
     /**
      * 上传文件
