@@ -1,5 +1,6 @@
 package com.blog4j.article.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -61,13 +62,12 @@ public class LabelServiceImpl extends ServiceImpl<LabelMapper, LabelEntity> impl
     /**
      * 根据创建者ID获取标签列表
      *
-     * @param userId 创建者ID
      * @return 标签列表
      */
     @Override
-    public List<LabelEntity> getListByCreaterId(String userId) {
+    public List<LabelEntity> getListByCreaterId() {
         LambdaQueryWrapper<LabelEntity> wrapper = new LambdaQueryWrapper<LabelEntity>()
-                .eq(LabelEntity::getCreater, userId);
+                .eq(LabelEntity::getCreater, StpUtil.getLoginIdAsString());
         return this.baseMapper.selectList(wrapper);
     }
 }

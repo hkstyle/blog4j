@@ -5,6 +5,7 @@ import com.blog4j.article.entity.CategoryEntity;
 import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
+import com.blog4j.article.vo.req.SaveCategoryLabelReqVo;
 
 import java.util.List;
 
@@ -51,4 +52,11 @@ public interface CategoryService extends IService<CategoryEntity>  {
      * @param reqVo 分类信息
      */
     void edit(CategoryEditReqVo reqVo);
+
+    /**
+     * 保存分类下的标签信息
+     *
+     * @param reqVo 请求信息
+     */
+    void saveCategoryLabel(SaveCategoryLabelReqVo reqVo);
 }

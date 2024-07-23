@@ -1,18 +1,24 @@
 package com.blog4j.article.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blog4j.api.client.FeignUser;
 import com.blog4j.api.vo.UserInfoVo;
 import com.blog4j.article.entity.ArticleEntity;
 import com.blog4j.article.entity.CategoryEntity;
+import com.blog4j.article.entity.CategoryLabelRelEntity;
+import com.blog4j.article.entity.LabelEntity;
 import com.blog4j.article.mapper.ArticleMapper;
+import com.blog4j.article.mapper.CategoryLabelRelMapper;
 import com.blog4j.article.mapper.CategoryMapper;
+import com.blog4j.article.mapper.LabelMapper;
 import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CategoryListReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
+import com.blog4j.article.vo.req.SaveCategoryLabelReqVo;
 import com.blog4j.common.enums.CategoryStatusEnum;
 import com.blog4j.common.enums.ErrorEnum;
 import com.blog4j.common.exception.Blog4jException;
@@ -38,6 +44,8 @@ import java.util.Objects;
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEntity> implements CategoryService {
     private final ArticleMapper articleMapper;
     private final FeignUser feignUser;
+    private final LabelMapper labelMapper;
+    private final CategoryLabelRelMapper categoryLabelRelMapper;
 
     /**
      * 获取文章分类信息列表
@@ -148,5 +156,35 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
         BeanUtils.copyProperties(reqVo, categoryEntity);
         categoryEntity.setUpdateTime(CommonUtil.getCurrentDateTime());
         this.baseMapper.updateById(categoryEntity);
+    }
+
+    /**
+     * 保存分类下的标签信息
+     *
+     * @param reqVo 请求信息
+     */
+    @Override
+    public void saveCategoryLabel(SaveCategoryLabelReqVo reqVo) {
+        String categoryId = reqVo.getCategoryId();
+        List<String> labelIds = reqVo.getLabelIds();
+
+        CategoryEntity category = this.baseMapper.selectById(categoryId);
+        if (Objects.isNull(category)) {
+            throw new Blog4jException(ErrorEnum.CATEGORY_INFO_EMPTY_ERROR);
+        }
+
+        List<LabelEntity> labelList = labelMapper.selectBatchIds(labelIds);
+        if (CollectionUtil.size(labelIds) != CollectionUtil.size(labelList)) {
+            throw new Blog4jException(ErrorEnum.INVALID_PARAMETER_ERROR);
+        }
+
+        // todo 性能优化
+        for (LabelEntity label : labelList) {
+            CategoryLabelRelEntity build = CategoryLabelRelEntity.builder()
+                    .labelId(label.getLabelId())
+                    .categoryId(categoryId)
+                    .build();
+            categoryLabelRelMapper.insert(build);
+        }
     }
 }

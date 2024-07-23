@@ -5,6 +5,7 @@ import com.blog4j.article.service.CategoryService;
 import com.blog4j.article.vo.req.CategoryEditReqVo;
 import com.blog4j.article.vo.req.CreateCategoryReqVo;
 import com.blog4j.article.vo.req.DeleteCategoryReqVo;
+import com.blog4j.article.vo.req.SaveCategoryLabelReqVo;
 import com.blog4j.common.model.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,18 @@ public class CategoryController {
     @PostMapping("/edit")
     public Result edit(@RequestBody @Valid CategoryEditReqVo reqVo) {
         categoryService.edit(reqVo);
+        return Result.ok();
+    }
+
+    /**
+     * 保存分类下的标签信息
+     *
+     * @param reqVo 请求信息
+     * @return 保存成功
+     */
+    @PostMapping("/saveCategoryLabel")
+    public Result saveCategoryLabel(@RequestBody @Valid SaveCategoryLabelReqVo reqVo) {
+        categoryService.saveCategoryLabel(reqVo);
         return Result.ok();
     }
 }

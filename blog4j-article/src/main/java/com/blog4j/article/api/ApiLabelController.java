@@ -2,7 +2,6 @@ package com.blog4j.article.api;
 
 import com.blog4j.article.entity.LabelEntity;
 import com.blog4j.article.service.LabelService;
-import com.blog4j.article.vo.resp.LabelRespVo;
 import com.blog4j.common.model.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +39,11 @@ public class ApiLabelController {
     /**
      * 根据创建者ID获取标签列表
      *
-     * @param userId 创建者ID
      * @return 标签列表
      */
-    @GetMapping("/getListByCreaterId/{userId}")
-    public Result getListByCreaterId(@PathVariable("userId") String userId) {
-        List<LabelEntity> list = labelService.getListByCreaterId(userId);
+    @GetMapping("/getListByCreaterId")
+    public Result getListByCreaterId() {
+        List<LabelEntity> list = labelService.getListByCreaterId();
         return Result.ok(list);
     }
 }
