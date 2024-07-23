@@ -19,5 +19,13 @@ public interface LabelService extends IService<LabelEntity>  {
      * @param categoryId 分类ID
      * @return 标签信息列表
      */
-    List<LabelRespVo> getByCategoryId(String categoryId);
+    List<LabelEntity> getByCategoryId(String categoryId);
+
+    /**
+     * 根据创建者ID获取标签列表
+     *
+     * @param userId 创建者ID
+     * @return 标签列表
+     */
+    List<LabelEntity> getListByCreaterId(String userId);
 }

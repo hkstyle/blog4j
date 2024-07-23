@@ -1,5 +1,6 @@
 package com.blog4j.article.api;
 
+import com.blog4j.article.entity.LabelEntity;
 import com.blog4j.article.service.LabelService;
 import com.blog4j.article.vo.resp.LabelRespVo;
 import com.blog4j.common.model.Result;
@@ -20,7 +21,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/api/label")
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ApiLabelController {
     private final LabelService labelService;
 
@@ -32,7 +33,19 @@ public class ApiLabelController {
      */
     @GetMapping("/getByCategoryId/{categoryId}")
     public Result getByCategoryId(@PathVariable("categoryId") String categoryId) {
-        List<LabelRespVo> list = labelService.getByCategoryId(categoryId);
+        List<LabelEntity> list = labelService.getByCategoryId(categoryId);
+        return Result.ok(list);
+    }
+
+    /**
+     * 根据创建者ID获取标签列表
+     *
+     * @param userId 创建者ID
+     * @return 标签列表
+     */
+    @GetMapping("/getListByCreaterId/{userId}")
+    public Result getListByCreaterId(@PathVariable("userId") String userId) {
+        List<LabelEntity> list = labelService.getListByCreaterId(userId);
         return Result.ok(list);
     }
 }

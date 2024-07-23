@@ -59,6 +59,11 @@ public class UserEntity {
     private String avatar;
 
     /**
+     * 签名
+     */
+    private String sign;
+
+    /**
      * 用户状态(1:正常 2:锁定)
      */
     private Integer status;

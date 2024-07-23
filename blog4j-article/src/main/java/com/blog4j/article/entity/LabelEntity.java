@@ -28,11 +28,6 @@ public class LabelEntity {
     private String labelId;
 
     /**
-     * 分类ID
-     */
-    private String categoryId;
-
-    /**
      * 标签代码
      */
     private String labelCode;
@@ -41,6 +36,16 @@ public class LabelEntity {
      * 标签名称
      */
     private String labelName;
+
+    /**
+     * 创建人用户ID
+     */
+    private String creater;
+
+    /**
+     * 创建者名称
+     */
+    private String createrName;
 
     /**
      * 更新时间

@@ -8,7 +8,7 @@
         <result property="categoryName" column="category_name"/>
         <result property="status" column="status"/>
         <result property="creater" column="creater"/>
-        <result property="categoryName" column="category_name"/>
+        <result property="createrName" column="creater_name"/>
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
